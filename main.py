@@ -153,4 +153,6 @@ async def on_ready():
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-bot.run(TOKEN)
+# RUNNING
+if __name__ == "__main__":
+    bot.run(TOKEN)
