@@ -1,6 +1,7 @@
 import discord
 import os
 import asyncio
+import sys
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord import app_commands
@@ -122,7 +123,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: commands
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def restart(interaction: discord.Interaction, do_update:bool=True):
-    await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer()
     if do_update:
         await interaction.followup.send(embed = discord.Embed(title="Updating...", colour=discord.Colour.random()))
 
@@ -139,8 +140,9 @@ async def restart(interaction: discord.Interaction, do_update:bool=True):
 
     else:
         await interaction.followup.send(embed=discord.Embed(title="Restarting...", colour=discord.Colour.random()))
-
-    os.execv(executable, [executable])
+    executable = sys.executable
+    args = [executable] + sys.argv
+    os.execv(executable, args)
 
 # STARTUP
 @bot.event
