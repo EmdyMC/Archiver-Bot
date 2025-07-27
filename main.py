@@ -135,8 +135,8 @@ async def restart(interaction: discord.Interaction, do_update:bool=True):
         stdout, stderr = await process.communicate()
 
         if process.returncode != 0:
-            return await interaction.followup.send(f"Update failed: {stderr.decode().strip()}")
-        await interaction.followup.send(f'Update successful: {stdout.decode().strip()}')
+            return await interaction.followup.send(embed= discord.Embed(title=f"Update failed: {stderr.decode().strip()}", color=discord.Color.red()))
+        await interaction.followup.send(embed= discord.Embed(title=f'Update successful: {stdout.decode().strip()}', color=discord.Color.green()))
 
     else:
         await interaction.followup.send(embed=discord.Embed(title="Restarting...", colour=discord.Colour.random()))
