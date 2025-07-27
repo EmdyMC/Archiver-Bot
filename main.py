@@ -1,8 +1,10 @@
 import discord
 import os
+import asyncio
 from dotenv import load_dotenv
 from discord.ext import commands
 from discord import app_commands
+from sys import executable
 
 intents = discord.Intents.none()
 intents.guilds = True
@@ -114,6 +116,31 @@ async def on_app_command_error(interaction: discord.Interaction, error: commands
             "An error occurred while trying to execute this command.",
             ephemeral=True
         )
+
+# Restarts the bot and updates code from git if specified.
+@bot.tree.command(name="restart", description="Restarts and updates the bot")
+@app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def restart(interaction: discord.Interaction, do_update:bool=True):
+    await interaction.response.defer(ephemeral=True)
+    if do_update:
+        await interaction.followup.send(embed = discord.Embed(title="Updating...", colour=discord.Colour.random()))
+
+        process = await asyncio.create_subprocess_exec(
+            "git", "pull", "origin", "main",
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        stdout, stderr = await process.communicate()
+
+        if process.returncode != 0:
+            return await interaction.followup.send(f"Update failed: {stderr.decode().strip()}")
+        await interaction.followup.send(f'Update successful: {stdout.decode().strip()}')
+
+    else:
+        await interaction.followup.send(embed=discord.Embed(title="Restarting...", colour=discord.Colour.random()))
+
+    os.execv(executable, [executable])
 
 # STARTUP
 @bot.event
