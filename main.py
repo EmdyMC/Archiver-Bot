@@ -110,12 +110,11 @@ async def on_thread_create(thread):
             notif.add_reaction("🟢"),
             notif.add_reaction("✅")
         )
-
-"""     
+   
 # Other archives embed
-@bot.tree.command(name="archive_embed", description="Sends the list of other archive servers in a neat embed")
+@bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
 @app_commands.checks.has_role(MODERATOR_ID)
-async def archives_embed():
+async def archives_embed(interaction: discord.Interaction):
     archives_channel = bot.get_channel(OTHER_ARCHIVES_CHANNEL)
     archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed(), description=
         '''<:pridetech:849361224319238174> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
@@ -138,7 +137,6 @@ async def archives_embed():
         <:rutmc:1305855498515386368> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
         <:tba:1397679666373988533> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive')''')
     await archives_channel.send(embed=archives_embed)
-"""
 
 # Slash command error
 @bot.tree.error
