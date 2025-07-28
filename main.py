@@ -14,12 +14,14 @@ intents.messages = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
+# Constants
 HIGHER_ROLES = {1161821342514036776, 1162049503503863808}
 MODERATOR_ID = 1161821342514036776
 LOG_CHANNEL = 1343664979831820368
 NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1358435852153258114, 1163087048173965402, 1378966923152195655, 1182932696662560798, 1374225342948053032, 1161803873317568583}
 SUBMISSIONS_CHANNEL = 1161814713496256643
 SUBMISSIONS_TRACKER_CHANNEL = 1394308822926889060
+OTHER_ARCHIVES_CHANNEL = 1266791891710513222
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -107,6 +109,32 @@ async def on_thread_create(thread):
             notif.add_reaction("🟢"),
             notif.add_reaction("✅")
         )
+        
+# Other archives embed
+@bot.tree.command(name='archive_embed', description='Sends the list of other archive servers in a neat embed')
+@app_commands.checks.has_role(MODERATOR_ID)
+async def archives_embed():
+    archives_channel = bot.get_channel(OTHER_ARCHIVES_CHANNEL)
+    archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed(), description='''<:pridetech:849361224319238174> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
+<:slimestonetech:1397669158505807953> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK) Flying machines and movable contraptions
+<:mtdr:977912177337962556> [**Minecraft Tech Discord Recollector**](https://discord.gg/UT8ns46As9) Index of TMC SMP and archive servers
+<:tntarchive:1397670149368053800> [**TNT Archive**](https://discord.gg/vPyUBcdmZV) TNT cannon tech and projectile physics
+<:treehuggers:1397670997355921448> [**Tree Huggers**](https://discord.gg/8bUbuuS) Tree farm development
+<:hugefungihuggers:1397672034300985434> [**Huge Fungi Huggers**](https://discord.gg/EKKkyfcPPV) Nether tree and foliage farm development
+<:cartchives:1397672526229803028> [**Cartchives**](https://discord.gg/8nGNTewveC) Piston bolts and minecart based tech
+<:witherhead:913636413503848478> [**Wither Archive**](https://discord.gg/Ea28MyKB3J) Wither tech archive and development 
+<:suppression:1397673704191692901> [**Saints of Suppression**](https://discord.gg/xa7QWAeAng) Light and update suppression and skipping
+<:aca:1397674339004055752> [**Autocrafting Archive**](https://discord.gg/guZdbQ9KQe) Crafters and modded autocrafting table tech
+<:comparchive:1397674846036430848> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7) TMC-oriented computational redstone logic
+<:tmcra:1397675452415606804> [**TMC Resources Archive**](https://discord.gg/E4q8WDUc7k) Compilation of TMC tricks, links, and resources
+<:lukearchive:1397675957933969509> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBiili) tech recollector
+
+<:ored:1397677889305968752> [**Open Redstone**](https://discord.gg/zjWRarN) (DiscOREd) Computational redstone community
+<:pistondoor:1397678277493264414> [**Piston Door Catalogue**](https://discord.gg/Khj8MyA) (Redstone Squid's Records Catalogue) Piston door index
+<:ssf:1397678984715833386> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH) (SSf Archive) Structureless superflat tech
+<:rutmc:1305855498515386368> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
+<:tba:1397679666373988533> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive')''')
+    await archives_channel.send(embed=archives_embed)
 
 # Slash command error
 @bot.tree.error
