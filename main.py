@@ -15,6 +15,7 @@ intents.messages = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
 HIGHER_ROLES = {1161821342514036776, 1162049503503863808}
+MODERATOR_ID = 1161821342514036776
 LOG_CHANNEL = 1343664979831820368
 NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1358435852153258114, 1163087048173965402, 1378966923152195655, 1182932696662560798, 1374225342948053032, 1161803873317568583}
 SUBMISSIONS_CHANNEL = 1161814713496256643
@@ -88,7 +89,7 @@ async def close_archived(interaction: discord.Interaction):
     else:
         await interaction.followup.send("No open forum posts found in the archives")
 
-#Submission tracker
+# Submission tracker
 @bot.event
 async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
@@ -107,7 +108,7 @@ async def on_thread_create(thread):
             notif.add_reaction("✅")
         )
 
-#Slash command error
+# Slash command error
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: commands.CommandInvokeError):
     if isinstance(error, commands.MissingRole) or isinstance(error, commands.MissingAnyRole):
@@ -124,7 +125,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: commands
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
-@app_commands.checks.has_any_role(*HIGHER_ROLES)
+@app_commands.checks.has_role(1161821342514036776)
 async def restart(interaction: discord.Interaction, do_update:bool=True):
     await interaction.response.defer()
     if do_update:
@@ -156,7 +157,7 @@ async def on_message(message):
         await message.channel.send(f'{message.author.mention} 🏓')
     await bot.process_commands(message)
 
-# STARTUP
+# Startup
 @bot.event
 async def on_ready():
     print(f"Bot online as {bot.user}")
@@ -167,6 +168,6 @@ async def on_ready():
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-# RUNNING
+# Running
 if __name__ == "__main__":
     bot.run(TOKEN)
