@@ -10,6 +10,7 @@ from sys import executable
 intents = discord.Intents.none()
 intents.guilds = True
 intents.members = True
+intents.messages = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
@@ -99,10 +100,12 @@ async def on_thread_create(thread):
         discussion_thread_channel = bot.get_channel(discussion_thread.id)
         await discussion_thread_channel.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
-        await notif.add_reaction("❌")
-        await notif.add_reaction("🔴")
-        await notif.add_reaction("🟢")
-        await notif.add_reaction("✅")
+        await asyncio.gather(
+            notif.add_reaction("❌"),
+            notif.add_reaction("🔴"),
+            notif.add_reaction("🟢"),
+            notif.add_reaction("✅")
+        )
 
 #Slash command error
 @bot.tree.error
@@ -143,6 +146,15 @@ async def restart(interaction: discord.Interaction, do_update:bool=True):
     executable = sys.executable
     args = [executable] + sys.argv
     os.execv(executable, args)
+
+# Ping reply
+@bot.event
+async def on_message(message):
+    if message.author == bot.user:
+        return
+    if bot.user in message.mentions:
+        await message.channel.send(f'{message.author.mention} 🏓')
+    await bot.process_commands(message)
 
 # STARTUP
 @bot.event
