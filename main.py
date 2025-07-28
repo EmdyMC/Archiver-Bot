@@ -102,6 +102,7 @@ async def on_thread_create(thread):
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         discussion_thread_channel = bot.get_channel(discussion_thread.id)
         await discussion_thread_channel.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
+        #await archivers = bot.get_all_members()
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
@@ -109,7 +110,8 @@ async def on_thread_create(thread):
             notif.add_reaction("🟢"),
             notif.add_reaction("✅")
         )
-        
+
+"""     
 # Other archives embed
 @bot.tree.command(name="archive_embed", description="Sends the list of other archive servers in a neat embed")
 @app_commands.checks.has_role(MODERATOR_ID)
@@ -136,6 +138,7 @@ async def archives_embed():
         <:rutmc:1305855498515386368> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
         <:tba:1397679666373988533> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive')''')
     await archives_channel.send(embed=archives_embed)
+"""
 
 # Slash command error
 @bot.tree.error
