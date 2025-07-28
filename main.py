@@ -102,7 +102,8 @@ async def on_thread_create(thread):
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         discussion_thread_channel = bot.get_channel(discussion_thread.id)
         await discussion_thread_channel.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
-        #await archivers = bot.get_all_members()
+        ping_message = await discussion_thread_channel.send("ping pong")
+        await ping_message.edit(content="<@1162049503503863808> boop")
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
