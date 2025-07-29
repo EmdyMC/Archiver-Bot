@@ -22,6 +22,7 @@ NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1358435852153258114, 116308704817
 SUBMISSIONS_CHANNEL = 1161814713496256643
 SUBMISSIONS_TRACKER_CHANNEL = 1394308822926889060
 ARCHIVERS = {869534786094518302, 1170351112973467681, 247478244960501760, 301919226078298114, 697416598100770916, 619840922129268746, 443157310341251083, 549734176455262209, 549734176455262209, 709149578636689468, 828951132721774604, 744300374550118562, 697092662511272036, 513900971219353600, 640174975675793430, 900779759997419530, 394609623530995712, 330610358094004225}
+RESOLVED_TAGS = {1183092798908534804, 1197302327065972776}
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -103,7 +104,7 @@ async def on_thread_create(thread):
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         ping_message = await discussion_thread.send("ping pong")
-        await ping_message.edit(content="<@&1162049503503863808> boop")
+        await ping_message.edit(content="@Archiver boop")
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
@@ -111,7 +112,26 @@ async def on_thread_create(thread):
             notif.add_reaction("🟢"),
             notif.add_reaction("✅")
         )
-   
+
+# Close tracker post on archival/reject
+@bot.event
+async def on_thread_update(before, after):
+    if before.parent.id == SUBMISSIONS_CHANNEL:
+        try:
+            tag_before = set(before.applied_tags)
+            tag_after = set(after.applied_tags)
+            tag_added = list(tag_after - tag_before)[0]
+        except:
+            return
+        if any(tag_added in RESOLVED_TAGS):
+            tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+            for thread in tracker_channel.threads:
+                if thread.name == before.name:
+                    logs = bot.get_channel(LOG_CHANNEL)
+                    await logs.send(f"{thread.name} submission tracker discussion post removed")
+                    thread.delete()
+
+
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
 @app_commands.checks.has_role(MODERATOR_ID)
