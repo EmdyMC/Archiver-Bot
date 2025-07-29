@@ -96,16 +96,15 @@ async def close_archived(interaction: discord.Interaction):
 async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
         #logging
-        logs = await bot.get_channel(LOG_CHANNEL)
+        logs = bot.get_channel(LOG_CHANNEL)
         await logs.send(f"Submission created: {thread.name}")
         #send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
-        discussion_thread_channel = bot.get_channel(discussion_thread.id)
-        await discussion_thread_channel.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
-        ping_message = await discussion_thread_channel.send("ping pong")
+        await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
+        ping_message = await discussion_thread.send("ping pong")
         await ping_message.edit(content="<@&1162049503503863808> boop")
-        notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
+        notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
             notif.add_reaction("🔴"),
