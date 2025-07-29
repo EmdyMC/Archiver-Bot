@@ -115,26 +115,25 @@ async def on_thread_create(thread):
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
 @app_commands.checks.has_role(MODERATOR_ID)
 async def archives_embed(interaction: discord.Interaction):
-    archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed(), description=
-        '''<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
-        <:slime:1399677082472153098> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK) Flying machines and movable contraptions
-        <:mtdr:1399677041946923061> [**Minecraft Tech Discord Recollector**](https://discord.gg/UT8ns46As9) Index of TMC SMP and archive servers
-        <:tnt:1399677165104009226> [**TNT Archive**](https://discord.gg/vPyUBcdmZV) TNT cannon tech and projectile physics
-        <:tree:1399677175803805696> [**Tree Huggers**](https://discord.gg/8bUbuuS) Tree farm development
-        <:hfh:1399677019767312404> [**Huge Fungi Huggers**](https://discord.gg/EKKkyfcPPV) Nether tree and foliage farm development
-        <:cart:1399676987928219739> [**Cartchives**](https://discord.gg/8nGNTewveC) Piston bolts and minecart based tech
-        <:wither:1399677185870008330> [**Wither Archive**](https://discord.gg/Ea28MyKB3J) Wither tech archive and development 
-        <:sos:1399677094169940139> [**Saints of Suppression**](https://discord.gg/xa7QWAeAng) Light and update suppression and skipping
-        <:aca:1399676962464600155> [**Autocrafting Archive**](https://discord.gg/guZdbQ9KQe) Crafters and modded autocrafting table tech
-        <:comp:1399677007406698516> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7) TMC-oriented computational redstone logic
-        <:tmcra:1399677154702135328> [**TMC Resources Archive**](https://discord.gg/E4q8WDUc7k) Compilation of TMC tricks, links, and resources
-        <:luke:1399677029707808768> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBiili) tech recollector
-
-        <:ore:1399677056584781946> [**Open Redstone**](https://discord.gg/zjWRarN) (DiscOREd) Computational redstone community
-        <:squid:1399677105033183232> [**Piston Door Catalogue**](https://discord.gg/Khj8MyA) (Redstone Squid's Records Catalogue) Piston door index
-        <:ssf:1399677117884534875> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH) (SSf Archive) Structureless superflat tech
-        <:rta:1399677071919288342> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
-        <:tba:1399677142660546620> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive')''')
+    archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed())
+    archives_embed.add_field(name="<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf)", value="Item sorting and storage", inline=False)
+    archives_embed.add_field(name="<:slime:1399677082472153098> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK)", value="Flying machines and movable contraptions", inline=False)
+    archives_embed.add_field(name="<:mtdr:1399677041946923061> [**Minecraft Tech Discord Recollector**](https://discord.gg/UT8ns46As9)", value="Index of TMC SMP and archive servers", inline=False)
+    archives_embed.add_field(name="<:tnt:1399677165104009226> [**TNT Archive**](https://discord.gg/vPyUBcdmZV)", value="TNT cannon tech and projectile physics", inline=False)
+    archives_embed.add_field(name="<:tree:1399677175803805696> [**Tree Huggers**](https://discord.gg/8bUbuuS)", value="Tree farm development", inline=False)
+    archives_embed.add_field(name="<:hfh:1399677019767312404> [**Huge Fungi Huggers**](https://discord.gg/EKKkyfcPPV)", value="Nether tree and foliage farm development", inline=False)
+    archives_embed.add_field(name="<:cart:1399676987928219739> [**Cartchives**](https://discord.gg/8nGNTewveC)", value="Piston bolts and minecart based tech", inline=False)
+    archives_embed.add_field(name="<:wither:1399677185870008330> [**Wither Archive**](https://discord.gg/Ea28MyKB3J)", value="Wither tech archive and development ", inline=False)
+    archives_embed.add_field(name="<:sos:1399677094169940139> [**Saints of Suppression**](https://discord.gg/xa7QWAeAng)", value="Light and update suppression and skipping", inline=False)
+    archives_embed.add_field(name="<:aca:1399676962464600155> [**Autocrafting Archive**](https://discord.gg/guZdbQ9KQe)", value="Crafters and modded autocrafting table tech", inline=False)
+    archives_embed.add_field(name="<:comp:1399677007406698516> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7)", value="TMC-oriented computational redstone logic", inline=False)
+    archives_embed.add_field(name="<:tmcra:1399677154702135328> [**TMC Resources Archive**](https://discord.gg/E4q8WDUc7k)", value="Compilation of TMC tricks, links, and resources", inline=False)
+    archives_embed.add_field(name="<:luke:1399677029707808768> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk)", value="Chinese (BiliBiili) tech recollector", inline=False)
+    archives_embed.add_field(name="<:ore:1399677056584781946> [**Open Redstone**](https://discord.gg/zjWRarN)", value="(DiscOREd) Computational redstone community", inline=False)
+    archives_embed.add_field(name="<:squid:1399677105033183232> [**Piston Door Catalogue**](https://discord.gg/Khj8MyA)", value="(Redstone Squid's Records Catalogue) Piston door index", inline=False)
+    archives_embed.add_field(name="<:ssf:1399677117884534875> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH)", value="(SSf Archive) Structureless superflat tech", inline=False)
+    archives_embed.add_field(name="<:rta:1399677071919288342> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA)", value="(RTMC Каталог) Russian TMC archive", inline=False)
+    archives_embed.add_field(name="<:tba:1399677142660546620> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648)", value="Bedrock TMC archive", inline=False)
     await interaction.channel.send(embed=archives_embed)
 
 # Slash command error
