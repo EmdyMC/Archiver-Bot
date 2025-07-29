@@ -96,14 +96,16 @@ async def close_archived(interaction: discord.Interaction):
 @bot.event
 async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL or thread.parent.id == 1396083078279073946:
-        #terminal notif
-        print(f"New submission {thread.name} created")
+        #logging
+        logs = await bot.get_channel(LOG_CHANNEL)
+        await logs.send(f"Submission created: {thread.name}")
         #send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name, message=f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         discussion_thread_channel = bot.get_channel(discussion_thread.id)
         for archiver in ARCHIVERS:
             await discussion_thread_channel.add_user(archiver)
+            await logs.send(f"Added {bot.get_user(archiver).name} to the thread")
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
