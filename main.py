@@ -116,7 +116,7 @@ async def on_thread_create(thread):
 @app_commands.checks.has_role(MODERATOR_ID)
 async def archives_embed(interaction: discord.Interaction):
     archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed())
-    archives_embed.add_field(name="<:std:1399677131004580051> **Storage Tech**", value="[Join](https://discord.gg/JufJ6uf) - Item sorting and storage", inline=False)
+    archives_embed.add_field(name="<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf)", value="Item sorting and storage", inline=False)
     archives_embed.add_field(name="<:slime:1399677082472153098> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK)", value="Flying machines and movable contraptions", inline=False)
     archives_embed.add_field(name="<:mtdr:1399677041946923061> [**Minecraft Tech Discord Recollector**](https://discord.gg/UT8ns46As9)", value="Index of TMC SMP and archive servers", inline=False)
     archives_embed.add_field(name="<:tnt:1399677165104009226> [**TNT Archive**](https://discord.gg/vPyUBcdmZV)", value="TNT cannon tech and projectile physics", inline=False)
