@@ -21,10 +21,7 @@ LOG_CHANNEL = 1343664979831820368
 NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1358435852153258114, 1163087048173965402, 1378966923152195655, 1182932696662560798, 1374225342948053032, 1161803873317568583}
 SUBMISSIONS_CHANNEL = 1161814713496256643
 SUBMISSIONS_TRACKER_CHANNEL = 1394308822926889060
-<<<<<<< HEAD
 ARCHIVERS = {869534786094518302, 1170351112973467681, 247478244960501760, 301919226078298114, 697416598100770916, 619840922129268746, 443157310341251083, 549734176455262209, 549734176455262209, 709149578636689468, 828951132721774604, 744300374550118562, 697092662511272036, 513900971219353600, 640174975675793430, 900779759997419530, 394609623530995712, 330610358094004225}
-=======
->>>>>>> parent of c2d9937 (Add archivers to submission thread (hopefully))
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -97,7 +94,7 @@ async def close_archived(interaction: discord.Interaction):
 # Submission tracker
 @bot.event
 async def on_thread_create(thread):
-    if thread.parent.id == SUBMISSIONS_CHANNEL or thread.parent.id == 1396083078279073946:
+    if thread.parent.id == SUBMISSIONS_CHANNEL:
         #logging
         logs = await bot.get_channel(LOG_CHANNEL)
         await logs.send(f"Submission created: {thread.name}")
@@ -105,15 +102,9 @@ async def on_thread_create(thread):
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name, message=f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         discussion_thread_channel = bot.get_channel(discussion_thread.id)
-<<<<<<< HEAD
-        for archiver in ARCHIVERS:
-            await discussion_thread_channel.add_user(archiver)
-            await logs.send(f"Added {bot.get_user(archiver).name} to the thread")
-=======
         await discussion_thread_channel.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         ping_message = await discussion_thread_channel.send("ping pong")
         await ping_message.edit(content="<@&1162049503503863808> boop")
->>>>>>> parent of c2d9937 (Add archivers to submission thread (hopefully))
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
