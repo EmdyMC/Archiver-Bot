@@ -21,7 +21,6 @@ LOG_CHANNEL = 1343664979831820368
 NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1358435852153258114, 1163087048173965402, 1378966923152195655, 1182932696662560798, 1374225342948053032, 1161803873317568583}
 SUBMISSIONS_CHANNEL = 1161814713496256643
 SUBMISSIONS_TRACKER_CHANNEL = 1394308822926889060
-OTHER_ARCHIVES_CHANNEL = 1266791891710513222
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -116,7 +115,6 @@ async def on_thread_create(thread):
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
 @app_commands.checks.has_role(MODERATOR_ID)
 async def archives_embed(interaction: discord.Interaction):
-    archives_channel = bot.get_channel(OTHER_ARCHIVES_CHANNEL)
     archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed(), description=
         '''<:pridetech:849361224319238174> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
         <:slimestonetech:1397669158505807953> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK) Flying machines and movable contraptions
@@ -137,7 +135,7 @@ async def archives_embed(interaction: discord.Interaction):
         <:ssf:1397678984715833386> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH) (SSf Archive) Structureless superflat tech
         <:rutmc:1305855498515386368> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
         <:tba:1397679666373988533> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive')''')
-    await archives_channel.send(embed=archives_embed)
+    await interaction.channel.send(embed=archives_embed)
 
 # Slash command error
 @bot.tree.error
