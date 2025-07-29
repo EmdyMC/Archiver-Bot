@@ -95,7 +95,7 @@ async def close_archived(interaction: discord.Interaction):
 # Submission tracker
 @bot.event
 async def on_thread_create(thread):
-    if thread.parent.id == SUBMISSIONS_CHANNEL:
+    if thread.parent.id == SUBMISSIONS_CHANNEL or thread.parent.id == 1396083078279073946:
         #terminal notif
         print(f"New submission {thread.name} created")
         #send to tracker
