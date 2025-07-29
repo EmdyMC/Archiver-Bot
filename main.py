@@ -100,9 +100,8 @@ async def on_thread_create(thread):
         print(f"New submission {thread.name} created")
         #send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-        discussion_thread = await tracker_channel.create_thread(name=thread.name)
+        discussion_thread = await tracker_channel.create_thread(name=thread.name, message=f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         discussion_thread_channel = bot.get_channel(discussion_thread.id)
-        await discussion_thread_channel.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         for archiver in ARCHIVERS:
             await discussion_thread_channel.add_user(archiver)
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread_channel.jump_url}")
