@@ -107,8 +107,8 @@ async def on_thread_create(thread):
         await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
         for archiver in ARCHIVERS:
             try:
-                member = await thread.guild.fetch_member(archiver)
-                await thread.add_user(member)
+                member = await discussion_thread.guild.fetch_member(archiver)
+                await discussion_thread.add_user(member)
             except discord.Forbidden:
                 logs.send(f"Bot does not have permissions to add user ID {archiver} to the thread.")
             except Exception as e:
