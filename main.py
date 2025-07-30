@@ -17,6 +17,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 # Constants
 HIGHER_ROLES = {1161821342514036776, 1162049503503863808}
 MODERATOR_ID = 1161821342514036776
+ARCHIVER_ID = 1162049503503863808
 LOG_CHANNEL = 1343664979831820368
 NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1358435852153258114, 1163087048173965402, 1378966923152195655, 1182932696662560798, 1374225342948053032, 1161803873317568583}
 SUBMISSIONS_CHANNEL = 1161814713496256643
@@ -104,8 +105,15 @@ async def on_thread_create(thread):
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
-        ping_message = await discussion_thread.send("ping pong")
-        await ping_message.edit(content="@Archiver boop")
+        for archiver in ARCHIVERS:
+            try:
+                member = await thread.guild.fetch_member(archiver)
+                await thread.add_user(member)
+            except discord.Forbidden:
+                logs.send(f"Bot does not have permissions to add user ID {archiver} to the thread.")
+            except Exception as e:
+                logs.send(f"Error adding user ID {archiver} to thread: {e}")
+            
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
