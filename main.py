@@ -98,7 +98,8 @@ async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
         #logging
         logs = bot.get_channel(LOG_CHANNEL)
-        await logs.send(f"Submission created: {thread.name}")
+        embed = discord.Embed(title=f"Submission created: {thread.name}")
+        await logs.send(embed=embed)
         #send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
@@ -127,7 +128,8 @@ async def on_thread_update(before, after):
             async for message in tracker_channel.history(limit=None):
                 if str(before.id) in message.content:
                     logs = bot.get_channel(LOG_CHANNEL)
-                    await logs.send(f"Submission tracker post of {before.name} removed")
+                    embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
+                    await logs.send(embed=embed)
                     await message.delete()
                     break
 
