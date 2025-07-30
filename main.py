@@ -105,18 +105,8 @@ async def on_thread_create(thread):
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
-        ping_message = await discussion_thread.send("ping pong")
-        await ping_message.edit(content="<@&1162049503503863808> boop")
-        '''
-        for archiver in ARCHIVERS:
-            try:
-                member = await discussion_thread.guild.fetch_member(archiver)
-                await discussion_thread.add_user(member)
-            except discord.Forbidden:
-                logs.send(f"Bot does not have permissions to add user ID {archiver} to the thread.")
-            except Exception as e:
-                logs.send(f"Error adding user ID {archiver} to thread: {e}")
-        '''    
+        ping_message = await discussion_thread.send("ping")
+        await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
         await asyncio.gather(
             notif.add_reaction("❌"),
