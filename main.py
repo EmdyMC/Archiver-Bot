@@ -105,7 +105,8 @@ async def on_thread_create(thread):
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
-        await discussion_thread.send(f"<@&1162049503503863808> boop", silent=True)
+        ping_message = await discussion_thread.send("ping pong")
+        await ping_message.edit(content="<@&1162049503503863808> boop")
         '''
         for archiver in ARCHIVERS:
             try:
