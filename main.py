@@ -113,23 +113,23 @@ async def on_thread_create(thread):
             notif.add_reaction("✅")
         )
 
-# Close tracker post on archival/reject
+# Remove tracker post on archival/reject
 @bot.event
 async def on_thread_update(before, after):
     if before.parent.id == SUBMISSIONS_CHANNEL:
-        try:
-            tag_before = set(before.applied_tags)
-            tag_after = set(after.applied_tags)
-            tag_added = list(tag_after - tag_before)[0]
-        except:
-            return
-        if any(tag_added in RESOLVED_TAGS):
+        tags_before = set(tag.id for tag in before.applied_tags)
+        tags_after = set(tag.id for tag in after.applied_tags)
+        added_tags = tags_after - tags_before
+        if len(added_tags) == 1:
+            tag_added = list(added_tags)[0]
+        if tag_added in RESOLVED_TAGS:
             tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-            for thread in tracker_channel.threads:
-                if thread.name == before.name:
+            async for message in tracker_channel.history(limit=None):
+                if str(before.id) in message.content:
                     logs = bot.get_channel(LOG_CHANNEL)
-                    await logs.send(f"{thread.name} submission tracker discussion post removed")
-                    thread.delete()
+                    await logs.send(f"Submission tracker post of {before.name} removed")
+                    await message.delete()
+                    break
 
 
 # Other archives embed
