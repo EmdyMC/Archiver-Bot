@@ -29,6 +29,42 @@ TAG_COLOUR = {
     "Rejected": discord.Colour.red(),
     "Solved": discord.Colour.green(),
     "Archived": discord.Colour.dark_blue()} # Embed Colour based on tag
+UPPER_TAGS = {"Accepted", "Rejected", "Solved", "Pending", "Archived"}
+
+# Edit tag button
+class TagButton(discord.ui.Button):
+    def __init__(self, tag, style):
+        super().__init__(label = tag.name, style = style)
+        self.tag = tag
+
+    async def callback(self, interaction: discord.Interaction):
+        new_tags = [self.tag]
+        if self.view.forum_id == SUBMISSIONS_CHANNEL:
+            if not self.tag.name in UPPER_TAGS:
+                for tag in interaction.channel.applied_tags:
+                    if tag.name in UPPER_TAGS:
+                        new_tags.append(tag)
+
+        await asyncio.gather(self.view.on_timeout(), interaction.channel.edit(applied_tags = new_tags))
+
+# Edit tag view
+class TagView(discord.ui.View):
+    def __init__(self, tag_list: list, forum_id:int):
+        super().__init__(timeout = 30)
+        self.forum_id = forum_id
+        self.msg = None
+        for tag in tag_list:
+            self.add_item(TagButton(tag, discord.ButtonStyle.primary))
+
+    async def set_message(self, msg):
+        self.msg = msg
+
+    async def on_timeout(self):
+        if self.msg:
+            try:
+                await self.msg.delete_original_response()
+            except discord.NotFound:
+                pass
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -97,6 +133,16 @@ async def close_archived(interaction: discord.Interaction):
         await interaction.followup.send(report)
     else:
         await interaction.followup.send("No open forum posts found in the archives")
+
+#Set tag command
+@bot.tree.command(name="set_tag", description="Sets the tag for the thread")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def set_tag(interaction: discord.Interaction):
+    if not isinstance(interaction.channel.parent, discord.ForumChannel):
+        await interaction.respond(embed = discord.Embed(title = "This is not a forum channel"), ephemeral = True)
+    view = TagView(interaction.channel.parent.available_tags, interaction.channel.parent.id)
+    msg = await interaction.respond("**Which tag would you like to set?**", view = view, ephemeral = True)
+    await view.set_message(msg)
 
 # Submission tracker
 @bot.event
