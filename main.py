@@ -27,7 +27,8 @@ RESOLVED_TAGS = {1183092798908534804, 1197302327065972776}
 TAG_COLOUR = {
     "Accepted": discord.Colour.green(),
     "Rejected": discord.Colour.red(),
-    "Solved": discord.Colour.green()} # Embed Colour based on tag
+    "Solved": discord.Colour.green(),
+    "Archived": discord.Colour.dark_blue()} # Embed Colour based on tag
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -119,7 +120,7 @@ async def on_thread_create(thread):
             notif.add_reaction("✅")
         )
 
-# Remove tracker post on archival/reject
+# Remove tracker post on archival/reject and update notifs
 @bot.event
 async def on_thread_update(before, after):
     if before.parent.id == SUBMISSIONS_CHANNEL:
@@ -128,6 +129,17 @@ async def on_thread_update(before, after):
         added_tags = tags_after - tags_before
         if len(added_tags) == 1:
             tag_added = list(added_tags)[0]
+
+        if tag_added:
+            tag_emote = str(tag_added.emoji).strip("_")
+            tag_name = str(tag_added)
+
+            # Pick the embed colour
+            embed_colour = TAG_COLOUR.get(tag_name, None)
+            if embed_colour is None:
+                embed_colour = discord.Colour.light_gray()
+            await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
+
         if tag_added in RESOLVED_TAGS:
             tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
             async for message in tracker_channel.history(limit=None):
@@ -137,24 +149,6 @@ async def on_thread_update(before, after):
                     await logs.send(embed=embed)
                     await message.delete()
                     break
-
-#tag update notifs
-@bot.event
-async def on_thread_update(before, after):
-    if before.category_id in NON_ARCHIVE_CATEGORIES:
-        try:
-            tag_before = set(before.applied_tags)
-            tag_after = set(after.applied_tags)
-            tag_added = list(tag_after - tag_before)[0]
-        except:
-            return
-        if tag_added:
-            tag_emote = str(tag_added.emoji).strip("_")
-            tag_name = str(tag_added)
-
-            # Pick the embed colour
-            embed_colour = TAG_COLOUR.get(tag_name, None)
-            await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
 
 '''
 # Tracker list
