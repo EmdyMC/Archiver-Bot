@@ -130,25 +130,25 @@ async def on_thread_update(before, after):
         if len(added_tags) == 1:
             tag_added = list(added_tags)[0]
 
-        if tag_added:
-            tag_emote = str(tag_added.emoji).strip("_")
-            tag_name = str(tag_added)
+            if tag_added:
+                tag_emote = str(tag_added.emoji).strip("_")
+                tag_name = str(tag_added)
 
-            # Pick the embed colour
-            embed_colour = TAG_COLOUR.get(tag_name, None)
-            if embed_colour is None:
-                embed_colour = discord.Colour.light_gray()
-            await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
+                # Pick the embed colour
+                embed_colour = TAG_COLOUR.get(tag_name, None)
+                if embed_colour is None:
+                    embed_colour = discord.Colour.light_gray()
+                await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
 
-        if tag_added in RESOLVED_TAGS:
-            tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-            async for message in tracker_channel.history(limit=None):
-                if str(before.id) in message.content:
-                    logs = bot.get_channel(LOG_CHANNEL)
-                    embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
-                    await logs.send(embed=embed)
-                    await message.delete()
-                    break
+            if tag_added in RESOLVED_TAGS:
+                tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+                async for message in tracker_channel.history(limit=None):
+                    if str(before.id) in message.content:
+                        logs = bot.get_channel(LOG_CHANNEL)
+                        embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
+                        await logs.send(embed=embed)
+                        await message.delete()
+                        break
 
 '''
 # Tracker list
