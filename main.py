@@ -139,9 +139,9 @@ async def close_archived(interaction: discord.Interaction):
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def set_tag(interaction: discord.Interaction):
     if not isinstance(interaction.channel.parent, discord.ForumChannel):
-        await interaction.respond(embed = discord.Embed(title = "This is not a forum channel"), ephemeral = True)
+        await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum channel"), ephemeral = True)
     view = TagView(interaction.channel.parent.available_tags, interaction.channel.parent.id)
-    msg = await interaction.respond("**Which tag would you like to set?**", view = view, ephemeral = True)
+    msg = await interaction.response.send_message("**Which tag would you like to set?**", view = view, ephemeral = True)
     await view.set_message(msg)
 
 # Submission tracker
