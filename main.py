@@ -24,6 +24,7 @@ SUBMISSIONS_CHANNEL = 1161814713496256643
 SUBMISSIONS_TRACKER_CHANNEL = 1394308822926889060
 ARCHIVERS = {869534786094518302, 1170351112973467681, 247478244960501760, 301919226078298114, 697416598100770916, 619840922129268746, 443157310341251083, 549734176455262209, 549734176455262209, 709149578636689468, 828951132721774604, 744300374550118562, 697092662511272036, 513900971219353600, 640174975675793430, 900779759997419530, 394609623530995712, 330610358094004225}
 RESOLVED_TAGS = {1183092798908534804, 1197302327065972776}
+FORUMS = {1161814713496256643, 1284851559947305052, 1378037810975473846}
 TAG_COLOUR = {
     "Accepted": discord.Colour.green(),
     "Rejected": discord.Colour.red(),
@@ -38,16 +39,14 @@ class TagButton(discord.ui.Button):
         self.tag = tag
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.defer()
         new_tags = [self.tag]
-        if self.view.forum_id == SUBMISSIONS_CHANNEL:
+        if self.view.forum_id in FORUMS:
             if not self.tag.name in UPPER_TAGS:
                 for tag in interaction.channel.applied_tags:
                     if tag.name in UPPER_TAGS:
                         new_tags.append(tag)
 
         await asyncio.gather(self.view.on_timeout(), interaction.channel.edit(applied_tags = new_tags))
-        await interaction.delete_original_response()
 
 # Edit tag view
 class TagView(discord.ui.View):
