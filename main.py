@@ -24,6 +24,10 @@ SUBMISSIONS_CHANNEL = 1161814713496256643
 SUBMISSIONS_TRACKER_CHANNEL = 1394308822926889060
 ARCHIVERS = {869534786094518302, 1170351112973467681, 247478244960501760, 301919226078298114, 697416598100770916, 619840922129268746, 443157310341251083, 549734176455262209, 549734176455262209, 709149578636689468, 828951132721774604, 744300374550118562, 697092662511272036, 513900971219353600, 640174975675793430, 900779759997419530, 394609623530995712, 330610358094004225}
 RESOLVED_TAGS = {1183092798908534804, 1197302327065972776}
+TAG_COLOUR = {
+    "Accepted": discord.Colour.green(),
+    "Rejected": discord.Colour.red(),
+    "Solved": discord.Colour.green()} # Embed Colour based on tag
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
@@ -134,6 +138,34 @@ async def on_thread_update(before, after):
                     await message.delete()
                     break
 
+#tag update notifs
+@bot.event
+async def on_thread_update(before, after):
+    if before.category_id in NON_ARCHIVE_CATEGORIES:
+        try:
+            tag_before = set(before.applied_tags)
+            tag_after = set(after.applied_tags)
+            tag_added = list(tag_after - tag_before)[0]
+        except:
+            return
+        if tag_added:
+            tag_emote = str(tag_added.emoji).strip("_")
+            tag_name = str(tag_added)
+
+            # Pick the embed colour
+            embed_colour = TAG_COLOUR.get(tag_name, None)
+            await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
+
+'''
+# Tracker list
+@bot.event
+async def on_message(message):
+    if message.channel == bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL) and message.author == bot.user:
+        pending_messages = []
+        awaiting_testing = []
+        async for tracking_message in message.channel.history(limit=None):
+            if tracking_message.
+'''
 
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
