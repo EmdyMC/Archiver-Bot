@@ -47,7 +47,8 @@ class TagButton(discord.ui.Button):
                     if tag.name in UPPER_TAGS:
                         new_tags.append(tag)
 
-        await asyncio.gather(self.view.on_timeout(), interaction.channel.edit(applied_tags = new_tags))
+        await interaction.channel.edit(applied_tags = new_tags)
+        await self.view.on_timeout()
 
 # Edit tag view
 class TagView(discord.ui.View):
