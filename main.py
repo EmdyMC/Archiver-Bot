@@ -181,13 +181,13 @@ async def on_thread_create(thread):
                     except:
                         logs.send(discord.Embed(title="Could not delete the previous tracker list"))
                     continue
-                reactions = tracking_message.reactions()
+                reactions = tracking_message.reactions
                 if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
                     awaiting_testing.append(tracking_message.jump_url)
                 else:
                     pending_messages.append(tracking_message.jump_url)
         except:
-            logs.send(discord.Embed(title="Could not fetch messages in tracker channel"))
+            await logs.send(embed = discord.Embed(title="Could not fetch messages in tracker channel"))
 
         if len(pending_messages) + len(awaiting_testing) > 0:
             tracker_list = f"## 🕥 Pending Decision\n"
