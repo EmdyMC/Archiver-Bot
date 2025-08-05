@@ -175,7 +175,7 @@ async def on_thread_create(thread):
         awaiting_testing = []
         try:
             async for tracking_message in tracker_channel.history(limit=None):
-                reactions = set(await tracking_message.reactions())
+                reactions = set(tracking_message.reactions())
                 if CLOCK_EMOJI in tracking_message.content:
                     try:
                         await tracking_message.delete()
@@ -188,7 +188,7 @@ async def on_thread_create(thread):
                     pending_messages.append(tracking_message.jump_url)
         except:
             logs.send(discord.Embed(title="Could not fetch messages in tracker channel"))
-            
+
         if len(pending_messages) + len(awaiting_testing) > 0:
             tracker_list = f"## 🕥 Pending Decision\n"
             tracker_list += "\n- ".join(pending_messages)
