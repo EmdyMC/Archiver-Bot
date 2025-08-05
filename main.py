@@ -171,7 +171,7 @@ async def on_thread_create(thread):
 # Remove tracker post on archival/reject and update notifs
 @bot.event
 async def on_thread_update(before, after):
-    if before.parent.id == SUBMISSIONS_CHANNEL:
+    if before.parent.id in FORUMS:
         try:
             tag_before = set(before.applied_tags)
             tag_after = set(after.applied_tags)
