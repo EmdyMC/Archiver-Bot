@@ -187,10 +187,11 @@ async def on_thread_update(before, after):
             if embed_colour is None:
                 embed_colour = discord.Colour.light_gray()
             await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
+            # Close posts if resolved
+            if tag_added.id in GENERAL_RESOLVED_TAGS:
+                await after.edit(archived=True)
 
-        if tag_added.id in GENERAL_RESOLVED_TAGS:
-            await after.edit(archived=True)
-
+        # Remove the tracker channel message
         if tag_added.id in RESOLVED_TAGS:
             tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
             async for message in tracker_channel.history(limit=None):
