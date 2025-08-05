@@ -32,6 +32,7 @@ TAG_COLOUR = {
     "Solved": discord.Colour.green(),
     "Archived": discord.Colour.dark_blue()} # Embed Colour based on tag
 UPPER_TAGS = {"Accepted", "Rejected", "Solved", "Pending", "Archived"}
+TESTING_EMOJI = '🧪'
 
 # Edit tag button
 class TagButton(discord.ui.Button):
@@ -53,7 +54,7 @@ class TagButton(discord.ui.Button):
 # Edit tag view
 class TagView(discord.ui.View):
     def __init__(self, tag_list: list, forum_id:int):
-        super().__init__(timeout = 30)
+        super().__init__(timeout = 10)
         self.forum_id = forum_id
         self.msg = None
         for tag in tag_list:
@@ -151,11 +152,11 @@ async def set_tag(interaction: discord.Interaction):
 @bot.event
 async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
-        #logging
+        # Logging
         logs = bot.get_channel(LOG_CHANNEL)
         embed = discord.Embed(title=f"Submission created: {thread.name}")
         await logs.send(embed=embed)
-        #send to tracker
+        # Send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
         await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
@@ -168,6 +169,26 @@ async def on_thread_create(thread):
             notif.add_reaction("🟢"),
             notif.add_reaction("✅")
         )
+        # Resend tracker list
+        pending_messages = []
+        awaiting_testing = []
+        async for tracking_message in tracker_channel.history(limit=None):
+            reactions = set(await tracking_message.reactions())
+            if '🕥' in tracking_message.content:
+                await tracking_message.delete()
+                continue
+            if TESTING_EMOJI in reactions:
+                awaiting_testing.append(tracking_message.jump_url)
+            else:
+                pending_messages.append(tracking_message.jump_url)
+        if len(pending_messages) + len(awaiting_testing) > 0:
+            tracker_list = f"## 🕥 Pending Decision\n"
+            tracker_list += "\n- ".join(pending_messages)
+            tracker_list += "## 🧪 Awaiting Testing\n"
+            tracker_list += "\n- ".join(awaiting_testing)
+            await tracker_channel.send(tracker_list)
+        else:
+            logs.send(discord.Embed(title="Error getting tracker posts"))
 
 # Remove tracker post on archival/reject and update notifs
 @bot.event
@@ -202,17 +223,6 @@ async def on_thread_update(before, after):
                     await logs.send(embed=embed)
                     await message.delete()
                     break
-
-'''
-# Tracker list
-@bot.event
-async def on_message(message):
-    if message.channel == bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL) and message.author == bot.user:
-        pending_messages = []
-        awaiting_testing = []
-        async for tracking_message in message.channel.history(limit=None):
-            if tracking_message.
-'''
 
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
@@ -284,8 +294,10 @@ async def restart(interaction: discord.Interaction, do_update:bool=True):
 # Ping reply
 @bot.event
 async def on_message(message):
+    #Ignore own messages
     if message.author == bot.user:
         return
+    # Reply to pings
     if bot.user in message.mentions:
         await message.channel.send(f'{message.author.mention} 🏓')
     await bot.process_commands(message)
