@@ -32,7 +32,8 @@ TAG_COLOUR = {
     "Solved": discord.Colour.green(),
     "Archived": discord.Colour.dark_blue()} # Embed Colour based on tag
 UPPER_TAGS = {"Accepted", "Rejected", "Solved", "Pending", "Archived"}
-TESTING_EMOJI = '🧪'
+TESTING_EMOJI = "🧪"
+CLOCK_EMOJI = "🕥"
 
 # Edit tag button
 class TagButton(discord.ui.Button):
@@ -172,15 +173,22 @@ async def on_thread_create(thread):
         # Resend tracker list
         pending_messages = []
         awaiting_testing = []
-        async for tracking_message in tracker_channel.history(limit=None):
-            reactions = set(await tracking_message.reactions())
-            if '🕥' in tracking_message.content:
-                await tracking_message.delete()
-                continue
-            if TESTING_EMOJI in reactions:
-                awaiting_testing.append(tracking_message.jump_url)
-            else:
-                pending_messages.append(tracking_message.jump_url)
+        try:
+            async for tracking_message in tracker_channel.history(limit=None):
+                reactions = set(await tracking_message.reactions())
+                if CLOCK_EMOJI in tracking_message.content:
+                    try:
+                        await tracking_message.delete()
+                    except:
+                        logs.send(discord.Embed(title="Could not delete the previous tracker list"))
+                    continue
+                if TESTING_EMOJI in reactions:
+                    awaiting_testing.append(tracking_message.jump_url)
+                else:
+                    pending_messages.append(tracking_message.jump_url)
+        except:
+            logs.send(discord.Embed(title="Could not fetch messages in tracker channel"))
+            
         if len(pending_messages) + len(awaiting_testing) > 0:
             tracker_list = f"## 🕥 Pending Decision\n"
             tracker_list += "\n- ".join(pending_messages)
@@ -188,7 +196,8 @@ async def on_thread_create(thread):
             tracker_list += "\n- ".join(awaiting_testing)
             await tracker_channel.send(tracker_list)
         else:
-            logs.send(discord.Embed(title="Error getting tracker posts"))
+            logs.send(discord.Embed(title="No posts found in tracker channel"))
+        
 
 # Remove tracker post on archival/reject and update notifs
 @bot.event
