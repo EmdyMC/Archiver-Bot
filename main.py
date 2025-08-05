@@ -179,7 +179,7 @@ async def on_thread_create(thread):
                     try:
                         await tracking_message.delete()
                     except:
-                        logs.send(discord.Embed(title="Could not delete the previous tracker list"))
+                        await logs.send(embed=discord.Embed(title="Could not delete the previous tracker list"))
                     continue
                 reactions = tracking_message.reactions
                 if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
@@ -187,16 +187,16 @@ async def on_thread_create(thread):
                 else:
                     pending_messages.append(tracking_message.jump_url)
         except:
-            await logs.send(embed = discord.Embed(title="Could not fetch messages in tracker channel"))
+            await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
 
         if len(pending_messages) + len(awaiting_testing) > 0:
-            tracker_list = f"## 🕥 Pending Decision\n"
+            tracker_list = f"## 🕥 Pending Decision\n- "
             tracker_list += "\n- ".join(pending_messages)
-            tracker_list += "## 🧪 Awaiting Testing\n"
+            tracker_list += "\n## 🧪 Awaiting Testing\n- "
             tracker_list += "\n- ".join(awaiting_testing)
             await tracker_channel.send(tracker_list)
         else:
-            logs.send(discord.Embed(title="No posts found in tracker channel"))
+            await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
         
 
 # Remove tracker post on archival/reject and update notifs
