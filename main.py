@@ -175,14 +175,14 @@ async def on_thread_create(thread):
         awaiting_testing = []
         try:
             async for tracking_message in tracker_channel.history(limit=None):
-                reactions = set(tracking_message.reactions())
                 if CLOCK_EMOJI in tracking_message.content:
                     try:
                         await tracking_message.delete()
                     except:
                         logs.send(discord.Embed(title="Could not delete the previous tracker list"))
                     continue
-                if TESTING_EMOJI in reactions:
+                reactions = tracking_message.reactions()
+                if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
                     awaiting_testing.append(tracking_message.jump_url)
                 else:
                     pending_messages.append(tracking_message.jump_url)
