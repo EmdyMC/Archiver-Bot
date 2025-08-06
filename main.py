@@ -168,19 +168,19 @@ async def update_tracker_list():
                 continue
             reactions = tracking_message.reactions
             if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
-                awaiting_testing.append(tracking_message.content)
+                awaiting_testing.append(tracking_message.content[3:])
             else:
-                pending_messages.append(tracking_message.content)
+                pending_messages.append(tracking_message.content[3:])
     except:
         await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
 
     if len(pending_messages) + len(awaiting_testing) > 0:
         pending_messages.reverse()
         awaiting_testing.reverse()
-        tracker_list = f"## 🕥 Pending Decision\n- "
-        tracker_list += "\n- ".join(pending_messages)
-        tracker_list += "\n## 🧪 Awaiting Testing\n- "
-        tracker_list += "\n- ".join(awaiting_testing)
+        tracker_list = f"## 🕥 Pending Decision\n "
+        tracker_list += "\n ".join(pending_messages)
+        tracker_list += "\n## 🧪 Awaiting Testing\n "
+        tracker_list += "\n ".join(awaiting_testing)
         await tracker_channel.send(tracker_list)
     else:
         await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
