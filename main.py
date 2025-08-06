@@ -34,6 +34,7 @@ TAG_COLOUR = {
 UPPER_TAGS = {"Accepted", "Rejected", "Solved", "Pending", "Archived"}
 TESTING_EMOJI = "🧪"
 CLOCK_EMOJI = "🕥"
+CROSS_EMOJI = "❌"
 
 # Edit tag button
 class TagButton(discord.ui.Button):
@@ -149,6 +150,41 @@ async def set_tag(interaction: discord.Interaction):
     msg = await interaction.response.send_message("**Which tag would you like to set?**", view = view, ephemeral = True)
     await view.set_message(msg)
 
+# Update tracker list
+async def update_tracker_list():
+    pending_messages = []
+    awaiting_testing = []
+    tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+    logs = bot.get_channel(LOG_CHANNEL)
+    try:
+        async for tracking_message in tracker_channel.history(limit=None):
+            if CLOCK_EMOJI in tracking_message.content:
+                try:
+                    await tracking_message.delete()
+                except:
+                    await logs.send(embed=discord.Embed(title="Could not delete the previous tracker list"))
+                continue
+            if CROSS_EMOJI in tracking_message.content:
+                continue
+            reactions = tracking_message.reactions
+            if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
+                awaiting_testing.append(tracking_message.content)
+            else:
+                pending_messages.append(tracking_message.content)
+    except:
+        await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
+
+    if len(pending_messages) + len(awaiting_testing) > 0:
+        pending_messages.reverse()
+        awaiting_testing.reverse()
+        tracker_list = f"## 🕥 Pending Decision\n- "
+        tracker_list += "\n- ".join(pending_messages)
+        tracker_list += "\n## 🧪 Awaiting Testing\n- "
+        tracker_list += "\n- ".join(awaiting_testing)
+        await tracker_channel.send(tracker_list)
+    else:
+        await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
+
 # Submission tracker
 @bot.event
 async def on_thread_create(thread):
@@ -171,33 +207,14 @@ async def on_thread_create(thread):
             notif.add_reaction("✅")
         )
         # Resend tracker list
-        pending_messages = []
-        awaiting_testing = []
-        try:
-            async for tracking_message in tracker_channel.history(limit=None):
-                if CLOCK_EMOJI in tracking_message.content:
-                    try:
-                        await tracking_message.delete()
-                    except:
-                        await logs.send(embed=discord.Embed(title="Could not delete the previous tracker list"))
-                    continue
-                reactions = tracking_message.reactions
-                if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
-                    awaiting_testing.append(tracking_message.jump_url)
-                else:
-                    pending_messages.append(tracking_message.jump_url)
-        except:
-            await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
+        await update_tracker_list()
 
-        if len(pending_messages) + len(awaiting_testing) > 0:
-            tracker_list = f"## 🕥 Pending Decision\n- "
-            tracker_list += "\n- ".join(pending_messages)
-            tracker_list += "\n## 🧪 Awaiting Testing\n- "
-            tracker_list += "\n- ".join(awaiting_testing)
-            await tracker_channel.send(tracker_list)
-        else:
-            await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
-        
+@bot.tree.command(name="tracker_list", description="rechecks and resends the submission tracker list")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def tracker_list(interaction: discord.Interaction):
+    await interaction.response.defer()
+    await update_tracker_list()
+    await interaction.followup.send(content="Tracker list updated", ephemeral=True)
 
 # Remove tracker post on archival/reject and update notifs
 @bot.event
