@@ -214,7 +214,7 @@ async def on_thread_create(thread):
 async def tracker_list(interaction: discord.Interaction):
     await interaction.response.defer()
     await update_tracker_list()
-    await interaction.followup.send(content="Tracker list updated", ephemeral=True)
+    await interaction.delete_original_response()
 
 # Remove tracker post on archival/reject and update notifs
 @bot.event
