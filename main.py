@@ -248,7 +248,9 @@ async def on_thread_update(before, after):
                     embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
                     await logs.send(embed=embed)
                     await message.delete()
-                    break
+                    # Update tracker list
+                    await update_tracker_list()
+                    break                    
 
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
