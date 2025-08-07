@@ -168,9 +168,9 @@ async def update_tracker_list():
                 continue
             reactions = tracking_message.reactions
             if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
-                awaiting_testing.append("**"+tracking_message.content[3:].strip("\n")+" **")
+                awaiting_testing.append("**"+tracking_message.content[3:].replace("\n", " ")+" **")
             else:
-                pending_messages.append("**"+tracking_message.content[3:].strip("\n")+" **")
+                pending_messages.append("**"+tracking_message.content[3:].replace("\n", " ")+" **")
     except:
         await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
 
