@@ -248,6 +248,7 @@ async def on_thread_update(before, after):
                 if str(before.id) in message.content:
                     logs = bot.get_channel(LOG_CHANNEL)
                     try:
+                        await logs.send(f"Attempting to delete tracker message for submission id {before.id}, found message {message.clean_content}")
                         await message.delete()
                         embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
                     except Exception as e:
