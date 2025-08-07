@@ -181,7 +181,7 @@ async def update_tracker_list():
         awaiting_testing.reverse()
         tracker_list = f"## 🕥 Pending Decision\n "
         tracker_list += "\n ".join(pending_messages)
-        tracker_list += "## 🧪 Awaiting Testing\n "
+        tracker_list += "\n## 🧪 Awaiting Testing\n "
         tracker_list += "\n ".join(awaiting_testing)
         await tracker_channel.send(tracker_list)
     else:
