@@ -247,9 +247,12 @@ async def on_thread_update(before, after):
             async for message in tracker_channel.history(limit=None):
                 if str(before.id) in message.content:
                     logs = bot.get_channel(LOG_CHANNEL)
-                    embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
+                    try:
+                        await message.delete()
+                        embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
+                    except Exception as e:
+                        embed = discord.Embed(title=f"An error occured {e}")
                     await logs.send(embed=embed)
-                    await message.delete()
                     # Update tracker list
                     await update_tracker_list()
                     break                    
