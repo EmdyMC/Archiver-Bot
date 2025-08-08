@@ -297,7 +297,7 @@ async def on_app_command_error(interaction: discord.Interaction, error: commands
         )
     else:
         await interaction.followup.send(
-            "An error occurred while trying to execute this command.",
+            f"An error occurred while trying to execute this command: {error}",
             ephemeral=True
         )
 
