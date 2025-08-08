@@ -222,7 +222,7 @@ async def on_thread_update(before, after):
         # Remove the tracker channel message
         if tag_added.id in RESOLVED_TAGS:
             tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-            async for message in tracker_channel.history(limit=None):
+            async for message in tracker_channel.history(limit=100, oldest_first=True):
                 if str(before.id) in message.content:
                     logs = bot.get_channel(LOG_CHANNEL)
                     try:
