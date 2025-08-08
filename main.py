@@ -22,6 +22,7 @@ class TagButton(discord.ui.Button):
         self.tag = tag
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         new_tags = [self.tag]
         if self.view.forum_id in FORUMS:
             if not self.tag.name in UPPER_TAGS:
