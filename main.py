@@ -68,7 +68,7 @@ class TagView(discord.ui.View):
     async def on_timeout(self):
         if self.msg:
             try:
-                await self.msg.delete_original_response()
+                await self.msg.delete()
             except discord.NotFound:
                 pass
 
@@ -211,6 +211,7 @@ async def on_thread_create(thread):
         # Resend tracker list
         await update_tracker_list()
 
+# Tracker list command
 @bot.tree.command(name="tracker_list", description="rechecks and resends the submission tracker list")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def tracker_list(interaction: discord.Interaction):
@@ -251,9 +252,10 @@ async def on_thread_update(before, after):
                         await logs.send(f"Attempting to delete tracker message for submission id {before.id}, found message {message.id}")
                         await message.delete()
                         embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
+                        await logs.send(embed=embed)
                     except Exception as e:
                         embed = discord.Embed(title=f"An error occured {e}")
-                    await logs.send(embed=embed)
+                        await logs.send(embed=embed)
                     # Update tracker list
                     await update_tracker_list()
                     break                    
