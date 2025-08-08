@@ -158,7 +158,7 @@ async def update_tracker_list():
     logs = bot.get_channel(LOG_CHANNEL)
     try:
         async for tracking_message in tracker_channel.history(limit=None):
-            if CLOCK_EMOJI in tracking_message.content:
+            if CLOCK_EMOJI in tracking_message.content or TESTING_EMOJI in tracking_message.content:
                 try:
                     await tracking_message.delete()
                 except:
@@ -179,11 +179,12 @@ async def update_tracker_list():
     if len(pending_messages) + len(awaiting_testing) > 0:
         pending_messages.reverse()
         awaiting_testing.reverse()
-        tracker_list = f"## 🕥 Pending Decision\n "
-        tracker_list += "\n ".join(pending_messages)
-        tracker_list += "\n## 🧪 Awaiting Testing\n "
-        tracker_list += "\n ".join(awaiting_testing)
-        await tracker_channel.send(tracker_list)
+        pending_list = f"## 🕥 Pending Decision\n "
+        pending_list += "\n ".join(pending_messages)
+        await tracker_channel.send(pending_list)
+        awaiting_list += "## 🧪 Awaiting Testing\n "
+        awaiting_list += "\n ".join(awaiting_testing)
+        await tracker_channel.send(awaiting_list)
     else:
         await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
 
