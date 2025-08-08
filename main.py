@@ -182,7 +182,7 @@ async def update_tracker_list():
         pending_list = f"## 🕥 Pending Decision\n "
         pending_list += "\n ".join(pending_messages)
         await tracker_channel.send(pending_list)
-        awaiting_list += "## 🧪 Awaiting Testing\n "
+        awaiting_list = f"## 🧪 Awaiting Testing\n "
         awaiting_list += "\n ".join(awaiting_testing)
         await tracker_channel.send(awaiting_list)
     else:
