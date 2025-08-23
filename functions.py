@@ -70,21 +70,29 @@ async def update_tracker_list():
         awaiting_testing.reverse()
         pending_list = f"## 🕥 Pending Decision\n "
         for pending_message in pending_messages:
-            if len(pending_list) < DISCORD_CHAR_LIMIT:
-                pending_list += "\n ".join(pending_message)
-            else:
-                sent = await tracker_channel.send(pending_list)
-                pending_list = f""
-                tracker_list_messages.append(sent.id)
+            while pending_message != pending_messages[-1]:
+                if len(pending_list) < DISCORD_CHAR_LIMIT:
+                    pending_list += pending_message + "\n"
+                else:
+                    sent = await tracker_channel.send(pending_list)
+                    pending_list = f""
+                    tracker_list_messages.append(sent.id)
+            sent = await tracker_channel.send(pending_list)
+            tracker_list_messages.append(sent.id)
+            pending_message = ""
 
         awaiting_list = f"## 🧪 Awaiting Testing\n "
         for awaiting_message in awaiting_testing:
-            if len(awaiting_list) < DISCORD_CHAR_LIMIT:
-                awaiting_list += "\n ".join(awaiting_message)
-            else:
-                sent = await tracker_channel.send(awaiting_list)
-                awaiting_list = f""
-                tracker_list_messages.append(sent.id)
+            while awaiting_message != awaiting_testing[-1]:
+                if len(awaiting_list) < DISCORD_CHAR_LIMIT:
+                    awaiting_list += awaiting_message + "\n"
+                else:
+                    sent = await tracker_channel.send(awaiting_list)
+                    awaiting_list = f""
+                    tracker_list_messages.append(sent.id)
+            sent = await tracker_channel.send(awaiting_list)
+            tracker_list_messages.append(sent.id)
+            awaiting_message = ""
         try:
             async with aiofiles.open("messages.json", mode='w') as list:
                 await list.write(json.dumps(tracker_list_messages))
