@@ -22,6 +22,8 @@ UPPER_TAGS = {"Accepted", "Rejected", "Solved", "Pending", "Archived"}
 TESTING_EMOJI = "🧪"
 CLOCK_EMOJI = "🕥"
 CROSS_EMOJI = "❌"
+MESSAGES_LIST = "messages.json"
+DISCORD_CHAR_LIMIT = 1800
 
 # Embed text
 

@@ -1,5 +1,4 @@
 from init import *
-import asyncio
 
 # Edit tag button
 class TagButton(discord.ui.Button):
@@ -41,13 +40,17 @@ async def update_tracker_list():
     tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
     logs = bot.get_channel(LOG_CHANNEL)
     try:
-        async for tracking_message in tracker_channel.history(limit=None):
-            if CLOCK_EMOJI in tracking_message.content or TESTING_EMOJI in tracking_message.content:
+        async with aiofiles.open("messages.json", mode='r') as list:
+            content = await list.read()
+            message_ids = json.loads(content) if content else []
+            for message_id in message_ids:
                 try:
-                    await tracking_message.delete()
-                except:
-                    await logs.send(embed=discord.Embed(title="Could not delete the previous tracker list"))
-                continue
+                    message_to_delete = await tracker_channel.fetch_message(message_id)
+                    await message_to_delete.delete()
+                except discord.NotFound:
+                    continue
+        
+        async for tracking_message in tracker_channel.history(limit=None):
             if CROSS_EMOJI in tracking_message.content:
                 continue
             reactions = tracking_message.reactions
@@ -60,15 +63,34 @@ async def update_tracker_list():
     except:
         await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
 
+    tracker_list_messages = []
+
     if len(pending_messages) + len(awaiting_testing) > 0:
         pending_messages.reverse()
         awaiting_testing.reverse()
         pending_list = f"## 🕥 Pending Decision\n "
-        pending_list += "\n ".join(pending_messages)
-        await tracker_channel.send(pending_list)
+        for pending_message in pending_messages:
+            if len(pending_list) < DISCORD_CHAR_LIMIT:
+                pending_list += "\n ".join(pending_message)
+            else:
+                sent = await tracker_channel.send(pending_list)
+                pending_list = f""
+                tracker_list_messages.append(sent.id)
+
         awaiting_list = f"## 🧪 Awaiting Testing\n "
-        awaiting_list += "\n ".join(awaiting_testing)
-        await tracker_channel.send(awaiting_list)
+        for awaiting_message in awaiting_testing:
+            if len(awaiting_list) < DISCORD_CHAR_LIMIT:
+                awaiting_list += "\n ".join(awaiting_message)
+            else:
+                sent = await tracker_channel.send(awaiting_list)
+                awaiting_list = f""
+                tracker_list_messages.append(sent.id)
+        try:
+            async with aiofiles.open("messages.json", mode='w') as list:
+                await list.write(json.dumps(tracker_list_messages))
+        except Exception as e:
+            await logs.send(embed=discord.Embed(title="Error saving message IDs", description=f"Error: {e}"))
+
     else:
         await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
 
