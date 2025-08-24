@@ -143,7 +143,12 @@ async def on_thread_create(thread):
         # Resend tracker list
         await update_tracker_list()
         # Pin first post
-        await thread.starter_message.pin
+        starter_message = await thread.fetch_starter_message
+        if starter_message:
+            await starter_message.pin()
+        else:
+            embed = discord.Embed(title=f"Could not pin the starter message in {thread.name}")
+            await logs.send(embed=embed)
 
 # Thread updates
 @bot.event
@@ -187,10 +192,14 @@ async def on_thread_update(before, after):
                     break
     # Edit tracker post if submission post title changes
     if before.parent.id == SUBMISSIONS_CHANNEL and before.name != after.name:
+        logs = bot.get_channel(LOG_CHANNEL)
+        embed = discord.Embed(title=f"Submission tracker post title changed")
+        await logs.send(embed=embed)
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         async for message in tracker_channel.history(limit=100, oldest_first=True):
-            if str(before.name) in message.content:
-                logs = bot.get_channel(LOG_CHANNEL)
+            if before.name in message.content:
+                embed = discord.Embed(title=f"Found tracker post, attempting edit")
+                await logs.send(embed=embed)
                 try:
                     discussion_thread = await get_thread_by_name(tracker_channel, before.name)
                     await message.edit(content=f"## [{after.name}]({after.jump_url})\n{discussion_thread.jump_url}")
