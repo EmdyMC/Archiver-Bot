@@ -48,6 +48,19 @@ async def send_chunked_messages(channel, header, items, id_list):
         sent_message = await channel.send(message_content)
         id_list.append(sent_message.id)
 
+# Fetch thread ID given name
+async def get_thread_by_name(channel, name):
+    for thread in channel.threads:
+        if thread.name == name:
+            return thread
+    async for thread in channel.archived_threads(limit=None):
+        if thread.name == name:
+            return thread
+    logs = bot.get_channel(LOG_CHANNEL)
+    embed = discord.Embed(title=f"Could not find discussion thread for **{name}**")
+    await logs.send(embed=embed)
+    return None
+
 # Update tracker list
 async def update_tracker_list():
     pending_messages = []
@@ -129,11 +142,14 @@ async def on_thread_create(thread):
         )
         # Resend tracker list
         await update_tracker_list()
+        # Pin first post
+        await thread.starter_message.pin
 
-# Remove tracker post on archival/reject and update notifs
+# Thread updates
 @bot.event
 async def on_thread_update(before, after):
     if before.parent.id in FORUMS:
+        # Tag updates
         try:
             tag_before = set(before.applied_tags)
             tag_after = set(after.applied_tags)
@@ -168,4 +184,20 @@ async def on_thread_update(before, after):
                         await logs.send(embed=embed)
                     # Update tracker list
                     await update_tracker_list()
-                    break     
+                    break
+    # Edit tracker post if submission post title changes
+    if before.parent.id == SUBMISSIONS_CHANNEL and before.name != after.name:
+        tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+        async for message in tracker_channel.history(limit=100, oldest_first=True):
+            if str(before.name) in message.content:
+                logs = bot.get_channel(LOG_CHANNEL)
+                try:
+                    discussion_thread = await get_thread_by_name(tracker_channel, before.name)
+                    await message.edit(content=f"## [{after.name}]({after.jump_url})\n{discussion_thread.jump_url}")
+                    embed = discord.Embed(title=f"Submission tracker post title of **{after.name}** updated from **{before.name}**")
+                    await logs.send(embed=embed)
+                    break
+                except Exception as e:
+                    embed = discord.Embed(title=f"An error occured {e}")
+                    await logs.send(embed=embed)
+                    break
