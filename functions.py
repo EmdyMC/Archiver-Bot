@@ -153,8 +153,28 @@ async def on_thread_create(thread):
 # Thread updates
 @bot.event
 async def on_thread_update(before, after):
+    # Edit tracker post if submission post title changes
+    if before.parent.id == SUBMISSIONS_CHANNEL and before.name != after.name:
+        logs = bot.get_channel(LOG_CHANNEL)
+        embed = discord.Embed(title=f"Submission tracker post title changed")
+        await logs.send(embed=embed)
+        tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+        async for message in tracker_channel.history(limit=100, oldest_first=True):
+            if before.name in message.content:
+                embed = discord.Embed(title=f"Found tracker post, attempting edit")
+                await logs.send(embed=embed)
+                try:
+                    discussion_thread = await get_thread_by_name(tracker_channel, before.name)
+                    await message.edit(content=f"## [{after.name}]({after.jump_url})\n{discussion_thread.jump_url}")
+                    embed = discord.Embed(title=f"Submission tracker post title of **{after.name}** updated from **{before.name}**")
+                    await logs.send(embed=embed)
+                    break
+                except Exception as e:
+                    embed = discord.Embed(title=f"An error occured {e}")
+                    await logs.send(embed=embed)
+                    break
+    # Tag updates
     if before.parent.id in FORUMS:
-        # Tag updates
         try:
             tag_before = set(before.applied_tags)
             tag_after = set(after.applied_tags)
@@ -175,7 +195,7 @@ async def on_thread_update(before, after):
                 await after.edit(archived=True)
 
         # Remove the tracker channel message
-        if tag_added.id in RESOLVED_TAGS:
+        if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
             tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
             async for message in tracker_channel.history(limit=100, oldest_first=True):
                 if str(before.id) in message.content:
@@ -189,24 +209,4 @@ async def on_thread_update(before, after):
                         await logs.send(embed=embed)
                     # Update tracker list
                     await update_tracker_list()
-                    break
-    # Edit tracker post if submission post title changes
-    if before.parent.id == SUBMISSIONS_CHANNEL and before.name != after.name:
-        logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title=f"Submission tracker post title changed")
-        await logs.send(embed=embed)
-        tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-        async for message in tracker_channel.history(limit=100, oldest_first=True):
-            if before.name in message.content:
-                embed = discord.Embed(title=f"Found tracker post, attempting edit")
-                await logs.send(embed=embed)
-                try:
-                    discussion_thread = await get_thread_by_name(tracker_channel, before.name)
-                    await message.edit(content=f"## [{after.name}]({after.jump_url})\n{discussion_thread.jump_url}")
-                    embed = discord.Embed(title=f"Submission tracker post title of **{after.name}** updated from **{before.name}**")
-                    await logs.send(embed=embed)
-                    break
-                except Exception as e:
-                    embed = discord.Embed(title=f"An error occured {e}")
-                    await logs.send(embed=embed)
                     break
