@@ -117,6 +117,17 @@ async def on_message(message):
     if bot.user in message.mentions:
         await message.channel.send(f'{message.author.mention} 🏓')
     await bot.process_commands(message)
+    if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
+        logs = bot.get_channel(LOG_CHANNEL)
+        if message.id == message.channel.id:
+            try:
+                await message.pin()
+                embed = discord.Embed(title=f"First message in {message.channel.name} pinned")
+                await logs.send(embed=embed)
+            except Exception as e:
+                embed = discord.Embed(title=f"An error occured {e}")
+                await logs.send(embed=embed)
+
 
 
 # Submission tracker
@@ -142,13 +153,6 @@ async def on_thread_create(thread):
         )
         # Resend tracker list
         await update_tracker_list()
-        # Pin first post
-        starter_message = await thread.fetch_starter_message
-        if starter_message:
-            await starter_message.pin()
-        else:
-            embed = discord.Embed(title=f"Could not pin the starter message in {thread.name}")
-            await logs.send(embed=embed)
 
 # Thread updates
 @bot.event
