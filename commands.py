@@ -80,7 +80,7 @@ async def set_tag(interaction: discord.Interaction):
     in_help_forum = interaction.channel_id == HELP_FORUM
     has_higher_role = any(role.id in HIGHER_ROLES for role in interaction.user.roles)
     if not in_help_forum and not has_higher_role:
-        await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum channel"), ephemeral = True)
+        await interaction.response.send_message(embed = discord.Embed(title = "You do not have the permissions to run that command here"), ephemeral = True)
         return
     view = TagView(interaction.channel.parent.available_tags, interaction.channel.parent.id)
     msg = await interaction.response.send_message("**Which tag would you like to set?**", view = view, ephemeral = True)
