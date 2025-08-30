@@ -17,7 +17,7 @@ class TagButton(discord.ui.Button):
 
         await interaction.channel.edit(applied_tags = new_tags)
         logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title=f"Tag {str(tag.emoji)}{tag.name} added", description=f"to post {interaction.channel.name} by {interaction.user.name}")
+        embed = discord.Embed(title=f"Tag {str(tag.emoji)} {tag.name} added", description=f"To post: **{interaction.channel.name}**\nBy: {interaction.user.mention}")
         await logs.send(embed=embed)
         await interaction.delete_original_response()
 
