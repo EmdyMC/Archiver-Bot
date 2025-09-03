@@ -60,7 +60,7 @@ async def get_thread_by_name(channel, name):
         if thread.name == name:
             return thread
     logs = bot.get_channel(LOG_CHANNEL)
-    embed = discord.Embed(title=f"Could not find discussion thread for **{name}**")
+    embed = discord.Embed(title=f"Could not find discussion thread", description=f"for post **{name}**")
     await logs.send(embed=embed)
     return None
 
@@ -125,7 +125,7 @@ async def on_message(message):
         if message.id == message.channel.id:
             try:
                 await message.pin()
-                embed = discord.Embed(title=f"First message in {message.channel.name} pinned")
+                embed = discord.Embed(title=f"Message pinned", description=f"in {message.channel.name}")
                 await logs.send(embed=embed)
             except Exception as e:
                 embed = discord.Embed(title=f"An error occured {e}")
@@ -139,7 +139,7 @@ async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
         # Logging
         logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title=f"Submission created: {thread.name}")
+        embed = discord.Embed(title=f"Submission created", description=f"{thread.name}")
         await logs.send(embed=embed)
         # Send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
@@ -163,17 +163,18 @@ async def on_thread_update(before, after):
     # Edit tracker post if submission post title changes
     if before.parent.id == SUBMISSIONS_CHANNEL and before.name != after.name:
         logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title=f"Submission tracker post title changed")
+        embed = discord.Embed(title="Submission post title changed")
         await logs.send(embed=embed)
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         async for message in tracker_channel.history(limit=100, oldest_first=True):
             if before.name in message.content:
-                embed = discord.Embed(title=f"Found tracker post, attempting edit")
+                embed = discord.Embed(title="Found tracker post", description="Attempting edit")
                 await logs.send(embed=embed)
                 try:
                     discussion_thread = await get_thread_by_name(tracker_channel, before.name)
                     await message.edit(content=f"## [{after.name}]({after.jump_url})\n{discussion_thread.jump_url}")
-                    embed = discord.Embed(title=f"Submission tracker post title of **{after.name}** updated from **{before.name}**")
+                    await discussion_thread.edit(name=f"{after.name}")
+                    embed = discord.Embed(title=f"Tracker post title updated", description=f"From: **{before.name}**\nTo: **{after.name}**")
                     await logs.send(embed=embed)
                     break
                 except Exception as e:
@@ -209,7 +210,7 @@ async def on_thread_update(before, after):
                     logs = bot.get_channel(LOG_CHANNEL)
                     try:
                         await message.delete()
-                        embed = discord.Embed(title=f"Submission tracker post of **{before.name}** removed")
+                        embed = discord.Embed(title=f"Tracker post removed", description=f"**{before.name}**")
                         await logs.send(embed=embed)
                     except Exception as e:
                         embed = discord.Embed(title=f"An error occured {e}")
