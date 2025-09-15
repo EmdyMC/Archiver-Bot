@@ -102,6 +102,30 @@ async def archives_embed(interaction: discord.Interaction):
     await interaction.channel.send(embed=archives_embed)
     await interaction.response.send_message("Embed sent!", ephemeral=True)
 
+# Message edit
+@bot.tree.command(name="edit", description="Edit a message the bot sent (mod only)")
+@app_commands.describe(message_id="The ID of the message to edit")
+@app_commands.checks.has_role(MODERATOR_ID)
+async def edit(interaction: discord.Interaction, message_id: str):
+    await interaction.response.defer(ephemeral=True)
+    try:
+        message = await interaction.channel.fetch_message(message_id)
+    except discord.NotFound:
+        await interaction.followup.send(content="Message with the given ID not found in the current channel", ephemeral=True)
+        return
+    except Exception as e:
+        await interaction.followup.send(content=f"An error occured {e}", ephemeral=True)
+        return
+    if message.author==bot.user:
+        message_content = message.content
+        class EditBox(discord.ui.Modal, title="Edit Message"):
+            message_text = discord.ui.TextInput(label="The current content", default=message_content, style=discord.TextStyle.paragraph)
+            async def on_submit(self, interaction: discord.Interaction):
+                await message.edit(content=self.message_text.value)
+                await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
+    else:
+        await interaction.followup.send(content="The given message is not one made by the bot, editing is not possible", ephemeral=True)
+
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
@@ -109,7 +133,7 @@ async def archives_embed(interaction: discord.Interaction):
 async def restart(interaction: discord.Interaction, do_update:bool=True):
     await interaction.response.defer()
     if do_update:
-        await interaction.followup.send(embed = discord.Embed(title="Updating...", colour=discord.Colour.random()))
+        await interaction.followup.send(embed = discord.Embed(title="Updating...", colour=discord.Colour.yellow()))
 
         process = await asyncio.create_subprocess_exec(
             "git", "pull", "origin", "main",
@@ -123,7 +147,7 @@ async def restart(interaction: discord.Interaction, do_update:bool=True):
         await interaction.followup.send(embed= discord.Embed(title=f"Update successful", description=f"{stdout.decode().strip()}", color=discord.Color.green()))
 
     else:
-        await interaction.followup.send(embed=discord.Embed(title="Restarting...", colour=discord.Colour.random()))
+        await interaction.followup.send(embed=discord.Embed(title="Restarting...", colour=discord.Colour.yellow()))
     executable = sys.executable
     args = [executable] + sys.argv
     os.execv(executable, args)
