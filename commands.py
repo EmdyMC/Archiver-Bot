@@ -123,6 +123,8 @@ async def edit(interaction: discord.Interaction, message_id: str):
             async def on_submit(self, interaction: discord.Interaction):
                 await message.edit(content=self.message_text.value)
                 await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
+        edit_modal = EditBox()
+        await interaction.response.send_modal(edit_modal)
     else:
         await interaction.followup.send(content="The given message is not one made by the bot, editing is not possible", ephemeral=True)
 
