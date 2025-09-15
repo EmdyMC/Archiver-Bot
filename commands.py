@@ -107,14 +107,13 @@ async def archives_embed(interaction: discord.Interaction):
 @app_commands.describe(message_id="The ID of the message to edit")
 @app_commands.checks.has_role(MODERATOR_ID)
 async def edit(interaction: discord.Interaction, message_id: str):
-    await interaction.response.defer(ephemeral=True)
     try:
         message = await interaction.channel.fetch_message(message_id)
     except discord.NotFound:
-        await interaction.followup.send(content="Message with the given ID not found in the current channel", ephemeral=True)
+        await interaction.response.send_message(content="Message with the given ID not found in the current channel", ephemeral=True)
         return
     except Exception as e:
-        await interaction.followup.send(content=f"An error occured {e}", ephemeral=True)
+        await interaction.response.send_message(content=f"An error occured {e}", ephemeral=True)
         return
     if message.author==bot.user:
         message_content = message.content
@@ -126,7 +125,7 @@ async def edit(interaction: discord.Interaction, message_id: str):
         edit_modal = EditBox()
         await interaction.response.send_modal(edit_modal)
     else:
-        await interaction.followup.send(content="The given message is not one made by the bot, editing is not possible", ephemeral=True)
+        await interaction.response.send_message(content="The given message is not one made by the bot, editing is not possible", ephemeral=True)
 
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
