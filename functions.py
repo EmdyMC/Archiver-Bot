@@ -42,7 +42,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         super().__init__()
         self.message_text = discord.ui.TextInput(
             label="Message content:", 
-            default=message_content, 
+            default=original_content, 
             style=discord.TextStyle.long,
             required=False
         )
