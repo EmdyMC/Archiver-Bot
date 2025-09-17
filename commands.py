@@ -118,7 +118,7 @@ async def edit(interaction: discord.Interaction, message_id: str):
     if message.author==bot.user:
         existing_embed = message.embeds[0] if message.embeds else None
         edit_modal = EditBox(original_content=message.content, original_embed=existing_embed)
-        modal.target_message = message
+        edit_modal.target_message = message
         await interaction.response.send_modal(edit_modal)
     else:
         await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)
