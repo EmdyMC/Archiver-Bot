@@ -49,19 +49,27 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         self.add_item(self.message_text)
         self.original_embed = original_embed
         if original_embed:
+            self.embed_title = discord.ui.TextInput(
+                label="Embed title:",
+                default=original_embed.title,
+                style=discord.TextStyle.short,
+                required=False
+            )
             self.embed_text = discord.ui.TextInput(
                 label="Embed description:",
                 default=original_embed.description,
                 style=discord.TextStyle.long,
                 required=False
             )
+            self.add_item(self.embed_title)
             self.add_item(self.embed_text)
 
     async def on_submit(self, interaction: discord.Interaction):
         new_content=self.message_text.value
-        if hasattr(self,'embed_text'):
+        if hasattr(self,'embed_title'):
             new_embed = self.original_embed
             new_embed.description = self.embed_text.value
+            new_embed.title = self.embed_title.value
             await self.target_message.edit(embed=new_embed)
         await self.target_message.edit(content=new_content)
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
