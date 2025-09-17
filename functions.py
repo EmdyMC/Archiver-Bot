@@ -182,7 +182,7 @@ async def on_thread_create(thread):
         # Send to tracker
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name)
-        await discussion_thread.send(f"For discussion and debate regarding the archival staus of {thread.jump_url}")
+        await discussion_thread.send(f"For discussion and debate regarding the archival status of {thread.jump_url}")
         ping_message = await discussion_thread.send("ping")
         await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
