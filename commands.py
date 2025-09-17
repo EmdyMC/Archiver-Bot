@@ -116,18 +116,9 @@ async def edit(interaction: discord.Interaction, message_id: str):
         await interaction.response.send_message(content=f"An error occured {e}", ephemeral=True)
         return
     if message.author==bot.user:
-        message_content = message.content
-        embed_list = message.embeds
-        class EditBox(discord.ui.Modal, title="Edit Message"):
-            message_text = discord.ui.TextInput(label="Message content:", default=message_content, style=discord.TextStyle.long)
-            embed_text = discord.ui.TextInput(label="Embed content:", default=embed_list[0].description, style=discord.TextStyle.long)
-            async def on_submit(self, interaction: discord.Interaction):
-                new_embed = embed_list[0]
-                new_embed.description = self.embed_text.value
-                await message.edit(content=self.message_text.value)
-                await message.edit(embed=new_embed)
-                await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
-        edit_modal = EditBox()
+        existing_embed = message.embeds[0] if message.embeds else None
+        edit_modal = EditBox(original_content=message.content, original_embed=existing_embed)
+        modal.target_message = message
         await interaction.response.send_modal(edit_modal)
     else:
         await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)

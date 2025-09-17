@@ -36,6 +36,36 @@ class TagView(discord.ui.View):
     async def on_timeout(self):
         pass
 
+# Edit box
+class EditBox(discord.ui.Modal, title="Edit Message"):
+    def __init__(self, original_content: str, original_embed: discord.Embed = None):
+        super().__init__()
+        self.message_text = discord.ui.TextInput(
+            label="Message content:", 
+            default=message_content, 
+            style=discord.TextStyle.long,
+            required=False
+        )
+        self.add_item(self.message_text)
+        self.original_embed = original_embed
+        if original_embed:
+            self.embed_text = discord.ui.TextInput(
+                label="Embed description:",
+                default=original_embed.description,
+                style=discord.TextStyle.long,
+                required=False
+            )
+            self.add_item(self.embed_text)
+
+    async def on_submit(self, interaction: discord.Interaction):
+        new_content=self.message_text.value
+        if hasattr(self,'embed_text'):
+            new_embed = self.original_embed
+            new_embed.description = self.embed_text.value
+            await self.target_message.edit(embed=new_embed)
+        await self.target_message.edit(content=new_content)
+        await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
+
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
     if not items:
