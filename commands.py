@@ -117,15 +117,20 @@ async def edit(interaction: discord.Interaction, message_id: str):
         return
     if message.author==bot.user:
         message_content = message.content
+        embed_list = message.embeds
         class EditBox(discord.ui.Modal, title="Edit Message"):
-            message_text = discord.ui.TextInput(label="The current content", default=message_content, style=discord.TextStyle.paragraph)
+            message_text = discord.ui.TextInput(label="Message content:", default=message_content, style=discord.TextStyle.long)
+            embed_text = discord.ui.TextInput(label="Embed content:", default=embed_list[0].description, style=discord.TextStyle.long)
             async def on_submit(self, interaction: discord.Interaction):
+                new_embed = embed_list[0]
+                new_embed.description = self.embed_text.value
                 await message.edit(content=self.message_text.value)
+                await message.edit(embed=new_embed)
                 await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
         edit_modal = EditBox()
         await interaction.response.send_modal(edit_modal)
     else:
-        await interaction.response.send_message(content="The given message is not one made by the bot, editing is not possible", ephemeral=True)
+        await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)
 
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
