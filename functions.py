@@ -57,11 +57,18 @@ class SendBox(discord.ui.Modal, title="Send Message"):
                 style=discord.TextStyle.long,
                 required=False
             )
+            self.embed_colour = discord.ui.TextInput(
+                label="Embed colour:",
+                style=discord.TextStyle.short,
+                default="#FFFFFF",
+                required=False
+            )
             self.add_item(self.embed_title)
             self.add_item(self.embed_text)
+            self.add_item(self.embed_colour)
     async def on_submit(self, interaction: discord.Interaction):
         if hasattr(self,'embed_title'):
-            new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value)
+            new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
             await self.target_channel.send(content=self.message_text.value, embed=new_embed)
         else:
             await self.target_channel.send(content=self.message_text.value)
