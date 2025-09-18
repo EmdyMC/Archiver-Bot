@@ -108,6 +108,7 @@ async def archives_embed(interaction: discord.Interaction):
 @app_commands.checks.has_role(MODERATOR_ID)
 async def send(interaction: discord.Interaction, has_embed:bool=False):
     send_modal = SendBox(has_embed)
+    send_modal.target_channel = interaction.channel
     await interaction.response.send_modal(send_modal)
 
 # Message edit
