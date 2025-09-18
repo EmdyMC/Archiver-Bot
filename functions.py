@@ -59,13 +59,13 @@ class SendBox(discord.ui.Modal, title="Send Message"):
             )
             self.add_item(self.embed_title)
             self.add_item(self.embed_text)
-        async def on_submit(self, interaction: discord.Interaction):
-            if hasattr(self,'embed_title'):
-                new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value)
-                await self.target_channel.send(content=self.message_text.value, embed=new_embed)
-            else:
-                await self.target_channel.send(content=self.message_text.value)
-            await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
+    async def on_submit(self, interaction: discord.Interaction):
+        if hasattr(self,'embed_title'):
+            new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value)
+            await self.target_channel.send(content=self.message_text.value, embed=new_embed)
+        else:
+            await self.target_channel.send(content=self.message_text.value)
+        await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
 class EditBox(discord.ui.Modal, title="Edit Message"):
