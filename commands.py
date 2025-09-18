@@ -102,6 +102,14 @@ async def archives_embed(interaction: discord.Interaction):
     await interaction.channel.send(embed=archives_embed)
     await interaction.response.send_message("Embed sent!", ephemeral=True)
 
+# Messsage send
+@bot.tree.command(name="send", description="Send a message via the bot to the current channel")
+@app_commands.describe(has_embed="Enable the embed field")
+@app_commands.checks.has_role(MODERATOR_ID)
+async def send(interaction: discord.Interaction, has_embed:bool=False):
+    send_modal = SendBox(has_embed)
+    await interaction.response.send_modal(send_modal)
+
 # Message edit
 @bot.tree.command(name="edit", description="Edit a message the bot sent (mod only)")
 @app_commands.describe(message_id="The ID of the message to edit")
