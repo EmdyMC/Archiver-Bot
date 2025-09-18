@@ -207,31 +207,32 @@ async def on_message(message):
                 embed = discord.Embed(title=f"An error occured {e}")
                 await logs.send(embed=embed)
 
-
+# Add to tracker
+async def track(thread):
+    logs = bot.get_channel(LOG_CHANNEL)
+    embed = discord.Embed(title=f"Submission created", description=f"{thread.name}")
+    await logs.send(embed=embed)
+    # Send to tracker
+    tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+    discussion_thread = await tracker_channel.create_thread(name=thread.name)
+    await discussion_thread.send(f"For discussion and debate regarding the archival status of {thread.jump_url}")
+    ping_message = await discussion_thread.send("ping")
+    await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
+    notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
+    await asyncio.gather(
+        notif.add_reaction("❌"),
+        notif.add_reaction("🔴"),
+        notif.add_reaction("🟢"),
+        notif.add_reaction("✅")
+    )
+    # Resend tracker list
+    await update_tracker_list()
 
 # Submission tracker
 @bot.event
 async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
-        # Logging
-        logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title=f"Submission created", description=f"{thread.name}")
-        await logs.send(embed=embed)
-        # Send to tracker
-        tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-        discussion_thread = await tracker_channel.create_thread(name=thread.name)
-        await discussion_thread.send(f"For discussion and debate regarding the archival status of {thread.jump_url}")
-        ping_message = await discussion_thread.send("ping")
-        await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
-        notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
-        await asyncio.gather(
-            notif.add_reaction("❌"),
-            notif.add_reaction("🔴"),
-            notif.add_reaction("🟢"),
-            notif.add_reaction("✅")
-        )
-        # Resend tracker list
-        await update_tracker_list()
+        await track(thread)
 
 # Thread updates
 @bot.event

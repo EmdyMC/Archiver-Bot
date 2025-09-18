@@ -87,12 +87,19 @@ async def set_tag(interaction: discord.Interaction):
     await view.set_message(msg)
 
 # Tracker list command
-@bot.tree.command(name="tracker_list", description="rechecks and resends the submission tracker list")
+@bot.tree.command(name="tracker_list", description="Rechecks and resends the submission tracker list")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def tracker_list(interaction: discord.Interaction):
     await interaction.response.defer()
     await update_tracker_list()
     await interaction.delete_original_response()
+
+# Track post
+@bot.tree.command(name="track", description="Add post to submission tracker")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def track_post(interaction: discord.Interaction):
+    await track(interaction.channel)
+    await interaction.response.send_message("Post tracked", ephemeral=True)
 
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
