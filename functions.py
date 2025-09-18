@@ -38,7 +38,7 @@ class TagView(discord.ui.View):
 
 # Send box
 class SendBox(discord.ui.Modal, title="Send Message"):
-    def __init__(self, has_embed: bool)
+    def __init__(self, has_embed: bool):
         super().__init__()
         self.message_text = discord.ui.TextInput(
             label="Message content:", 
@@ -62,12 +62,12 @@ class SendBox(discord.ui.Modal, title="Send Message"):
             self.add_item(self.embed_title)
             self.add_item(self.embed_text)
         async def on_submit(self, interaction: discord.Interaction):
-        if hasattr(self,'embed_title'):
-            new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value)
-            await interaction.channel.send_message(content=self.message_text.value, embed=new_embed)
-        else:
-            await interaction.channel.send_message(content=self.message_text.value)
-        await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
+            if hasattr(self,'embed_title'):
+                new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value)
+                await interaction.channel.send_message(content=self.message_text.value, embed=new_embed)
+            else:
+                await interaction.channel.send_message(content=self.message_text.value)
+            await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
 class EditBox(discord.ui.Modal, title="Edit Message"):
