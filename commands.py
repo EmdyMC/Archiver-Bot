@@ -105,7 +105,7 @@ async def track_post(interaction: discord.Interaction):
         embed = discord.Embed(title="Post tracked", description=f"Post: {interaction.channel.name}\nBy: {interaction.user.name}")
         await logs.send(embed=embed)
     else:
-        interaction.response.send_message(content="The current thread or channel is not a submission post", ephemeral=True)
+        await interaction.response.send_message(content="The current thread or channel is not a submission post", ephemeral=True)
 
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
