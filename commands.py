@@ -98,8 +98,14 @@ async def tracker_list(interaction: discord.Interaction):
 @bot.tree.command(name="track", description="Add post to submission tracker")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def track_post(interaction: discord.Interaction):
-    await track(interaction.channel)
-    await interaction.response.send_message("Post tracked", ephemeral=True)
+    if(interaction.channel.parent.id == SUBMISSIONS_CHANNEL):
+        logs = bot.get_channel(LOG_CHANNEL)
+        await track(interaction.channel)
+        await interaction.response.send_message(content="Post tracked", ephemeral=True)
+        embed = discord.Embed(title="Post tracked", description=f"Post: {interaction.channel.name}\nBy: {interaction.user.name}")
+        await logs.send(embed=embed)
+    else:
+        interaction.response.send_message(content="The current thread or channel is not a submission post", ephemeral=True)
 
 # Other archives embed
 @bot.tree.command(name="servers", description="Sends the list of other archive servers in a neat embed")
