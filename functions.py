@@ -71,10 +71,10 @@ class SendBox(discord.ui.Modal, title="Send Message"):
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
             await self.target_channel.send(content=self.message_text.value, embed=new_embed)
-            await logs.send(discord.Embed(title="Message sent via bot", description=f"Message content: {self.message_text.value}\nEmbed content: {new_embed.title}\n{new_embed.description}\n\nBy: {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription:{new_embed.description}\n\n**By:** {interaction.user.mention}"))
         else:
             await self.target_channel.send(content=self.message_text.value)
-            await logs.send(discord.Embed(title="Message sent via bot", description=f"Message content: {self.message_text.value}\n\nBy: {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}"))
         await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
@@ -89,6 +89,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         )
         self.add_item(self.message_text)
         self.original_embed = original_embed
+        self.original_content = original_content
         if original_embed:
             self.embed_title = discord.ui.TextInput(
                 label="Embed title:",
@@ -113,10 +114,10 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             new_embed.description = self.embed_text.value
             new_embed.title = self.embed_title.value
             await self.target_message.edit(embed=new_embed)
-            await logs.send(embed=discord.Embed(title="Embed edited", description=f"Before: \n{self.original_embed.title}\n{self.original_embed.description}\n\nAfter:\n{new_embed.title}\n{new_embed.description}\n\nBy:{interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embed.title}\nDescription: {self.original_embed.description}\n**After:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}"))
         await self.target_message.edit(content=new_content)
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
-        await logs.send(embed=discord.Embed(title="Message edited", description=f"Before:\n{self.original_content}\n By: {interaction.user.mention}"))
+        await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}**By:** {interaction.user.mention}"))
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
