@@ -103,7 +103,7 @@ async def track_post(interaction: discord.Interaction):
         logs = bot.get_channel(LOG_CHANNEL)
         await track(interaction.channel)
         await interaction.followup.send(content="Post tracked", ephemeral=True)
-        embed = discord.Embed(title="Post tracked", description=f"Post: {interaction.channel.name}\nBy: {interaction.user.name}")
+        embed = discord.Embed(title="Post tracked", description=f"Post: {interaction.channel.name}\nBy: {interaction.user.mention}")
         await logs.send(embed=embed)
     else:
         await interaction.followup.send(content="The current thread or channel is not a submission post", ephemeral=True)

@@ -67,11 +67,14 @@ class SendBox(discord.ui.Modal, title="Send Message"):
             self.add_item(self.embed_text)
             self.add_item(self.embed_colour)
     async def on_submit(self, interaction: discord.Interaction):
+        logs = bot.get_channel(LOG_CHANNEL)
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
             await self.target_channel.send(content=self.message_text.value, embed=new_embed)
+            await logs.send(discord.Embed(title="Message sent via bot", description=f"Message content: {self.message_text.value}\nEmbed content: {new_embed.title}\n{new_embed.description}\n\nBy: {interaction.user.mention}"))
         else:
             await self.target_channel.send(content=self.message_text.value)
+            await logs.send(discord.Embed(title="Message sent via bot", description=f"Message content: {self.message_text.value}\n\nBy: {interaction.user.mention}"))
         await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
@@ -104,13 +107,16 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
     async def on_submit(self, interaction: discord.Interaction):
         new_content=self.message_text.value
+        logs = bot.get_channel(LOG_CHANNEL)
         if hasattr(self,'embed_title'):
             new_embed = self.original_embed
             new_embed.description = self.embed_text.value
             new_embed.title = self.embed_title.value
             await self.target_message.edit(embed=new_embed)
+            await logs.send(embed=discord.Embed(title="Embed edited", description=f"Before: \n{self.original_embed.title}\n{self.original_embed.description}\n\nAfter:\n{new_embed.title}\n{new_embed.description}\n\nBy:{interaction.user.mention}"))
         await self.target_message.edit(content=new_content)
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
+        await logs.send(embed=discord.Embed(title="Message edited", description=f"Before:\n{self.original_content}\n By: {interaction.user.mention}"))
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
@@ -201,7 +207,7 @@ async def on_message(message):
         if message.id == message.channel.id:
             try:
                 await message.pin()
-                embed = discord.Embed(title=f"Message pinned", description=f"in {message.channel.name}")
+                embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
                 await logs.send(embed=embed)
             except Exception as e:
                 embed = discord.Embed(title=f"An error occured {e}")
