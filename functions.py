@@ -168,8 +168,8 @@ async def update_tracker_list():
                     continue
                 pending_messages.append("- **"+tracking_message.content[3:].replace("\n", " ")+" **")
     except:
-        await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel"))
-
+        await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel", description="Error opening the messages.json file"))
+    
     tracker_list_messages = []
 
     if pending_messages or awaiting_testing:
@@ -240,7 +240,7 @@ async def on_thread_update(before, after):
     # Edit tracker post if submission post title changes
     if before.parent.id == SUBMISSIONS_CHANNEL and before.name != after.name:
         logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title="Submission post title changed")
+        embed = discord.Embed(title="Submission post title changed", description=f"Before: {before.name}\nAfter: {after.name}")
         await logs.send(embed=embed)
         tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         async for message in tracker_channel.history(limit=100, oldest_first=True):

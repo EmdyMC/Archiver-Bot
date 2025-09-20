@@ -146,6 +146,12 @@ async def edit(interaction: discord.Interaction, message_id: str):
     else:
         await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)
 
+# Help
+@bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
+@app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
+async def help(interaction: discord.Interaction):
+    await interaction.response.send_message(content=COMMANDS_LIST, ephemeral=True)
+
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")

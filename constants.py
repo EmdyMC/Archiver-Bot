@@ -47,3 +47,18 @@ OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discor
 <:ssf:1399677117884534875> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH) (SSf Archive) Structureless superflat tech
 <:rta:1399677071919288342> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
 <:tba:1399677142660546620> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive'''
+
+COMMANDS_LIST = '''
+## Helper commands:
+**/set_tag**: Manage the tags of the current submission/archive corrections/ help forum post
+## Archiver commands:
+**/close_resolved**: Close all posts in the archived marked as accepted or rejected
+**/close_archived**: Close all open posts in the archive channels
+**/track**: Make a post in #submission-tracker for the submission post you are in
+**/tracker_list**: Resend the submission tracker list, clearing the older one
+## Mod commands:
+**/edit**: Pass a message id of any message the bot sent to edit it
+**/send**: Send a message or embed through the bot to the current channel
+**/restart**: Restart and update the bot
+**/servers**: Sends the list of other archives to the current channel
+'''
