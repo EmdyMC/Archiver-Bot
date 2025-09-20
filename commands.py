@@ -150,7 +150,7 @@ async def edit(interaction: discord.Interaction, message_id: str):
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
 @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
 async def help(interaction: discord.Interaction):
-    await interaction.response.send_message(content=COMMANDS_LIST, ephemeral=True)
+    await interaction.response.send_message(embed=discord.Embed(description=COMMANDS_LIST), ephemeral=True)
 
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
