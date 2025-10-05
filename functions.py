@@ -71,10 +71,10 @@ class SendBox(discord.ui.Modal, title="Send Message"):
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
             await self.target_channel.send(content=self.message_text.value, embed=new_embed)
-            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription:{new_embed.description}\n\n**By:** {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
         else:
             await self.target_channel.send(content=self.message_text.value)
-            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
         await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
@@ -117,7 +117,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embed.title}\nDescription: {self.original_embed.description}\n**After:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}"))
         await self.target_message.edit(content=new_content)
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
-        await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}**By:** {interaction.user.mention}"))
+        await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
@@ -199,10 +199,21 @@ async def on_message(message):
     #Ignore own messages
     if message.author == bot.user:
         return
+    # Pin snapshot updates
+    if message.author == bot.get_user(SNAPSHOT_UPDATE_USER):
+        logs = bot.get_channel(LOG_CHANNEL)
+        try:
+            await message.pin()
+            embed = discord.Embed(title=f"Snapshot update message pinned", description=f"In: {message.channel.name}")
+            await logs.send(embed=embed)
+        except:
+            embed = discord.Embed(title=f"An error occured {e}")
+            await logs.send(embed=embed)
     # Reply to pings
     if bot.user in message.mentions:
         await message.channel.send(f'{message.author.mention} 🏓')
     await bot.process_commands(message)
+    # Pin first message in submission posts
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
         logs = bot.get_channel(LOG_CHANNEL)
         if message.id == message.channel.id:
