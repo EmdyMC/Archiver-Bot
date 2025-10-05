@@ -203,11 +203,16 @@ async def on_message(message):
     if message.flags.is_crossposted and message.channel.id == SNAPSHOT_CHANNEL:
         logs = bot.get_channel(LOG_CHANNEL)
         try:
+            pinned_messages = await message.channel.pins(limit=1)
+            if pinned_messages:
+                await pinned_messages[0].unpin()
+                embed = discord.Embed(title=f"Old pinned message removed", description=f"In: {message.channel.name}")
+                await logs.send(embed=embed)
             await message.pin()
             embed = discord.Embed(title=f"Snapshot update message pinned", description=f"In: {message.channel.name}")
             await logs.send(embed=embed)
         except Exception as e:
-            embed = discord.Embed(title=f"An error occured {e}")
+            embed = discord.Embed(title=f"An error occurred {e}")
             await logs.send(embed=embed)
     # Reply to pings
     if bot.user in message.mentions:
@@ -222,7 +227,7 @@ async def on_message(message):
                 embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
                 await logs.send(embed=embed)
             except Exception as e:
-                embed = discord.Embed(title=f"An error occured {e}")
+                embed = discord.Embed(title=f"An error occurred {e}")
                 await logs.send(embed=embed)
 
 # Add to tracker
@@ -273,7 +278,7 @@ async def on_thread_update(before, after):
                     await logs.send(embed=embed)
                     break
                 except Exception as e:
-                    embed = discord.Embed(title=f"An error occured {e}")
+                    embed = discord.Embed(title=f"An error occurred {e}")
                     await logs.send(embed=embed)
                     break
     # Tag updates
@@ -308,7 +313,7 @@ async def on_thread_update(before, after):
                         embed = discord.Embed(title=f"Tracker post removed", description=f"**{before.name}**")
                         await logs.send(embed=embed)
                     except Exception as e:
-                        embed = discord.Embed(title=f"An error occured {e}")
+                        embed = discord.Embed(title=f"An error occurred {e}")
                         await logs.send(embed=embed)
                     # Update tracker list
                     await update_tracker_list()
