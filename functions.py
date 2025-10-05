@@ -193,20 +193,20 @@ async def update_tracker_list():
     else:
         await logs.send(embed=discord.Embed(title="No posts found in tracker channel"))
 
-# Ping reply
+# Message actions
 @bot.event
 async def on_message(message):
     #Ignore own messages
     if message.author == bot.user:
         return
     # Pin snapshot updates
-    if message.author == bot.get_user(SNAPSHOT_UPDATE_USER):
+    if message.flags.is_crossposted and message.channel.id == SNAPSHOT_CHANNEL:
         logs = bot.get_channel(LOG_CHANNEL)
         try:
             await message.pin()
             embed = discord.Embed(title=f"Snapshot update message pinned", description=f"In: {message.channel.name}")
             await logs.send(embed=embed)
-        except:
+        except Exception as e:
             embed = discord.Embed(title=f"An error occured {e}")
             await logs.send(embed=embed)
     # Reply to pings
