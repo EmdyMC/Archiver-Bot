@@ -155,11 +155,11 @@ async def help(interaction: discord.Interaction):
 # Pin context command
 @bot.tree.context_menu(name="Pin this message")
 async def pin_message(interaction: discord.Interaction, message: discord.Message):
-    if not isinstance(message.channel, discord.Thread) or message.channel.parent.id != SUBMISSIONS_CHANNEL:
-        await interaction.response.send_message(content="This command can only be run in a submission thread", ephemeral=True)
+    if not isinstance(message.channel, discord.Thread) or message.channel.parent.id not in ALLOWED_FORUMS:
+        await interaction.response.send_message(content="This command can only be run in a submission or development thread", ephemeral=True)
         return
     if interaction.user.id != interaction.channel.owner_id:
-        await interaction.response.send_message(content="You can only pin messages in your submission post", ephemeral=True)
+        await interaction.response.send_message(content="You can only pin messages in your submission or development post", ephemeral=True)
         return
     try:
         await message.pin()
