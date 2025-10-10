@@ -152,6 +152,22 @@ async def edit(interaction: discord.Interaction, message_id: str):
 async def help(interaction: discord.Interaction):
     await interaction.response.send_message(embed=discord.Embed(description=COMMANDS_LIST), ephemeral=True)
 
+# Pin context command
+@bot.tree.context_menu(name="Pin this message")
+async def pin_message(interaction: discord.Interaction, message: discord.Message):
+    if not isinstance(message.channel, discord.Thread) or message.channel.parent.id != SUBMISSIONS_CHANNEL:
+        interaction.response.send_message(content="This command can only be run in a submission thread", ephemeral=True)
+        return
+    if interaction.user.id != interaction.channel.owner_id:
+        interaction.response.send_message(content="You can only pin messages in your submission post", ephemeral=True)
+        return
+    try:
+        await message.pin()
+        interaction.response.send_message(content="Message pinned!", ephemeral=True)
+        return
+    except Exception as e:
+        interaction.response.send_message(content=f"An error occured: {e}", ephemeral=True)
+    
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
