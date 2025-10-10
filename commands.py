@@ -126,18 +126,9 @@ async def send(interaction: discord.Interaction, has_embed:bool=False):
     await interaction.response.send_modal(send_modal)
 
 # Message edit
-@bot.tree.command(name="edit", description="Edit a message the bot sent (mod only)")
-@app_commands.describe(message_id="The ID of the message to edit")
+@bot.tree.context_menu(name="edit")
 @app_commands.checks.has_role(MODERATOR_ID)
-async def edit(interaction: discord.Interaction, message_id: str):
-    try:
-        message = await interaction.channel.fetch_message(message_id)
-    except discord.NotFound:
-        await interaction.response.send_message(content="Message with the given ID not found in the current channel", ephemeral=True)
-        return
-    except Exception as e:
-        await interaction.response.send_message(content=f"An error occured {e}", ephemeral=True)
-        return
+async def edit(interaction: discord.Interaction, message: discord.Message):
     if message.author==bot.user:
         existing_embed = message.embeds[0] if message.embeds else None
         edit_modal = EditBox(original_content=message.content, original_embed=existing_embed)
