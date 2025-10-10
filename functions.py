@@ -257,6 +257,16 @@ async def on_thread_create(thread):
     if thread.parent.id == SUBMISSIONS_CHANNEL:
         await track(thread)
 
+# Role error handling
+@bot.tree.error
+async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
+    if isinstance(error, app_commands.MissingRole):
+        await interaction.response.send_message(content="Sorry, you don't have the required role to use this command", ephemeral=True)
+    else:
+        logs = bot.get_channel(LOG_CHANNEL)
+        await logs.send(embed=discord.Embed(title="An error occured", description=f"for command {interaction.command.name}: {error}"))
+        await interaction.response.send_message(content=f"An error occured: {error}", ephemeral=True)
+
 # Thread updates
 @bot.event
 async def on_thread_update(before, after):

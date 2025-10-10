@@ -126,7 +126,7 @@ async def send(interaction: discord.Interaction, has_embed:bool=False):
     await interaction.response.send_modal(send_modal)
 
 # Message edit
-@bot.tree.context_menu(name="edit")
+@bot.tree.context_menu(name="Edit")
 @app_commands.checks.has_role(MODERATOR_ID)
 async def edit(interaction: discord.Interaction, message: discord.Message):
     if message.author==bot.user:
