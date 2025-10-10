@@ -263,9 +263,9 @@ async def on_app_command_error(interaction: discord.Interaction, error: app_comm
     if isinstance(error, app_commands.MissingRole):
         await interaction.response.send_message(content="Sorry, you don't have the required role to use this command", ephemeral=True)
     else:
+        await interaction.response.send_message(content=f"An error occured: {error}", ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
         await logs.send(embed=discord.Embed(title="An error occured", description=f"for command {interaction.command.name}: {error}"))
-        await interaction.response.send_message(content=f"An error occured: {error}", ephemeral=True)
 
 # Thread updates
 @bot.event
