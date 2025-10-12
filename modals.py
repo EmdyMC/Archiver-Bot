@@ -108,6 +108,7 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
 
 class PublishBox(discord.ui.Modal, title="Publish Post"):
     def __init__(self, draft: discord.Message):
+        super().__init__()
         draft_tuple = draft.content.partition('\n')
         draft_title = draft_tuple[0].removeprefix('# Title: ')
         draft_content = draft_tuple[2]
@@ -133,8 +134,9 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         )
         self.add_item(self.post_content)
     async def on_submit(self, interaction: discord.Interaction):
+        interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
         archive_channel = bot.get_channel(int(self.channel.value))
         new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
         await logs.send(embed=discord.Embed(title="Post made", description=f"## {new_thread.name}\n\nIn: <#{self.channel.value}>\n\nBy: {interaction.user.mention}"))
-        await interaction.response.send_message(content="Post published", ephemeral=True)
+        await interaction.followup.send(content="Post published", ephemeral=True)
