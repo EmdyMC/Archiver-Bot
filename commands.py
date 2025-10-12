@@ -144,6 +144,13 @@ async def draft(interaction: discord.Interaction):
     draft_modal = DraftBox(interaction.channel)
     await interaction.response.send_modal(draft_modal)
 
+# Publish post
+@bot.tree.context_menu(name="Publish post")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def publish(interaction: discord.Interaction, message: discord.Message):
+    publish_modal = PublishBox(draft=message)
+    await interaction.response.send_modal(publish_modal)
+
 # Help
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
 @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)

@@ -102,6 +102,39 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
         self.add_item(self.post_content)
     async def on_submit(self, interaction: discord.Interaction):
         logs = bot.get_channel(LOG_CHANNEL)
-        await self.channel.send(content=f"# Title: {self.post_title}\n {self.post_content}")
+        await self.channel.send(content=f"# Title: {self.post_title}\n{self.post_content}")
         await logs.send(embed=discord.Embed(title="Draft made", description=f"For: {self.post_title}\n\nIn: <#{self.channel.id}>\n\nBy: {interaction.user.mention}"))
         await interaction.response.send_message(content="Draft sent", ephemeral=True)
+
+class PublishBox(discord.ui.Modal, title="Publish Post"):
+    def __init__(self, draft: discord.Message):
+        draft_tuple = draft.content.partition('\n')
+        draft_title = draft_tuple[0].removeprefix('# Title: ')
+        draft_content = draft_tuple[2]
+        self.channel = discord.ui.TextInput(
+            label="Channel ID", 
+            default="The ID of the forum channel to post in",
+            style=discord.TextStyle.short,
+            required=True
+        )
+        self.add_item(self.channel)
+        self.post_title = discord.ui.TextInput(
+            label="Post Title", 
+            default=draft_title,
+            style=discord.TextStyle.short,
+            required=True
+        )
+        self.add_item(self.post_title)
+        self.post_content = discord.ui.TextInput(
+            label="Post Content",
+            default=draft_content,
+            style=discord.TextStyle.long,
+            required=True
+        )
+        self.add_item(self.post_content)
+    async def on_submit(self, interaction: discord.Interaction):
+        logs = bot.get_channel(LOG_CHANNEL)
+        archive_channel = bot.get_channel(int(self.channel))
+        new_thread, start_message = await archive_channel.create_thread(name=self.post_title, content=self.post_content)
+        await logs.send(embed=discord.Embed(title="Post made", description=f"## {new_thread.name}\n\nIn: <#{self.channel}>\n\nBy: {interaction.user.mention}"))
+        await interaction.response.send_message(content="Post published", ephemeral=True)
