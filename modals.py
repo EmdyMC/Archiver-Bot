@@ -93,75 +93,9 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
             required=True
         )
         self.add_item(self.post_title)
-        self.designers = discord.ui.TextInput(
-            label="Designers", 
-            style=discord.TextStyle.short,
-            required=True
-        )
-        self.add_item(self.designers)
-        self.credits = discord.ui.TextInput(
-            label="Credits", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.credits)
-        self.version = discord.ui.TextInput(
-            label="Versions", 
+        self.post_content = discord.ui.TextInput(
+            label="Post Content",
             style=discord.TextStyle.long,
             required=True
         )
-        self.add_item(self.version)
-        self.rates = discord.ui.TextInput(
-            label="Rates", 
-            style=discord.TextStyle.short,
-            required=False
-        )
-        self.add_item(self.rates)
-        self.links = discord.ui.TextInput(
-            label="Video Links", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.links)
-        self.files = discord.ui.TextInput(
-            label="Files", 
-            style=discord.TextStyle.long,
-            required=True
-        )
-        self.add_item(self.files)
-        self.description = discord.ui.TextInput(
-            label="Description", 
-            style=discord.TextStyle.long,
-            required=True
-        )
-        self.add_item(self.description)
-        self.positives = discord.ui.TextInput(
-            label="Positives", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.positives)
-        self.negatives = discord.ui.TextInput(
-            label="Negatives", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.negatives)
-        self.specs = discord.ui.TextInput(
-            label="Design Specifications", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.specs)
-        self.instructions = discord.ui.TextInput(
-            label="Instructions", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.instructions)
-        self.figures = discord.ui.TextInput(
-            label="Figures", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.figures)
+        self.add_item(self.post_content)
