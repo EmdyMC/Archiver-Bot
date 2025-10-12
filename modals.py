@@ -103,4 +103,5 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
     async def on_submit(self, interaction: discord.Interaction):
         logs = bot.get_channel(LOG_CHANNEL)
         await self.channel.send(content=f"# Title: {self.post_title}\n {self.post_content}")
-        await logs.send(embed=discord.Embed(title="Draft made", description=f"For: {self.title}\n\nIn: <#{self.channel.id}>\n\nBy: {interaction.user.mention}"))
+        await logs.send(embed=discord.Embed(title="Draft made", description=f"For: {self.post_title}\n\nIn: <#{self.channel.id}>\n\nBy: {interaction.user.mention}"))
+        await interaction.response.send_message(content="Draft sent", ephemeral=True)
