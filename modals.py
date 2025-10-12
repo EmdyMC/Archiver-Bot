@@ -87,6 +87,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 class DraftBox(discord.ui.Modal, title="Draft Post"):
     def __init__(self, channel: discord.TextChannel):
         super().__init__()
+        self.channel = channel
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
             style=discord.TextStyle.short,
@@ -99,3 +100,7 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
             required=True
         )
         self.add_item(self.post_content)
+    async def on_submit(self, interaction: discord.Interaction):
+        logs = bot.get_channel(LOG_CHANNEL)
+        await self.channel.send(content=f"# Title: {self.post_title}\n {self.post_content}")
+        await logs.send(embed=discord.Embed(title="Draft made", description=f"For: {self.title}\n\nIn: <#{self.channel.id}>\n\nBy: {interaction.user.mention}"))
