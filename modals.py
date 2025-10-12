@@ -85,7 +85,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
 # Draft box
 class DraftBox(discord.ui.Modal, title="Draft Post"):
-    def __init__(self):
+    def __init__(self, channel: discord.TextChannel):
         super().__init__()
         self.post_title = discord.ui.TextInput(
             label="Post Title", 

@@ -141,8 +141,7 @@ async def edit(interaction: discord.Interaction, message: discord.Message):
 @bot.tree.command(name="draft", description="Draft an archive post before publishing")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def draft(interaction: discord.Interaction):
-    draft_modal = DraftBox()
-    draft_modal.target_channel = interaction.channel
+    draft_modal = DraftBox(interaction.channel)
     await interaction.response.send_modal(draft_modal)
 
 # Help
