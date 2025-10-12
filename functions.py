@@ -1,4 +1,4 @@
-from init import *
+from modals import*
 
 # Edit tag button
 class TagButton(discord.ui.Button):
@@ -35,89 +35,6 @@ class TagView(discord.ui.View):
 
     async def on_timeout(self):
         pass
-
-# Send box
-class SendBox(discord.ui.Modal, title="Send Message"):
-    def __init__(self, has_embed: bool):
-        super().__init__()
-        self.message_text = discord.ui.TextInput(
-            label="Message content:", 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.message_text)
-        if has_embed:
-            self.embed_title = discord.ui.TextInput(
-                label="Embed title:",
-                style=discord.TextStyle.short,
-                required=False
-            )
-            self.embed_text = discord.ui.TextInput(
-                label="Embed description:",
-                style=discord.TextStyle.long,
-                required=False
-            )
-            self.embed_colour = discord.ui.TextInput(
-                label="Embed colour:",
-                style=discord.TextStyle.short,
-                default="#FFFFFF",
-                required=False
-            )
-            self.add_item(self.embed_title)
-            self.add_item(self.embed_text)
-            self.add_item(self.embed_colour)
-    async def on_submit(self, interaction: discord.Interaction):
-        logs = bot.get_channel(LOG_CHANNEL)
-        if hasattr(self,'embed_title'):
-            new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
-            await self.target_channel.send(content=self.message_text.value, embed=new_embed)
-            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
-        else:
-            await self.target_channel.send(content=self.message_text.value)
-            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
-        await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
-
-# Edit box
-class EditBox(discord.ui.Modal, title="Edit Message"):
-    def __init__(self, original_content: str, original_embed: discord.Embed = None):
-        super().__init__()
-        self.message_text = discord.ui.TextInput(
-            label="Message content:", 
-            default=original_content, 
-            style=discord.TextStyle.long,
-            required=False
-        )
-        self.add_item(self.message_text)
-        self.original_embed = original_embed
-        self.original_content = original_content
-        if original_embed:
-            self.embed_title = discord.ui.TextInput(
-                label="Embed title:",
-                default=original_embed.title,
-                style=discord.TextStyle.short,
-                required=False
-            )
-            self.embed_text = discord.ui.TextInput(
-                label="Embed description:",
-                default=original_embed.description,
-                style=discord.TextStyle.long,
-                required=False
-            )
-            self.add_item(self.embed_title)
-            self.add_item(self.embed_text)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        new_content=self.message_text.value
-        logs = bot.get_channel(LOG_CHANNEL)
-        if hasattr(self,'embed_title'):
-            new_embed = self.original_embed
-            new_embed.description = self.embed_text.value
-            new_embed.title = self.embed_title.value
-            await self.target_message.edit(embed=new_embed)
-            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embed.title}\nDescription: {self.original_embed.description}\n**After:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}"))
-        await self.target_message.edit(content=new_content)
-        await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
-        await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
@@ -241,6 +158,7 @@ async def track(thread):
     await discussion_thread.send(f"For discussion and debate regarding the archival status of {thread.jump_url}")
     ping_message = await discussion_thread.send("ping")
     await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
+    await ping_message.pin()
     notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
     await asyncio.gather(
         notif.add_reaction("❌"),
