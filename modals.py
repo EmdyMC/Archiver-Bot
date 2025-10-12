@@ -134,9 +134,9 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         )
         self.add_item(self.post_content)
     async def on_submit(self, interaction: discord.Interaction):
-        interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
         archive_channel = bot.get_channel(int(self.channel.value))
         new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
-        await logs.send(embed=discord.Embed(title="Post made", description=f"## {new_thread.name}\n\nIn: <#{self.channel.value}>\n\nBy: {interaction.user.mention}"))
+        await logs.send(embed=discord.Embed(title="Post made", description=f"### {new_thread.name}\n\nIn: <#{self.channel.value}>\n\nBy: {interaction.user.mention}"))
         await interaction.followup.send(content="Post published", ephemeral=True)
