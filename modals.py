@@ -115,7 +115,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             await interaction.followup.send(content="Channel ID must be a valid number.", ephemeral=True)
             return
         archive_channel = bot.get_channel(channel_id)
-        if not isinstance(archive_channel, discord.ForumChannel) or archive_channel.category in NON_ARCHIVE_CATEGORIES:
+        if not isinstance(archive_channel, discord.ForumChannel) or archive_channel.category.id in NON_ARCHIVE_CATEGORIES:
             await interaction.followup.send(content="The given channel ID is not an archive forum", ephemeral=True)
             return
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
@@ -158,7 +158,7 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
         if not isinstance(archive_thread, discord.Thread):
             await interaction.followup.send(content="The given ID is not a thread", ephemeral=True)
             return
-        if not isinstance(archive_thread.parent, discord.ForumChannel) or archive_thread.parent.category in NON_ARCHIVE_CATEGORIES:
+        if not isinstance(archive_thread.parent, discord.ForumChannel) or archive_thread.parent.category.id in NON_ARCHIVE_CATEGORIES:
             await interaction.followup.send(content="The given thread ID is not in an archive forum", ephemeral=True)
             return
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
