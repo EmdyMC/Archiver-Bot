@@ -155,6 +155,9 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
             await interaction.followup.send(content="Thread ID must be a valid number.", ephemeral=True)
             return
         archive_thread = bot.get_channel(thread_id)
+        if not isinstance(archive_thread, discord.Thread):
+            await interaction.followup.send(content="The given ID is not a thread", ephemeral=True)
+            return
         if not isinstance(archive_thread.parent, discord.ForumChannel) or archive_thread.parent.category in NON_ARCHIVE_CATEGORIES:
             await interaction.followup.send(content="The given thread ID is not in an archive forum", ephemeral=True)
             return
