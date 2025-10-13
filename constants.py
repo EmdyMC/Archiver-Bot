@@ -26,6 +26,7 @@ UPPER_TAGS = {"Accepted", "Rejected", "Solved", "Pending", "Archived"}
 TESTING_EMOJI = "🧪"
 CLOCK_EMOJI = "🕥"
 CROSS_EMOJI = "❌"
+ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
 DISCORD_CHAR_LIMIT = 1800
 

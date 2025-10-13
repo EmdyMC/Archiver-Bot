@@ -88,12 +88,6 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
     def __init__(self, channel: discord.TextChannel):
         super().__init__()
         self.channel = channel
-        self.post_title = discord.ui.TextInput(
-            label="Post Title", 
-            style=discord.TextStyle.short,
-            required=True
-        )
-        self.add_item(self.post_title)
         self.post_content = discord.ui.TextInput(
             label="Post Content",
             style=discord.TextStyle.long,
@@ -102,16 +96,20 @@ class DraftBox(discord.ui.Modal, title="Draft Post"):
         self.add_item(self.post_content)
     async def on_submit(self, interaction: discord.Interaction):
         logs = bot.get_channel(LOG_CHANNEL)
-        await self.channel.send(content=f"# Title: {self.post_title.value}\n{self.post_content.value}")
-        await logs.send(embed=discord.Embed(title="Draft made", description=f"For: {self.post_title.value}\n\nIn: <#{self.channel.id}>\n\nBy: {interaction.user.mention}"))
-        await interaction.response.send_message(content="Draft sent", ephemeral=True)
+        if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
+            await interaction.response.send_message(content="That message content is not allowed", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Illegal content in draft", description=f"```{self.post_content.value}```\n\nIn: <#{self.channel.id}>\nBy: {interaction.user.mention}"))
+            return
+        try:
+            await self.channel.send(content=f"{self.post_content.value}")
+            await logs.send(embed=discord.Embed(title="Draft made", description=f"{self.post_content.value}\n\nIn: <#{self.channel.id}>\nBy: {interaction.user.mention}"))
+            await interaction.response.send_message(content="Draft sent", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(content=f"Error sending draft {e}", ephemeral=True)
 
 class PublishBox(discord.ui.Modal, title="Publish Post"):
     def __init__(self, draft: discord.Message):
         super().__init__()
-        draft_tuple = draft.content.partition('\n')
-        draft_title = draft_tuple[0].removeprefix('# Title: ')
-        draft_content = draft_tuple[2]
         self.channel = discord.ui.TextInput(
             label="Channel ID", 
             placeholder="The ID of the forum channel to post in",
@@ -121,14 +119,13 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         self.add_item(self.channel)
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
-            default=draft_title,
             style=discord.TextStyle.short,
             required=True
         )
         self.add_item(self.post_title)
         self.post_content = discord.ui.TextInput(
             label="Post Content",
-            default=draft_content,
+            default=draft.content,
             style=discord.TextStyle.long,
             required=True
         )
@@ -136,7 +133,22 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        archive_channel = bot.get_channel(int(self.channel.value))
-        new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
-        await logs.send(embed=discord.Embed(title="Post made", description=f"### {new_thread.name}\n\nIn: <#{self.channel.value}>\n\nBy: {interaction.user.mention}"))
-        await interaction.followup.send(content="Post published", ephemeral=True)
+        try:
+            channel_id = int(self.channel.value)
+        except ValueError:
+            await interaction.followup.send(content="Channel ID must be a valid number.", ephemeral=True)
+            return
+        archive_channel = bot.get_channel(int(channel_id))
+        if not isinstance(archive_channel, discord.ForumChannel) or archive_channel.category in NON_ARCHIVE_CATEGORIES:
+            await interaction.followup.send(content="The given channel ID is not an archive forum", ephemeral=True)
+            return
+        if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
+            await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value}```\n\nIn: <#{self.channel.id}>\nBy: {interaction.user.mention}"))
+            return
+        try:
+            new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
+            await logs.send(embed=discord.Embed(title="Post made", description=f"**{new_thread.name}**\n\nIn: <#{archive_channel.id}>\n\nBy: {interaction.user.mention}"))
+            await interaction.followup.send(content="Post published", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
