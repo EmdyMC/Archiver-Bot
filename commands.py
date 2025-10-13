@@ -137,19 +137,19 @@ async def edit(interaction: discord.Interaction, message: discord.Message):
     else:
         await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)
 
-# Draft post
-@bot.tree.command(name="draft", description="Draft an archive post before publishing")
-@app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def draft(interaction: discord.Interaction):
-    draft_modal = DraftBox(interaction.channel)
-    await interaction.response.send_modal(draft_modal)
-
 # Publish post
 @bot.tree.context_menu(name="Publish post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def publish(interaction: discord.Interaction, message: discord.Message):
     publish_modal = PublishBox(draft=message)
     await interaction.response.send_modal(publish_modal)
+
+# Append post
+@bot.tree.context_menu(name="Append post")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def append(interaction: discord.Interaction, message: discord.Message):
+    append_modal = AppendBox(draft=message)
+    await interaction.response.send_modal(append_modal)
 
 # Help
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")

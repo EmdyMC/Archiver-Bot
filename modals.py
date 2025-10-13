@@ -83,30 +83,6 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
         await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
 
-# Draft box
-class DraftBox(discord.ui.Modal, title="Draft Post"):
-    def __init__(self, channel: discord.TextChannel):
-        super().__init__()
-        self.channel = channel
-        self.post_content = discord.ui.TextInput(
-            label="Post Content",
-            style=discord.TextStyle.long,
-            required=True
-        )
-        self.add_item(self.post_content)
-    async def on_submit(self, interaction: discord.Interaction):
-        logs = bot.get_channel(LOG_CHANNEL)
-        if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
-            await interaction.response.send_message(content="That message content is not allowed", ephemeral=True)
-            await logs.send(embed=discord.Embed(title="Illegal content in draft", description=f"```{self.post_content.value}```\n\nIn: <#{self.channel.id}>\nBy: {interaction.user.mention}"))
-            return
-        try:
-            await self.channel.send(content=f"{self.post_content.value}")
-            await logs.send(embed=discord.Embed(title="Draft made", description=f"{self.post_content.value}\n\nIn: <#{self.channel.id}>\nBy: {interaction.user.mention}"))
-            await interaction.response.send_message(content="Draft sent", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(content=f"Error sending draft {e}", ephemeral=True)
-
 class PublishBox(discord.ui.Modal, title="Publish Post"):
     def __init__(self, draft: discord.Message):
         super().__init__()
@@ -138,17 +114,57 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         except ValueError:
             await interaction.followup.send(content="Channel ID must be a valid number.", ephemeral=True)
             return
-        archive_channel = bot.get_channel(int(channel_id))
+        archive_channel = bot.get_channel(channel_id)
         if not isinstance(archive_channel, discord.ForumChannel) or archive_channel.category in NON_ARCHIVE_CATEGORIES:
             await interaction.followup.send(content="The given channel ID is not an archive forum", ephemeral=True)
             return
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
             await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
-            await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value}```\n\nIn: <#{self.channel.id}>\nBy: {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel_id}>\nBy: {interaction.user.mention}"))
             return
         try:
             new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
             await logs.send(embed=discord.Embed(title="Post made", description=f"**{new_thread.name}**\n\nIn: <#{archive_channel.id}>\n\nBy: {interaction.user.mention}"))
+            await interaction.followup.send(content="Post published", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
+
+class AppendBox(discord.ui.Modal, title="Append to post"):
+    def __init__(self, draft: discord.Message):
+        super().__init__()
+        self.thread = discord.ui.TextInput(
+            label="Thread ID", 
+            placeholder="The ID of the archive thread to post in",
+            style=discord.TextStyle.short,
+            required=True
+        )
+        self.add_item(self.thread)
+        self.post_content = discord.ui.TextInput(
+            label="Post Content",
+            default=draft.content,
+            style=discord.TextStyle.long,
+            required=True
+        )
+        self.add_item(self.post_content)
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        logs = bot.get_channel(LOG_CHANNEL)
+        try:
+            thread_id = int(self.thread.value)
+        except ValueError:
+            await interaction.followup.send(content="Thread ID must be a valid number.", ephemeral=True)
+            return
+        archive_thread = bot.get_channel(thread_id)
+        if not isinstance(archive_thread.parent, discord.ForumChannel) or archive_thread.parent.category in NON_ARCHIVE_CATEGORIES:
+            await interaction.followup.send(content="The given thread ID is not in an archive forum", ephemeral=True)
+            return
+        if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
+            await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value}```\n\nIn: <#{interaction.channel_id}>\nBy: {interaction.user.mention}"))
+            return
+        try:
+            appended_post = await archive_thread.send(content=self.post_content.value)
+            await logs.send(embed=discord.Embed(title="Post appended", description=f"**{appended_post.content[:900]}**\n\nIn: <#{thread_id}>\n\nBy: {interaction.user.mention}"))
             await interaction.followup.send(content="Post published", ephemeral=True)
         except Exception as e:
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)

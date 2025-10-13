@@ -2,20 +2,6 @@ import discord
 from commands import *
 from dotenv import load_dotenv               
 
-# Slash command error
-@bot.tree.error
-async def on_app_command_error(interaction: discord.Interaction, error: commands.CommandInvokeError):
-    if isinstance(error, commands.MissingRole) or isinstance(error, commands.MissingAnyRole):
-        await interaction.followup.send(
-            "You don't have the necessary roles to use this command",
-            ephemeral=True
-        )
-    else:
-        await interaction.followup.send(
-            f"An error occurred while trying to execute this command: {error}",
-            ephemeral=True
-        )
-
 # Startup
 @bot.event
 async def on_ready():
