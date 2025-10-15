@@ -57,6 +57,10 @@ class TagSelectView(discord.ui.View):
         self.tag_select.disabled = True
         self.selected_tags = self.tag_select.values
         tags_to_apply =  [tag for tag in self.all_tags if str(tag.id) in self.selected_tags]
+        logs = bot.get_channel(LOG_CHANNEL)
+        for tag in tags_to_apply:
+            embed = discord.Embed(title=f"Tag {str(tag.emoji)} {tag.name} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
+            await logs.send(embed=embed)
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
 
