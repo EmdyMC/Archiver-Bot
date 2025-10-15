@@ -238,18 +238,19 @@ async def on_thread_update(before, after):
         try:
             tag_before = set(before.applied_tags)
             tag_after = set(after.applied_tags)
-            tag_added = list(tag_after - tag_before)[0]
+            tags_added = list(tag_after - tag_before)
         except:
             return
-        if tag_added:
-            tag_emote = str(tag_added.emoji).strip("_")
-            tag_name = str(tag_added)
+        if tags_added:
+            for tag_added in tags_added:
+                tag_emote = str(tag_added.emoji).strip("_")
+                tag_name = str(tag_added)
 
-            # Pick the embed colour
-            embed_colour = TAG_COLOUR.get(tag_name, None)
-            if embed_colour is None:
-                embed_colour = discord.Colour.light_gray()
-            await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
+                # Pick the embed colour
+                embed_colour = TAG_COLOUR.get(tag_name, None)
+                if embed_colour is None:
+                    embed_colour = discord.Colour.light_gray()
+                await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
 
         # Remove the tracker channel message
         if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
