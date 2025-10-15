@@ -36,6 +36,26 @@ class TagView(discord.ui.View):
     async def on_timeout(self):
         pass
 
+# Create tags selector
+class TagSelectView(discord.ui.View):
+    def __init__(self, tags: list[discord.ForumTag], thread: discord.Thread):
+        super().__init__()
+        self.selected_tags = []
+        self.thread = thread
+        options = [discord.SelectOption(label=tag.name, emoji=tag.emoji, value=str(tag.id)) for tag in tags[:25]]
+        self.tag_select = discord.ui.Select(
+            placeholder="Choose the tags for the post. . .",
+            min_values=1,
+            max_values=5,
+            options=options
+        )
+        self.tag_select.callback = self.select_callback
+        self.add_item(self.tag_select)
+    async def select_callback(self, interaction:discord.Interaction):
+        self.tag_select.disabled = True
+        self.selected_tags = self.tag_select.values
+        await self.thread.edit(applied_tags=self.selected_tags)
+
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
     if not items:

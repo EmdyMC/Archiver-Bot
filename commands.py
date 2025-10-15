@@ -86,6 +86,18 @@ async def set_tag(interaction: discord.Interaction):
     msg = await interaction.response.send_message("**Which tag would you like to set?**", view = view, ephemeral = True)
     await view.set_message(msg)
 
+# Tag selector command
+@bot.tree.command(name="tag_selector", description="Edit the tags of a forum post")
+@app_commands.checks.has_any_role(HIGHER_ROLES)
+async def selector(interaction: discord.Interaction):
+    thread = interaction.channel
+    available_tags = thread.parent.available_tags
+    if not available_tags:
+        await interaction.response.send_message("Not a thread, no tags available", ephemeral=True)
+        return
+    view = TagSelectView(tags=available_tags, thread=thread)
+    await interaction.response.send_message(content="Select the tags:", view=view, ephemeral=True)
+
 # Tracker list command
 @bot.tree.command(name="tracker_list", description="Rechecks and resends the submission tracker list")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
