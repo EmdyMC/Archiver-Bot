@@ -90,8 +90,11 @@ async def set_tag(interaction: discord.Interaction):
 @bot.tree.command(name="tag_selector", description="Edit the tags of a forum post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
 async def selector(interaction: discord.Interaction):
+    if not isinstance(interaction.channel, discord.Thread):
+        await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum post"), ephemeral = True)
+        return
     if not isinstance(interaction.channel.parent, discord.ForumChannel):
-        await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum channel"), ephemeral = True)
+        await interaction.response.send_message(embed = discord.Embed(title = "This is not a thread in a forum channel"), ephemeral = True)
         return
     in_help_forum = interaction.channel.parent_id == HELP_FORUM
     has_higher_role = any(role.id in HIGHER_ROLES for role in interaction.user.roles)
