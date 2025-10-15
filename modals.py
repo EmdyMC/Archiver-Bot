@@ -95,6 +95,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         self.add_item(self.channel)
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
+            default=draft.channel.name,
             style=discord.TextStyle.short,
             required=True
         )
@@ -106,6 +107,13 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             required=True
         )
         self.add_item(self.post_content)
+        self.update = discord.ui.TextInput(
+            label="Announce update",
+            placeholder="Leave empty for False, write something for True",
+            style=discord.TextStyle.short,
+            required=False
+        )
+        self.add_item(self.update)
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
@@ -125,6 +133,10 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         try:
             new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
             await logs.send(embed=discord.Embed(title="Post made", description=f"**{new_thread.name}**\n\nIn: <#{archive_channel.id}>\n\nBy: {interaction.user.mention}"))
+            if bool(self.update.value):
+                archive_updates = bot.get_channel(ARCHIVE_UPDATES)
+                await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n[Submission thread]({interaction.channel.jump_url})")
+            await interaction.channel.edit(applied_tags=[interaction.channel.get_tag(ARCHIVED_TAG)])
             await interaction.followup.send(content="Post published", ephemeral=True)
         except Exception as e:
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
