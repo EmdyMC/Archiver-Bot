@@ -88,7 +88,7 @@ async def set_tag(interaction: discord.Interaction):
 
 # Tag selector command
 @bot.tree.command(name="tag_selector", description="Edit the tags of a forum post")
-@app_commands.checks.has_any_role(HIGHER_ROLES)
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def selector(interaction: discord.Interaction):
     thread = interaction.channel
     available_tags = thread.parent.available_tags
