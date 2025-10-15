@@ -103,6 +103,9 @@ async def selector(interaction: discord.Interaction):
         return
     thread = interaction.channel
     available_tags = thread.parent.available_tags
+    if not available_tags:
+        logs = bot.get_channel(LOG_CHANNEL)
+        logs.send("No tags retrieved from tag selector command")
     view = TagSelectView(tags=available_tags, thread=thread)
     await interaction.response.send_message(content="Select the tags:", view=view, ephemeral=True)
 
