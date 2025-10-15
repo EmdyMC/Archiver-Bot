@@ -47,7 +47,7 @@ class TagSelectView(discord.ui.View):
         self.tag_select = discord.ui.Select(
             placeholder="Choose the tags for the post. . .",
             min_values=1,
-            max_values=5,
+            max_values=min(5, len(options)),
             options=options
         )
         self.tag_select.callback = self.select_callback
