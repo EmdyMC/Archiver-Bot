@@ -1,6 +1,6 @@
 import sys
 import os
-from functions import *
+from modals import *
 
 # Close resolved posts command
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")

@@ -1,4 +1,4 @@
-from modals import*
+from init import*
 
 # Create tags selector
 class TagSelectView(discord.ui.View):

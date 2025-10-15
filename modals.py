@@ -1,5 +1,4 @@
-from init import *
-from functions import TagSelectView
+from functions import *
 
 # Send box
 class SendBox(discord.ui.Modal, title="Send Message"):
