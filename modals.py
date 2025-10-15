@@ -1,4 +1,5 @@
 from init import *
+from functions import TagSelectView
 
 # Send box
 class SendBox(discord.ui.Modal, title="Send Message"):
@@ -137,7 +138,8 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n[Submission thread]({interaction.channel.jump_url})")
             await interaction.channel.edit(applied_tags=[interaction.channel.get_tag(ARCHIVED_TAG)])
-            await interaction.followup.send(content="Post published", ephemeral=True)
+            available_tags = new_thread.parent.available_tags
+            await interaction.followup.send(content="Set post tags. . .", view=TagSelectView(tags=available_tags, thread=new_thread), ephemeral=True)
         except Exception as e:
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
 
