@@ -91,7 +91,7 @@ async def set_tag(interaction: discord.Interaction):
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def selector(interaction: discord.Interaction):
     thread = interaction.channel
-    available_tags = thread.available_tags
+    available_tags = thread.parent.available_tags
     if not available_tags:
         await interaction.response.send_message("Not a thread, no tags available", ephemeral=True)
         return
