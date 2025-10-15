@@ -58,7 +58,7 @@ class TagSelectView(discord.ui.View):
         self.selected_tags = self.tag_select.values
         tags_to_apply =  [tag for tag in self.all_tags if str(tag.id) in self.selected_tags]
         await self.thread.edit(applied_tags=tags_to_apply)
-        await interaction.followup.send("Tags set", ephemeral=True)
+        await interaction.edit_original_response(content="Tags set!", view=None)
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
