@@ -42,6 +42,7 @@ class TagSelectView(discord.ui.View):
         super().__init__()
         self.selected_tags = []
         self.thread = thread
+        self.all_tags = tags
         options = [discord.SelectOption(label=tag.name, emoji=tag.emoji, value=str(tag.id)) for tag in tags[:25]]
         self.tag_select = discord.ui.Select(
             placeholder="Choose the tags for the post. . .",
@@ -52,9 +53,12 @@ class TagSelectView(discord.ui.View):
         self.tag_select.callback = self.select_callback
         self.add_item(self.tag_select)
     async def select_callback(self, interaction:discord.Interaction):
+        await interaction.response.defer()
         self.tag_select.disabled = True
         self.selected_tags = self.tag_select.values
-        await self.thread.edit(applied_tags=self.selected_tags)
+        tags_to_apply =  [tag for tag in self.all_tags if str(tag.id) in self.selected_tags]
+        await self.thread.edit(applied_tags=tags_to_apply)
+        await interaction.followup.send("Tags set", ephemeral=True)
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
