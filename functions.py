@@ -1,41 +1,5 @@
 from modals import*
 
-# Edit tag button
-class TagButton(discord.ui.Button):
-    def __init__(self, tag, style):
-        super().__init__(label = tag.name, style = style)
-        self.tag = tag
-
-    async def callback(self, interaction: discord.Interaction):
-        await interaction.response.defer()
-        new_tags = [self.tag]
-        if self.view.forum_id in FORUMS:
-            if not self.tag.name in UPPER_TAGS:
-                for tag in interaction.channel.applied_tags:
-                    if tag.name in UPPER_TAGS:
-                        new_tags.append(tag)
-
-        await interaction.channel.edit(applied_tags = new_tags)
-        logs = bot.get_channel(LOG_CHANNEL)
-        embed = discord.Embed(title=f"Tag {str(self.tag.emoji)} {self.tag.name} added", description=f"To post: **{interaction.channel.name}**\nBy: {interaction.user.mention}")
-        await logs.send(embed=embed)
-        await interaction.delete_original_response()
-
-# Edit tag view
-class TagView(discord.ui.View):
-    def __init__(self, tag_list: list, forum_id:int):
-        super().__init__(timeout = 30)
-        self.forum_id = forum_id
-        self.msg = None
-        for tag in tag_list:
-            self.add_item(TagButton(tag, discord.ButtonStyle.primary))
-
-    async def set_message(self, msg):
-        self.msg = msg
-
-    async def on_timeout(self):
-        pass
-
 # Create tags selector
 class TagSelectView(discord.ui.View):
     def __init__(self, tags: list[discord.ForumTag], thread: discord.Thread):

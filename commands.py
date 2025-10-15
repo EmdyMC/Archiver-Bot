@@ -70,22 +70,6 @@ async def close_archived(interaction: discord.Interaction):
     else:
         await interaction.followup.send("No open forum posts found in the archives")
 
-#Set tag command
-@bot.tree.command(name="set_tag", description="Sets the tag for the thread")
-@app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
-async def set_tag(interaction: discord.Interaction):
-    if not isinstance(interaction.channel.parent, discord.ForumChannel):
-        await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum channel"), ephemeral = True)
-        return
-    in_help_forum = interaction.channel.parent_id == HELP_FORUM
-    has_higher_role = any(role.id in HIGHER_ROLES for role in interaction.user.roles)
-    if not in_help_forum and not has_higher_role:
-        await interaction.response.send_message(embed = discord.Embed(title = "You do not have the permissions to run that command here"), ephemeral = True)
-        return
-    view = TagView(interaction.channel.parent.available_tags, interaction.channel.parent.id)
-    msg = await interaction.response.send_message("**Which tag would you like to set?**", view = view, ephemeral = True)
-    await view.set_message(msg)
-
 # Tag selector command
 @bot.tree.command(name="tag_selector", description="Edit the tags of a forum post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
