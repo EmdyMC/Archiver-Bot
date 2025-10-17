@@ -70,6 +70,6 @@ COMMANDS_LIST = '''
 '''
 
 STARTER_MESSAGE = '''>>> ## Thank you for your submission! 
-- 📌 The submitter of the post can pin messages in the thread using the application command [shown below](https://cdn.discordapp.com/attachments/1235473478371643412/1426099528314130483/image.png). 
+- 📌 The submitter of the post can pin messages in the thread using the application command [shown below](https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png). 
 - ❌ This thread is for archival-related discussion only. No development or help questions are allowed.
 - ⌚ Please be patient, as the archival team has a lot of posts to process. We will review this post as soon as possible.'''
