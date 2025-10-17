@@ -127,12 +127,13 @@ async def on_message(message):
     if bot.user in message.mentions:
         await message.channel.send(f'{message.author.mention} 🏓')
     await bot.process_commands(message)
-    # Pin first message in submission posts
+    # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
         logs = bot.get_channel(LOG_CHANNEL)
         if message.id == message.channel.id:
             try:
                 await message.pin()
+                await message.channel.send(content=STARTER_MESSAGE)
                 embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
                 await logs.send(embed=embed)
             except Exception as e:

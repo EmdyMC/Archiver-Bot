@@ -68,3 +68,8 @@ COMMANDS_LIST = '''
 **/restart**: Restart and update the bot
 **/servers**: Sends the list of other archives to the current channel
 '''
+
+STARTER_MESSAGE = '''>>> ## Thank you for your submission! 
+- 📌 The submitter of the post can pin messages in the thread using the application command [shown below](https://cdn.discordapp.com/attachments/1235473478371643412/1426099528314130483/image.png). 
+- ❌ This thread is for archival-related discussion only. No development or help questions are allowed.
+- ⌚ Please be patient, as the archival team has a lot of posts to process. We will review this post as soon as possible.'''
