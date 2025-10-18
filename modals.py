@@ -141,7 +141,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             await interaction.followup.send(content="Set post tags. . .", view=TagSelectView(tags=available_tags, thread=new_thread), ephemeral=True)
         except Exception as e:
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
-            await logs.send(embed=discord.Embed(title=f"Error publishing post to archive", description="{e}"))
+            await logs.send(embed=discord.Embed(title="Error publishing post to archive", description=f"{e}"))
 
 class AppendBox(discord.ui.Modal, title="Append to post"):
     def __init__(self, draft: discord.Message):
@@ -185,4 +185,4 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
             await interaction.followup.send(content="Post published", ephemeral=True)
         except Exception as e:
             await interaction.followup.send(content=f"Error appending post to archive {e}", ephemeral=True)
-            await logs.send(embed=discord.Embed(title=f"Error appending post to archive", description="{e}"))
+            await logs.send(embed=discord.Embed(title="Error appending post to archive", description=f"{e}"))
