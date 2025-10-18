@@ -220,20 +220,21 @@ async def on_thread_update(before, after):
                 if embed_colour is None:
                     embed_colour = discord.Colour.light_gray()
                 await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
-
-        # Remove the tracker channel message
-        if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
-            tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-            async for message in tracker_channel.history(limit=100, oldest_first=True):
-                if str(before.id) in message.content:
-                    logs = bot.get_channel(LOG_CHANNEL)
-                    try:
-                        await message.delete()
-                        embed = discord.Embed(title=f"Tracker post removed", description=f"**{before.name}**")
-                        await logs.send(embed=embed)
-                    except Exception as e:
-                        embed = discord.Embed(title=f"An error occurred {e}")
-                        await logs.send(embed=embed)
-                    # Update tracker list
-                    await update_tracker_list()
-                    break
+                
+                # Remove the tracker channel message
+                if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
+                    tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+                    async for message in tracker_channel.history(limit=100, oldest_first=True):
+                        if str(before.id) in message.content:
+                            logs = bot.get_channel(LOG_CHANNEL)
+                            try:
+                                await message.delete()
+                                embed = discord.Embed(title=f"Tracker post removed", description=f"**{before.name}**")
+                                await logs.send(embed=embed)
+                            except Exception as e:
+                                embed = discord.Embed(title=f"An error occurred {e}")
+                                await logs.send(embed=embed)
+                            # Update tracker list
+                            await update_tracker_list()
+                            break
+        
