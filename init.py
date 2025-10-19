@@ -5,8 +5,6 @@ from constants import *
 import asyncio
 import aiofiles
 import json
-import io
-import aiohttp
 
 intents = discord.Intents.none()
 intents.guilds = True

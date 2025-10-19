@@ -70,14 +70,6 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             )
             self.add_item(self.embed_title)
             self.add_item(self.embed_text)
-
-    async def url_to_file(self, url: str) -> discord.File:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    data = await resp.read()
-                    filename = url.split("/")[-1]
-                    return discord.File(io.BytesIO(data), filename=filename)
                 
     async def on_submit(self, interaction: discord.Interaction):
         new_content = self.message_text.value
@@ -89,31 +81,15 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             await interaction.response.send_message("Message successfully edited!", ephemeral=True)
             return
         else:
-            # CASE 2: embeds exist, merge into one
-            first_embed = discord.Embed.from_dict(self.original_embeds[0].to_dict())
-            first_embed.title = self.embed_title.value
-            first_embed.description = self.embed_text.value
-
-            # Collect image URLs from all embeds
-            image_urls = []
-            for embed in self.original_embeds:
-                if embed.image and embed.image.url:
-                    image_urls.append(embed.image.url)
-                if embed.thumbnail and embed.thumbnail.url:
-                    image_urls.append(embed.thumbnail.url)
-
-            # Download all images as files
-            files = []
-            for url in image_urls:
-                try:
-                    f = await self.url_to_file(url)
-                    files.append(f)
-                except Exception:
-                    continue
-
-            # Edit message 1 embed, multiple attachments
-            await self.target_message.edit(content=new_content, embed=first_embed, attachments=files)
-            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title or 'None'}\nDescription: {self.original_embeds[0].description or 'None'}\n**After:**\nTitle: {first_embed.title or 'None'}\nDescription: {first_embed.description or 'None'}\n\n**By:** {interaction.user.mention}"))
+            new_embeds = []
+            for i, embed in enumerate(self.original_embeds):
+                cloned = discord.Embed.from_dict(embed.to_dict())
+                if i == 0 and hasattr(self, 'embed_title'):
+                    cloned.title = self.embed_title.value
+                    cloned.description = self.embed_text.value
+                new_embeds.append(cloned)
+            await self.target_message.edit(content=new_content, embeds=new_embeds)
+            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title}\nDescription: {self.original_embeds[0].description}\n**After:**\nTitle: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}"))
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)      
 
 # Publish Box
