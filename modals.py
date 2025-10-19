@@ -113,7 +113,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
             # Edit message 1 embed, multiple attachments
             await self.target_message.edit(content=new_content, embed=first_embed, attachments=files)
-            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title or 'None'}\nDescription: {self.original_embeds[0].description or 'None'}\n**After:**\nTitle: {new_embeds[0].title or 'None'}\nDescription: {new_embeds[0].description or 'None'}\n\n**By:** {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title or 'None'}\nDescription: {self.original_embeds[0].description or 'None'}\n**After:**\nTitle: {first_embed.title or 'None'}\nDescription: {first_embed.description or 'None'}\n\n**By:** {interaction.user.mention}"))
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)      
 
 # Publish Box
