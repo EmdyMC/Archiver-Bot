@@ -80,7 +80,6 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             if not self.original_embeds:
                 await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
                 await interaction.response.send_message("Message successfully edited!", ephemeral=True)
-                return
             else:
                 for i, embed in enumerate(self.original_embeds):
                     cloned = discord.Embed.from_dict(embed.to_dict())
@@ -89,7 +88,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
                         cloned.description = self.embed_text.value
                     new_embeds.append(cloned)
                 await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\nContent: {self.message_text.value}\nEmbed title: {self.original_embeds[0].title}\nDescription: {self.original_embeds[0].description}\n**After:**\nContent: {new_content}\nEmbed title: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}"))
-            await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments)
+            await self.target_message.edit(content=new_content, embeds=new_embeds or None, attachments=self.original_attachments)
             await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(content=f"Error running edit command: {e}", ephemeral=True)
