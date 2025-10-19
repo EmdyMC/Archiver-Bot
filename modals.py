@@ -74,12 +74,13 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         new_content=self.message_text.value
         logs = bot.get_channel(LOG_CHANNEL)
         if hasattr(self,'embed_title'):
-            new_embed = self.original_embed
-            new_embed.description = self.embed_text.value
+            new_embed = discord.Embed.from_dict(self.original_embed.to_dict())
             new_embed.title = self.embed_title.value
-            await self.target_message.edit(embed=new_embed)
+            new_embed.description = self.embed_text.value
+            await self.target_message.edit(content=new_content, embed=new_embed)
             await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embed.title}\nDescription: {self.original_embed.description}\n**After:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}"))
-        await self.target_message.edit(content=new_content)
+        else:
+            await self.target_message.edit(content=new_content)
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
         await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
 
@@ -133,7 +134,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         try:
             new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
             await logs.send(embed=discord.Embed(title="Post made", description=f"**{new_thread.name}**\n\nIn: <#{archive_channel.id}>\n\nBy: {interaction.user.mention}"))
-            if bool(self.update.value):
+            if bool(self.update.value.strip()):
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n[Submission thread]({interaction.channel.jump_url})")
             await interaction.channel.edit(applied_tags=[interaction.channel.get_tag(ARCHIVED_TAG)])
