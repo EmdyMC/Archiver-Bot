@@ -75,23 +75,26 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
     async def on_submit(self, interaction: discord.Interaction):
         new_content = self.message_text.value
         logs = bot.get_channel(LOG_CHANNEL)
-        # CASE 1: no embeds, text only
-        if not self.original_embeds:
-            await self.target_message.edit(content=new_content)
-            await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
-            await interaction.response.send_message("Message successfully edited!", ephemeral=True)
-            return
-        else:
-            new_embeds = []
-            for i, embed in enumerate(self.original_embeds):
-                cloned = discord.Embed.from_dict(embed.to_dict())
-                if i == 0 and hasattr(self, 'embed_title'):
-                    cloned.title = self.embed_title.value
-                    cloned.description = self.embed_text.value
-                new_embeds.append(cloned)
-            await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments)
-            await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title}\nDescription: {self.original_embeds[0].description}\n**After:**\nTitle: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}"))
-        await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)      
+        try:
+            if not self.original_embeds:
+                await self.target_message.edit(content=new_content)
+                await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
+                await interaction.response.send_message("Message successfully edited!", ephemeral=True)
+                return
+            else:
+                new_embeds = []
+                for i, embed in enumerate(self.original_embeds):
+                    cloned = discord.Embed.from_dict(embed.to_dict())
+                    if i == 0 and hasattr(self, 'embed_title'):
+                        cloned.title = self.embed_title.value
+                        cloned.description = self.embed_text.value
+                    new_embeds.append(cloned)
+                await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments)
+                await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title}\nDescription: {self.original_embeds[0].description}\n**After:**\nTitle: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}"))
+            await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(content=f"Error running edit command: {e}", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Error running edit command", description=f"{e}"))      
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
