@@ -134,8 +134,8 @@ async def send(interaction: discord.Interaction, has_embed:bool=False):
 @app_commands.checks.has_role(MODERATOR_ID)
 async def edit(interaction: discord.Interaction, message: discord.Message):
     if message.author==bot.user:
-        existing_embed = message.embeds[0] if message.embeds else None
-        edit_modal = EditBox(original_content=message.content, original_embed=existing_embed)
+        existing_embeds = message.embeds if message.embeds else None
+        edit_modal = EditBox(original_content=message.content, original_embeds=existing_embeds)
         edit_modal.target_message = message
         await interaction.response.send_modal(edit_modal)
     else:
