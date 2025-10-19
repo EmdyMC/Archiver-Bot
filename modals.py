@@ -43,10 +43,11 @@ class SendBox(discord.ui.Modal, title="Send Message"):
 
 # Edit box
 class EditBox(discord.ui.Modal, title="Edit Message"):
-    def __init__(self, original_content: str, original_embeds: list[discord.Embed] = None):
+    def __init__(self, original_content: str, original_embeds: list[discord.Embed] = None, original_attachments: list[discord.Attachment] = None):
         super().__init__()
         self.original_embeds = original_embeds
         self.original_content = original_content
+        self.original_attachments = original_attachments
         self.message_text = discord.ui.TextInput(
             label="Message content:", 
             default=original_content, 
@@ -88,7 +89,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
                     cloned.title = self.embed_title.value
                     cloned.description = self.embed_text.value
                 new_embeds.append(cloned)
-            await self.target_message.edit(content=new_content, embeds=new_embeds)
+            await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments)
             await logs.send(embed=discord.Embed(title="Bot embed edited", description=f"**Before:**\nTitle: {self.original_embeds[0].title}\nDescription: {self.original_embeds[0].description}\n**After:**\nTitle: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}"))
         await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)      
 
