@@ -148,11 +148,11 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             return
         try:
             new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
-            await logs.send(embed=discord.Embed(title="Post made", description=f"**{new_thread.name}**\n\nIn: <#{archive_channel.id}>\n\nBy: {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: <#{archive_channel.id}>\nBy: {interaction.user.mention}"))
             if bool(self.update.value.strip()):
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
-                await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n[Submission thread]({interaction.channel.jump_url})")
-            await interaction.channel.edit(applied_tags=[interaction.channel.get_tag(ARCHIVED_TAG)])
+                await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n\n[Submission thread]({interaction.channel.jump_url})")
+            await interaction.channel.edit(applied_tags=[interaction.channel.parent.get_tag(ARCHIVED_TAG)])
             available_tags = new_thread.parent.available_tags
             await interaction.followup.send(content="Set post tags. . .", view=TagSelectView(tags=available_tags, thread=new_thread), ephemeral=True)
         except Exception as e:
