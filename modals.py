@@ -55,11 +55,9 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             required=False
         )
         self.add_item(self.message_text)
-        if original_embeds:
-            rich_embeds = [embed for embed in self.original_embeds if embed.type == 'rich']
-            self.rich_embeds = rich_embeds or None
-        if rich_embeds:
-            first_embed = rich_embeds[0]
+        self.rich_embeds = [embed for embed in self.original_embeds if embed.type == 'rich']
+        if self.rich_embeds:
+            first_embed = self.rich_embeds[0]
             self.embed_title = discord.ui.TextInput(
                 label="Embed title:",
                 default=first_embed.title,
