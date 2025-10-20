@@ -131,7 +131,7 @@ async def send(interaction: discord.Interaction, has_embed:bool=False):
 
 # Message edit
 @bot.tree.context_menu(name="Edit")
-@app_commands.checks.has_role(MODERATOR_ID)
+@app_commands.checks.has_role(*HIGHER_ROLES)
 async def edit(interaction: discord.Interaction, message: discord.Message):
     if message.author==bot.user:
         existing_embeds = [embed for embed in message.embeds if embed.type != "link"] or None
