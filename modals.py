@@ -45,7 +45,7 @@ class SendBox(discord.ui.Modal, title="Send Message"):
 class EditBox(discord.ui.Modal, title="Edit Message"):
     def __init__(self, original_content: str, original_embeds: list[discord.Embed] = None, original_attachments: list[discord.Attachment] = None):
         super().__init__()
-        self.original_embeds = original_embeds
+        self.original_embeds = original_embeds or []
         self.original_content = original_content
         self.original_attachments = original_attachments or []
         self.message_text = discord.ui.TextInput(
@@ -56,7 +56,10 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         )
         self.add_item(self.message_text)
         if original_embeds:
-            first_embed = original_embeds[0]
+            rich_embeds = [embed for embed in self.original_embeds if embed.type == 'rich']
+            self.rich_embeds = rich_embeds or None
+        if rich_embeds:
+            first_embed = rich_embeds[0]
             self.embed_title = discord.ui.TextInput(
                 label="Embed title:",
                 default=first_embed.title,
@@ -76,19 +79,22 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         new_content = self.message_text.value
         logs = bot.get_channel(LOG_CHANNEL)
         new_embeds = []
+        log_embed = None
         try:
-            if not self.original_embeds:
-                await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}"))
-                await interaction.response.send_message("Message successfully edited!", ephemeral=True)
+            if not self.rich_embeds:
+                log_embed = discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}")
             else:
-                for i, embed in enumerate(self.original_embeds):
+                for i, embed in enumerate(self.rich_embeds):
                     cloned = discord.Embed.from_dict(embed.to_dict())
                     if i == 0 and hasattr(self, 'embed_title'):
                         cloned.title = self.embed_title.value
                         cloned.description = self.embed_text.value
                     new_embeds.append(cloned)
-                await logs.send(embed=discord.Embed(title="Bot message edited", description=f"**Before:**\nContent: {self.message_text.value}\nEmbed title: {self.original_embeds[0].title}\nDescription: {self.original_embeds[0].description}\n**After:**\nContent: {new_content}\nEmbed title: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}"))
+                log_embed = discord.Embed(title="Bot message edited", description=f"**Before:**\nContent: {self.original_content}\nEmbed title: {self.rich_embeds[0].title}\nDescription: {self.rich_embeds[0].description}\n**After:**\nContent: {new_content}\nEmbed title: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}")
+            
             await self.target_message.edit(content=new_content, embeds=new_embeds or None, attachments=self.original_attachments)
+            if log_embed:
+                await logs.send(embed=log_embed)
             await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(content=f"Error running edit command: {e}", ephemeral=True)
