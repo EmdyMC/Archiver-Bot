@@ -22,8 +22,11 @@ class TagSelectView(discord.ui.View):
         self.selected_tags = self.tag_select.values
         tags_to_apply =  [tag for tag in self.all_tags if str(tag.id) in self.selected_tags]
         logs = bot.get_channel(LOG_CHANNEL)
+        log_message = []
         for tag in tags_to_apply:
-            embed = discord.Embed(title=f"Tag {str(tag.emoji)} {tag.name} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
+            log_message.append(f" {str(tag.emoji)} {tag.name} ")
+        if log_message:
+            embed = discord.Embed(title=f"Tags {str(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
             await logs.send(embed=embed)
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
@@ -211,6 +214,7 @@ async def on_thread_update(before, after):
         except:
             return
         if tags_added:
+            tag_list = []
             for tag_added in tags_added:
                 tag_emote = str(tag_added.emoji).strip("_")
                 tag_name = str(tag_added)
@@ -219,7 +223,7 @@ async def on_thread_update(before, after):
                 embed_colour = TAG_COLOUR.get(tag_name, None)
                 if embed_colour is None:
                     embed_colour = discord.Colour.light_gray()
-                await after.send(embed = discord.Embed(title = f"Marked as {tag_emote} {tag_name}", color = embed_colour))
+                tag_list.append(f" {tag_emote} {tag_name} ")
                 
                 # Remove the tracker channel message
                 if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
@@ -236,5 +240,5 @@ async def on_thread_update(before, after):
                                 await logs.send(embed=embed)
                             # Update tracker list
                             await update_tracker_list()
-                            break
-        
+
+            await after.send(embed = discord.Embed(title = f"Marked as {str(tag_list)}", color = embed_colour))
