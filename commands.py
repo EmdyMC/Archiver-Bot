@@ -146,7 +146,7 @@ async def edit(interaction: discord.Interaction, message: discord.Message):
 @bot.tree.context_menu(name="Publish post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def publish(interaction: discord.Interaction, message: discord.Message):
-    channel_list = channel_options()
+    channel_list = await channel_options()
     publish_modal = PublishBox(draft=message, channel_options=channel_list)
     await interaction.response.send_modal(publish_modal)
 

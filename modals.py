@@ -100,10 +100,10 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
-    def __init__(self, draft: discord.Message, channel_options: list[discord.ForumChannel]):
+    def __init__(self, draft: discord.Message, options: list[discord.ForumChannel]):
         super().__init__()
         self.channel_select = discord.ui.Select(
-            options=channel_options,
+            options=options,
             required=True
         )
         self.add_item(self.channel_select)
