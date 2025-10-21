@@ -100,7 +100,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
-    def __init__(self, draft: discord.Message, channel: discord.ForumChannel):
+    def __init__(self, draft: discord.Message):
         super().__init__()
         self.channel = discord.ui.TextInput(
             label=f"Channel ID", 
