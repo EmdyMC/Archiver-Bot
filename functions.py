@@ -56,6 +56,23 @@ async def get_thread_by_name(channel, name):
     await logs.send(embed=embed)
     return None
 
+# Fetch archive channels
+async def fetch_archive_channels():
+    channels = []
+    for channel in bot.get_all_channels():
+        if isinstance(channel, discord.ForumChannel):
+            if channel.category_id not in NON_ARCHIVE_CATEGORIES:
+                channels.append(channel)
+    return channels
+
+# Convert channel list into select options
+async def channel_options():
+    options = []
+    for channel in fetch_archive_channels():
+        op = discord.SelectOption(label=f"{channel.name}", description=f"{channel.id}")
+        options.append(op)
+    return options
+
 # Update tracker list
 async def update_tracker_list():
     pending_messages = []

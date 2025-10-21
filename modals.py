@@ -109,6 +109,11 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             required=True
         )
         self.add_item(self.channel)
+        self.channel_select = discord.ui.Select(
+            options=channel_options(),
+            required=True
+        )
+        self.add_item(self.channel_select)
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
             default=draft.channel.name,
