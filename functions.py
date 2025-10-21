@@ -68,7 +68,7 @@ async def fetch_archive_channels():
 # Convert channel list into select options
 async def channel_options():
     options = []
-    for channel in fetch_archive_channels():
+    for channel in await fetch_archive_channels():
         op = discord.SelectOption(label=f"{channel.name}", description=f"{channel.id}")
         options.append(op)
     return options
