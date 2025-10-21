@@ -24,9 +24,9 @@ class TagSelectView(discord.ui.View):
         logs = bot.get_channel(LOG_CHANNEL)
         log_message = []
         for tag in tags_to_apply:
-            log_message.append(f" {str(tag.emoji)} {tag.name} ")
+            log_message.append(f"{str(tag.emoji)} {tag.name}")
         if log_message:
-            embed = discord.Embed(title=f"Tags {str(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
+            embed = discord.Embed(title=f"Tags {", ".join(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
             await logs.send(embed=embed)
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
@@ -223,7 +223,7 @@ async def on_thread_update(before, after):
                 embed_colour = TAG_COLOUR.get(tag_name, None)
                 if embed_colour is None:
                     embed_colour = discord.Colour.light_gray()
-                tag_list.append(f" {tag_emote} {tag_name} ")
+                tag_list.append(f"{tag_emote} {tag_name}")
                 
                 # Remove the tracker channel message
                 if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
@@ -241,4 +241,4 @@ async def on_thread_update(before, after):
                             # Update tracker list
                             await update_tracker_list()
 
-            await after.send(embed = discord.Embed(title = f"Marked as {str(tag_list)}", color = embed_colour))
+            await after.send(embed = discord.Embed(title = f"Marked as {", ".join(tag_list)}", color = embed_colour))
