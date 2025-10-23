@@ -26,7 +26,7 @@ class TagSelectView(discord.ui.View):
         for tag in tags_to_apply:
             log_message.append(f"{str(tag.emoji)} {tag.name}")
         if log_message:
-            embed = discord.Embed(title=f"Tags {", ".join(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
+            embed = discord.Embed(title=f"Tags {",  ".join(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
             await logs.send(embed=embed)
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
@@ -241,4 +241,4 @@ async def on_thread_update(before, after):
                             # Update tracker list
                             await update_tracker_list()
 
-            await after.send(embed = discord.Embed(title = f"Marked as {", ".join(tag_list)}", color = embed_colour))
+            await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
