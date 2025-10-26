@@ -216,14 +216,14 @@ async def on_thread_update(before, after):
         if tags_added:
             tag_list = []
             for tag_added in tags_added:
-                tag_emote = str(tag_added.emoji).strip("_")
-                tag_name = str(tag_added)
+                tag_emote = tag_added.emoji or ""
+                tag_name = tag_added.name
 
                 # Pick the embed colour
                 embed_colour = TAG_COLOUR.get(tag_name, None)
                 if embed_colour is None:
                     embed_colour = discord.Colour.light_gray()
-                tag_list.append(f"{tag_emote} {tag_name}")
+                tag_list.append(f"{tag_emote} {tag_name}".strip())
                 
                 # Remove the tracker channel message
                 if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
