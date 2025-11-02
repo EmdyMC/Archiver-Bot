@@ -142,6 +142,24 @@ async def edit(interaction: discord.Interaction, message: discord.Message):
     else:
         await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)
 
+# Message delete
+@bot.tree.context_menu(name="Delete")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def delete(interaction: discord.Interaction, message: discord.Message):
+    if message.author!=bot.user:
+        await interaction.response.send_message("You can only delete bot messages with this command", ephemeral=True)
+    else:
+        role_ids = [role.id for role in interaction.user.roles]
+        if MODERATOR_ID in role_ids:
+            await interaction.response.send_message("You know you don't need to use the bot to delete stuff right?", ephemeral=True)
+        else:
+            archiver_chat = bot.get_channel(ARCHIVER_CHAT)
+            embed=discord.Embed(title="Message deletion request", description=f"{interaction.user.mention} wishes to delete {interaction.message.jump_url}")
+            view = DeleteApprovalView(target_message_id=interaction.message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
+            approval_message = await archiver_chat.send(embed=embed, view=view)
+            view.approval_message = approval_message
+            await interaction.response.send_message(content="Message deletion request sent", ephemeral=True)
+
 # Publish post
 @bot.tree.context_menu(name="Publish post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
@@ -163,7 +181,7 @@ async def help(interaction: discord.Interaction):
     await interaction.response.send_message(embed=discord.Embed(description=COMMANDS_LIST), ephemeral=True)
 
 # Pin context command
-@bot.tree.context_menu(name="Pin this message")
+@bot.tree.context_menu(name="Pin")
 async def pin_message(interaction: discord.Interaction, message: discord.Message):
     if not isinstance(message.channel, discord.Thread) or message.channel.parent.id not in ALLOWED_FORUMS:
         await interaction.response.send_message(content="This command can only be run in a submission or development thread", ephemeral=True)
