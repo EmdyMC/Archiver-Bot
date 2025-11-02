@@ -58,12 +58,13 @@ class DeleteApprovalView(discord.ui.View):
             target_channel = await bot.fetch_channel(self.target_channel_id)
             target_message = await target_channel.fetch_message(self.target_message_id)
             message_content = target_message.content
-            message_embed_title = target_message.embeds[0].title or None
-            message_embed_desc = target_message.embeds[0].description or None
-            if message_embed_title:
-                message_content+=f"\n**Title:** {message_embed_title}"
-            if message_embed_desc:
-                message_content+=f"\n**Description:** {message_embed_desc}"
+            if target_message.embeds:
+                message_embed_title = target_message.embeds[0].title or None
+                message_embed_desc = target_message.embeds[0].description or None
+                if message_embed_title:
+                    message_content+=f"\n**Title:** {message_embed_title}"
+                if message_embed_desc:
+                    message_content+=f"\n**Description:** {message_embed_desc}"
             log_message = await logs.send(embed=discord.Embed(title="Bot message deleted", description=f"Requested by: {self.requester.mention}\nApproved by: {interaction.user.mention}\nContent: {message_content[:1900]}"))
             await interaction.followup.edit_message(message_id=interaction.message.id, content=f"Message deletion request by {self.requester.mention} approved by {interaction.user.mention}\nLog message: {log_message.jump_url}", embeds=None, view=None)
             await target_message.delete()

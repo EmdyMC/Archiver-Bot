@@ -154,8 +154,8 @@ async def delete(interaction: discord.Interaction, message: discord.Message):
             await interaction.response.send_message("You know you don't need to use the bot to delete stuff right?", ephemeral=True)
         else:
             archiver_chat = bot.get_channel(ARCHIVER_CHAT)
-            embed=discord.Embed(title="Message deletion request", description=f"{interaction.user.mention} wishes to delete {interaction.message.jump_url}")
-            view = DeleteApprovalView(target_message_id=interaction.message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
+            embed=discord.Embed(title="Message deletion request", description=f"{interaction.user.mention} wishes to delete {message.jump_url}")
+            view = DeleteApprovalView(target_message_id=message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
             approval_message = await archiver_chat.send(embed=embed, view=view)
             view.approval_message = approval_message
             await interaction.response.send_message(content="Message deletion request sent", ephemeral=True)
