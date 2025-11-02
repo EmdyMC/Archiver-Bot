@@ -32,8 +32,8 @@ class TagSelectView(discord.ui.View):
         await interaction.edit_original_response(content="Tags set!", view=None)
 
 class DeleteApprovalView(discord.ui.View):
-    def __init__(self, target_message_id: int, target_channel_id: int, requester: discord.Member):
-        super().__init__()
+    def __init__(self, target_message_id: int, target_channel_id: int, requester: discord.Member, timeout=3600):
+        super().__init__(timeout=timeout)
         self.target_message_id = target_message_id
         self.target_channel_id = target_channel_id
         self.requester = requester
