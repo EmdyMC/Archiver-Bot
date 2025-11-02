@@ -68,6 +68,7 @@ class DeleteApprovalView(discord.ui.View):
             log_message = await logs.send(embed=discord.Embed(title="Bot message deleted", description=f"Requested by: {self.requester.mention}\nApproved by: {interaction.user.mention}\nContent: {message_content[:1900]}"))
             await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="✅ Approved",description=f"Message deletion request by {self.requester.mention} approved by {interaction.user.mention}\nLog message: {log_message.jump_url}"), view=None)
             await target_message.delete()
+            self.stop()
         except Exception as e:
             await interaction.followup.send(content=f"Error approving deletion request: {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error approving deletion request", description=f"{e}"))
@@ -76,11 +77,12 @@ class DeleteApprovalView(discord.ui.View):
         try:
             await interaction.response.defer(ephemeral=True)
             await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="❌ Rejected", description=f"Message deletion request by {self.requester.mention} rejected by {interaction.user.mention}"), view=None)
+            self.stop()
         except Exception as e:
             await interaction.followup.send(content=f"Error rejecting deletion request: {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error rejecting deletion request", description=f"{e}"))
     async def on_timeout(self):
-        if self.approval_message:
+        if self.approval_message and self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Message deletion request by {self.requester.mention}"), view=None)
 
 # Send chunked messages
