@@ -157,7 +157,7 @@ class EditTitleApproval(discord.ui.View):
         try:
             await logs.send(embed=discord.Embed(title="Thread title updated", description=f"Requested by: {self.requester.mention}\nApproved by: {interaction.user.mention}\nThread: {self.post.jump_url}"))
             await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="✅ Approved",description=f"Thread title change request by {self.requester.mention} approved by {interaction.user.mention}\nThread: {self.post.jump_url}"), view=None)
-            await self.post.edit(name=self.title)
+            await self.post.edit(name=self.title, archived=False)
             self.stop()
         except Exception as e:
             await interaction.followup.send(content=f"Error approving thread title change request: {e}", ephemeral=True)
