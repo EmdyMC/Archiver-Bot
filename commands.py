@@ -178,21 +178,25 @@ async def append(interaction: discord.Interaction, message: discord.Message):
 @bot.tree.command(name="delete_post", description="remove a post from the archive")
 @app_commands.describe(post_id="Post ID")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def delete_post(interaction: discord.Interaction, post_id: int):
+async def delete_post(interaction: discord.Interaction, post_id: str):
     logs = bot.get_channel(LOG_CHANNEL)
     try:
-        thread = await bot.get_channel(post_id)
+        thread_id = int(post_id)
+        thread = await bot.get_channel(thread_id)
         if not isinstance(thread, discord.Thread):
             await interaction.response.send_message("Provided ID is not that of a thread, please enter a valid thread ID", ephemeral=True)
         else:
             archiver_chat = bot.get_channel(ARCHIVER_CHAT)
             embed=discord.Embed(title="Thread deletion request", description=f"{interaction.user.mention} wishes to delete {thread.jump_url}")
-            view = DeleteThreadApprovalView(target_post_id=post_id, requester=interaction.user)
+            view = DeleteThreadApprovalView(target_post_id=thread_id, requester=interaction.user)
             approval_message = await archiver_chat.send(embed=embed, view=view)
             view.approval_message = approval_message
             await interaction.response.send_message(content="Thread deletion request sent", ephemeral=True)
+    except ValueError:
+        await interaction.response.send_message(content="Thread ID must be a valid number.", ephemeral=True)
+        return
     except Exception as e:
-        await logs.send(embed=discord.Embed(title="Error in delete post command", description=f"Could not fetch the thread from the provided ID {post_id}"))
+        await logs.send(embed=discord.Embed(title="Error in delete post command", description=f"Could not fetch the thread from the provided ID {thread_id}"))
         await interaction.response.send_message("Invalid thread ID", ephemeral=True)
     
 # Help
