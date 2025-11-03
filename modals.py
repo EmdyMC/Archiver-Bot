@@ -161,6 +161,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error publishing post to archive", description=f"{e}"))
 
+# Append Box
 class AppendBox(discord.ui.Modal, title="Append to post"):
     def __init__(self, draft: discord.Message):
         super().__init__()
@@ -204,3 +205,27 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
         except Exception as e:
             await interaction.followup.send(content=f"Error appending post to archive {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error appending post to archive", description=f"{e}"))
+
+# Edit Title Box
+class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
+    def __init__(self, post=discord.Thread):
+        super().__init__()
+        self.post = post
+        self.add_item(self.post)
+        self.title = discord.ui.TextInput(
+            label="Title",
+            default=post.name,
+            style=discord.TextStyle.short,
+            required=True
+        )
+        self.add_item(self.title)
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            archiver_chat = bot.get_channel(ARCHIVER_CHAT)
+            embed=discord.Embed(title="Thread title change request", description=f"{interaction.user.mention} wishes to edit the title of {self.post.jump_url}\nFrom: {self.post.name}\nTo: {self.title}")
+            view = EditTitleApproval(post=self.post, requester=interaction.user, title=self.title)
+            approval_message = await archiver_chat.send(embed=embed, view=view)
+            view.approval_message = approval_message
+            await interaction.response.send_message(content="Thread title change request sent", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"An error occured: {e}", ephemeral=True)

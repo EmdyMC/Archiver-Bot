@@ -179,7 +179,6 @@ async def append(interaction: discord.Interaction, message: discord.Message):
 @app_commands.describe(post_id="Post ID")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def delete_post(interaction: discord.Interaction, post_id: str):
-    logs = bot.get_channel(LOG_CHANNEL)
     try:
         thread_id = int(post_id)
         thread = await bot.fetch_channel(thread_id)
@@ -196,9 +195,27 @@ async def delete_post(interaction: discord.Interaction, post_id: str):
         await interaction.response.send_message(content="Thread ID must be a valid number.", ephemeral=True)
         return
     except Exception as e:
-        await logs.send(embed=discord.Embed(title="Error in delete post command", description=f"Could not fetch the thread from the provided ID {thread_id}"))
         await interaction.response.send_message("Invalid thread ID", ephemeral=True)
-    
+
+# Edit post title
+@bot.tree.command(name="edit_post_title", description="Edit the title of an archive post")
+@app_commands.describe(post_id="Post ID")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def edit_post(interaction: discord.Interaction, post_id: str):
+    try:
+        thread_id = int(post_id)
+        thread = await bot.fetch_channel(thread_id)
+        if not isinstance(thread, discord.Thread):
+            await interaction.response.send_message("Provided ID is not that of a thread, please enter a valid thread ID", ephemeral=True)
+        else:
+            edit_modal = EditTitleBox(post=thread)
+            await interaction.response.send_modal(edit_modal)
+    except ValueError:
+        await interaction.response.send_message(content="Thread ID must be a valid number.", ephemeral=True)
+        return
+    except Exception as e:
+        await interaction.response.send_message("Invalid thread ID", ephemeral=True)
+
 # Help
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
 @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
