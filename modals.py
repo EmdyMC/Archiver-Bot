@@ -211,7 +211,6 @@ class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
     def __init__(self, post=discord.Thread):
         super().__init__()
         self.post = post
-        self.add_item(self.post)
         self.title = discord.ui.TextInput(
             label="Title",
             default=post.name,
