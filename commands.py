@@ -182,7 +182,7 @@ async def delete_post(interaction: discord.Interaction, post_id: str):
     logs = bot.get_channel(LOG_CHANNEL)
     try:
         thread_id = int(post_id)
-        thread = await bot.get_channel(thread_id)
+        thread = await bot.fetch_channel(thread_id)
         if not isinstance(thread, discord.Thread):
             await interaction.response.send_message("Provided ID is not that of a thread, please enter a valid thread ID", ephemeral=True)
         else:
