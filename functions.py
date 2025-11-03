@@ -24,7 +24,8 @@ class TagSelectView(discord.ui.View):
         logs = bot.get_channel(LOG_CHANNEL)
         log_message = []
         for tag in tags_to_apply:
-            log_message.append(f"{str(tag.emoji)} {tag.name}")
+            emoji = tag.emoji or ""
+            log_message.append(f"{emoji} {tag.name}".strip())
         if log_message:
             embed = discord.Embed(title=f"Tags {",  ".join(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
             await logs.send(embed=embed)
