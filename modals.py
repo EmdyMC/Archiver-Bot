@@ -211,18 +211,18 @@ class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
     def __init__(self, post=discord.Thread):
         super().__init__()
         self.post = post
-        self.title = discord.ui.TextInput(
+        self.new_title = discord.ui.TextInput(
             label="Title",
             default=post.name,
             style=discord.TextStyle.short,
             required=True
         )
-        self.add_item(self.title)
+        self.add_item(self.new_title)
     async def on_submit(self, interaction: discord.Interaction):
         try:
             archiver_chat = bot.get_channel(ARCHIVER_CHAT)
-            embed=discord.Embed(title="Thread title change request", description=f"{interaction.user.mention} wishes to edit the title of {self.post.jump_url}\nFrom: {self.post.name}\nTo: {self.title}")
-            view = EditTitleApproval(post=self.post, requester=interaction.user, title=self.title)
+            embed=discord.Embed(title="Thread title change request", description=f"{interaction.user.mention} wishes to edit the title of {self.post.jump_url}\nFrom: {self.post.name}\nTo: {self.new_title.value}")
+            view = EditTitleApproval(post=self.post, requester=interaction.user, title=self.new_title.value)
             approval_message = await archiver_chat.send(embed=embed, view=view)
             view.approval_message = approval_message
             await interaction.response.send_message(content="Thread title change request sent", ephemeral=True)
