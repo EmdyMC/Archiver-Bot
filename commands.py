@@ -155,7 +155,7 @@ async def delete(interaction: discord.Interaction, message: discord.Message):
         else:
             archiver_chat = bot.get_channel(ARCHIVER_CHAT)
             embed=discord.Embed(title="Message deletion request", description=f"{interaction.user.mention} wishes to delete {message.jump_url}")
-            view = DeleteApprovalView(target_message_id=message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
+            view = DeleteMessageApprovalView(target_message_id=message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
             approval_message = await archiver_chat.send(embed=embed, view=view)
             view.approval_message = approval_message
             await interaction.response.send_message(content="Message deletion request sent", ephemeral=True)
@@ -174,6 +174,27 @@ async def append(interaction: discord.Interaction, message: discord.Message):
     append_modal = AppendBox(draft=message)
     await interaction.response.send_modal(append_modal)
 
+# Delete post
+@bot.tree.command(name="delete_post", description="remove a post from the archive")
+@app_commands.describe(post_id="Post ID")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def delete_post(interaction: discord.Interaction, post_id: int):
+    logs = bot.get_channel(LOG_CHANNEL)
+    try:
+        thread = await bot.get_channel(post_id)
+        if not isinstance(thread, discord.Thread):
+            await interaction.response.send_message("Provided ID is not that of a thread, please enter a valid thread ID", ephemeral=True)
+        else:
+            archiver_chat = bot.get_channel(ARCHIVER_CHAT)
+            embed=discord.Embed(title="Thread deletion request", description=f"{interaction.user.mention} wishes to delete {thread.jump_url}")
+            view = DeleteThreadApprovalView(target_post_id=post_id, requester=interaction.user)
+            approval_message = await archiver_chat.send(embed=embed, view=view)
+            view.approval_message = approval_message
+            await interaction.response.send_message(content="Thread deletion request sent", ephemeral=True)
+    except Exception as e:
+        await logs.send(embed=discord.Embed(title="Error in delete post command", description=f"Could not fetch the thread from the provided ID {post_id}"))
+        await interaction.response.send_message("Invalid thread ID", ephemeral=True)
+    
 # Help
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
 @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)

@@ -31,7 +31,7 @@ class TagSelectView(discord.ui.View):
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
 
-class DeleteApprovalView(discord.ui.View):
+class DeleteMessageApprovalView(discord.ui.View):
     def __init__(self, target_message_id: int, target_channel_id: int, requester: discord.Member, timeout=3600):
         super().__init__(timeout=timeout)
         self.target_message_id = target_message_id
@@ -70,8 +70,8 @@ class DeleteApprovalView(discord.ui.View):
             await target_message.delete()
             self.stop()
         except Exception as e:
-            await interaction.followup.send(content=f"Error approving deletion request: {e}", ephemeral=True)
-            await logs.send(embed=discord.Embed(title="Error approving deletion request", description=f"{e}"))
+            await interaction.followup.send(content=f"Error approving message deletion request: {e}", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Error approving message deletion request", description=f"{e}"))
     async def reject_callback(self, interaction: discord.Interaction):
         logs = bot.get_channel(LOG_CHANNEL)
         try:
@@ -79,11 +79,55 @@ class DeleteApprovalView(discord.ui.View):
             await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="❌ Rejected", description=f"Message deletion request by {self.requester.mention} rejected by {interaction.user.mention}"), view=None)
             self.stop()
         except Exception as e:
-            await interaction.followup.send(content=f"Error rejecting deletion request: {e}", ephemeral=True)
-            await logs.send(embed=discord.Embed(title="Error rejecting deletion request", description=f"{e}"))
+            await interaction.followup.send(content=f"Error rejecting message deletion request: {e}", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Error rejecting message deletion request", description=f"{e}"))
     async def on_timeout(self):
         if self.approval_message and self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Message deletion request by {self.requester.mention}"), view=None)
+
+class DeleteThreadApprovalView(discord.ui.View):
+    def __init__(self, target_post_id: int, requester: discord.Member, timeout=3600):
+        super().__init__(timeout=timeout)
+        self.target_post_id = target_post_id
+        self.requester = requester
+        self.approval_message = None
+
+        self.approve_button = discord.ui.Button(label="Approve", style=discord.ButtonStyle.green, custom_id="approve")
+        self.reject_button = discord.ui.Button(label="Reject", style=discord.ButtonStyle.red, custom_id="reject")
+
+        self.approve_button.callback = self.approve_callback
+        self.reject_button.callback = self.reject_callback
+
+        self.add_item(self.approve_button)
+        self.add_item(self.reject_button)
+
+    async def approve_callback(self, interaction: discord.Interaction):
+        if interaction.user == self.requester:
+            await interaction.response.send_message("You can't approve your own request silly", ephemeral=True)
+            return
+        await interaction.response.defer(ephemeral=True)
+        logs = bot.get_channel(LOG_CHANNEL)
+        try:
+            target_post = await bot.fetch_channel(self.target_post_id)
+            await logs.send(embed=discord.Embed(title="Thread deleted", description=f"Requested by: {self.requester.mention}\nApproved by: {interaction.user.mention}\Thread: {target_post.name}"))
+            await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="✅ Approved",description=f"Thread deletion request by {self.requester.mention} approved by {interaction.user.mention}\nThread: {target_post.name}"), view=None)
+            await target_post.delete()
+            self.stop()
+        except Exception as e:
+            await interaction.followup.send(content=f"Error approving thread deletion request: {e}", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Error approving thread deletion request", description=f"{e}"))
+    async def reject_callback(self, interaction: discord.Interaction):
+        logs = bot.get_channel(LOG_CHANNEL)
+        try:
+            await interaction.response.defer(ephemeral=True)
+            await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="❌ Rejected", description=f"Thread deletion request by {self.requester.mention} rejected by {interaction.user.mention}"), view=None)
+            self.stop()
+        except Exception as e:
+            await interaction.followup.send(content=f"Error rejecting thread deletion request: {e}", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Error rejecting thread deletion request", description=f"{e}"))
+    async def on_timeout(self):
+        if self.approval_message and self.approval_message:
+            await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Thread deletion request by {self.requester.mention}"), view=None)
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):
