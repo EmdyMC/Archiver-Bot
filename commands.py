@@ -214,7 +214,7 @@ async def edit_post(interaction: discord.Interaction, post_id: str):
         await interaction.response.send_message(content="Thread ID must be a valid number.", ephemeral=True)
         return
     except Exception as e:
-        await interaction.response.send_message("Invalid thread ID", ephemeral=True)
+        await interaction.response.send_message(f"An error occured: {e}", ephemeral=True)
 
 # Help
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
