@@ -57,14 +57,20 @@ OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discor
 
 COMMANDS_LIST = '''
 ## Helper commands:
-**/set_tag**: Manage the tags of the current submission/archive corrections/ help forum post
+**/tag_selector**: Set the tags of the current submission/archive corrections/ help forum post
+**Pin** *(App command)*: Pin the selected message
 ## Archiver commands:
 **/close_resolved**: Close all posts in the archived marked as accepted or rejected
 **/close_archived**: Close all open posts in the archive channels
+**/delete_post**: Send a delete request to archiver chat for another archiver to approve
+**/edit_post_title**: Send a title edit request to archiver chat for another archiver to approve
 **/track**: Make a post in #submission-tracker for the submission post you are in
 **/tracker_list**: Resend the submission tracker list, clearing the older one
+**Edit** *(App command)*: Edit a message sent by the bot
+**Delete** *(App command)*: Send a delete request to archiver chat for another archiver to approve
+**Publish post** *(App command)*: Create a new thread in the archives with the selected message as the starter
+**Append post** *(App command)*: Append the selected message to an existing archive post
 ## Mod commands:
-**/edit**: Pass a message id of any message the bot sent to edit it
 **/send**: Send a message or embed through the bot to the current channel
 **/restart**: Restart and update the bot
 **/servers**: Sends the list of other archives to the current channel
