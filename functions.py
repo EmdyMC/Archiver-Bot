@@ -198,8 +198,8 @@ async def open_all_archived(interaction: discord.Interaction):
     
     for channel in guild.channels:
         if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES):
-            for thread in channel.threads:
-                if thread.archived or thread.locked:
+            async for thread in channel.archived_threads(limit=None):
+                if thread.archived:
                     try:
                         await thread.edit(archived=False)
                         opened_posts += 1
