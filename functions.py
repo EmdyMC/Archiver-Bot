@@ -336,12 +336,12 @@ async def on_thread_create(thread):
 # Role error handling
 @bot.tree.error
 async def on_app_command_error(interaction: discord.Interaction, error: app_commands.AppCommandError):
-    if isinstance(error, app_commands.MissingRole):
+    if isinstance(error, app_commands.MissingRole) or isinstance(error, app_commands.MissingAnyRole):
         await interaction.response.send_message(content="Sorry, you don't have the required role to use this command", ephemeral=True)
     else:
         await interaction.response.send_message(content=f"An error occured: {error}", ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        await logs.send(embed=discord.Embed(title="An error occured", description=f"for command {interaction.command.name}: {error}"))
+        await logs.send(embed=discord.Embed(title="An error occured", description=f"for command {interaction.command.name} run by {interaction.user.mention}: {error}"))
 
 # Thread updates
 @bot.event
