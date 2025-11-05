@@ -37,38 +37,18 @@ async def close_resolved(interaction: discord.Interaction):
     else:
         await interaction.followup.send("No open forum posts found that were marked as solved/archived/rejected")
 
-# Close archived posts command
-@bot.tree.command(name="close_archived", description="Closes all posts in the archive")
+# Open archived posts command
+@bot.tree.command(name="open_archived", description="Opens all posts in the archive")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def close_archived(interaction: discord.Interaction):
-
+async def open_archived(interaction: discord.Interaction):
     await interaction.response.defer()
-
-    guild = interaction.guild
-    closed_posts = 0
-    post_list = []
-    
-    for channel in guild.channels:
-        if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES):
-            for thread in channel.threads:
-                if thread.archived or thread.locked:
-                    continue
-                try:
-                    await thread.edit(archived=True)
-                    closed_posts += 1
-                    post_list.append(f"*<#{thread.id}>* in <#{channel.id}>")
-                except discord.Forbidden:
-                    await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
-                    continue
+    opened_posts = await open_all_archived(interaction)
         
-    if closed_posts > 0:
-        report = f"### Successfully closed {closed_posts} forum post(s):\n"
-        report += "\n".join(post_list)
-        if len(report) > 1000:
-            report = report[:1000] + " . . ."
-        await interaction.followup.send(report)
+    if opened_posts > 0:
+        report = f"## Successfully opened {opened_posts} forum post(s)"
+        await interaction.followup.send(content=report)
     else:
-        await interaction.followup.send("No open forum posts found in the archives")
+        await interaction.followup.send("No closed forum posts found in the archives")
 
 # Tag selector command
 @bot.tree.command(name="tag_selector", description="Edit the tags of a forum post")

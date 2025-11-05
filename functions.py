@@ -191,6 +191,23 @@ async def send_chunked_messages(channel, header, items, id_list):
         sent_message = await channel.send(message_content)
         id_list.append(sent_message.id)
 
+# Open all archive threads
+async def open_all_archived(interaction: discord.Interaction):
+    guild = interaction.guild
+    opened_posts = 0
+    
+    for channel in guild.channels:
+        if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES):
+            for thread in channel.threads:
+                if thread.archived or thread.locked:
+                    try:
+                        await thread.edit(archived=False)
+                        opened_posts += 1
+                    except discord.Forbidden:
+                        await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
+                        return
+    return opened_posts
+
 # Fetch thread ID given name
 async def get_thread_by_name(channel, name):
     for thread in channel.threads:
