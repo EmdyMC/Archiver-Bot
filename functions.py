@@ -84,7 +84,7 @@ class DeleteMessageApprovalView(discord.ui.View):
             await interaction.followup.send(content=f"Error rejecting message deletion request: {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error rejecting message deletion request", description=f"{e}"))
     async def on_timeout(self):
-        if self.approval_message and self.approval_message:
+        if self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Message deletion request by {self.requester.mention}"), view=None)
 
 #Delete thread approval
@@ -129,7 +129,7 @@ class DeleteThreadApprovalView(discord.ui.View):
             await interaction.followup.send(content=f"Error rejecting thread deletion request: {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error rejecting thread deletion request", description=f"{e}"))
     async def on_timeout(self):
-        if self.approval_message and self.approval_message:
+        if self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Thread deletion request by {self.requester.mention}"), view=None)
 
 # Edit thread title approval

@@ -43,11 +43,12 @@ class SendBox(discord.ui.Modal, title="Send Message"):
 
 # Edit box
 class EditBox(discord.ui.Modal, title="Edit Message"):
-    def __init__(self, original_content: str, original_embeds: list[discord.Embed] = None, original_attachments: list[discord.Attachment] = None):
+    def __init__(self, original_content: str, target_message: discord.Message, original_embeds: list[discord.Embed] = None, original_attachments: list[discord.Attachment] = None):
         super().__init__()
         self.original_embeds = original_embeds or []
         self.original_content = original_content
         self.original_attachments = original_attachments or []
+        self.target_message = target_message
         self.message_text = discord.ui.TextInput(
             label="Message content:", 
             default=original_content, 
