@@ -149,7 +149,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             return
         try:
             new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
-            await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: <#{archive_channel.jump_url}>\nBy: {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
             if bool(self.update.value.strip()):
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n\n[Submission thread]({interaction.channel.jump_url})")
