@@ -153,10 +153,12 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             if bool(self.update.value.strip()):
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n\n[Submission thread]({interaction.channel.jump_url})")
-            await interaction.channel.edit(applied_tags=[interaction.channel.parent.get_tag(ARCHIVED_TAG)])
-            link = await interaction.channel.send(content=f"Submission archived as {new_thread.jump_url} in {archive_channel.jump_url}")
-            await link.pin()
-            #await interaction.channel.edit(locked=True)
+            # Handle reposting from the archive and not a submission thread
+            if interaction.channel.parent.id == SUBMISSIONS_CHANNEL:
+                await interaction.channel.edit(applied_tags=[interaction.channel.parent.get_tag(ARCHIVED_TAG)])
+                link = await interaction.channel.send(content=f"Submission archived as {new_thread.jump_url} in {archive_channel.jump_url}")
+                await link.pin()
+                #await interaction.channel.edit(locked=True)
             available_tags = new_thread.parent.available_tags
             await interaction.followup.send(content="Set post tags. . .", view=TagSelectView(tags=available_tags, thread=new_thread), ephemeral=True)
         except Exception as e:
