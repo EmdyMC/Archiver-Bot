@@ -229,11 +229,11 @@ async def archived_designer(interaction: discord.Interaction, user_id_str: str):
         await interaction.response.send_message("Could not find a member with that ID, please enter a valid user ID")
         return
     try:
-        designer_role = await interaction.guild.get_role(ARCHIVED_DESIGNER)
+        designer_role = interaction.guild.get_role(ARCHIVED_DESIGNER)
         await member.add_roles(designer_role)
         await interaction.response.send_message(content="Role granted successfully", ephemeral=True)
     except Exception as e:
-        await interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}")
+        await interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}", ephemeral=True)
     
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
