@@ -201,6 +201,25 @@ async def edit_post(interaction: discord.Interaction, post_id: str):
 async def help(interaction: discord.Interaction):
     await interaction.response.send_message(embed=discord.Embed(description=COMMANDS_LIST), ephemeral=True)
 
+# Fetch links
+@bot.tree.context_menu(name="Fetch links")
+async def fetch_links(interaction: discord.Interaction, message: discord.Message):
+    try: 
+        if message.attachments:
+            links = []
+            for attachment in message.attachments:
+                url = attachment.url
+                index = url.find('?')
+                if index != -1:
+                    url = url[:index]
+                links.append(f"- {attachment.filename}: {url}")
+            links_message = "\n".join(links)              
+            await interaction.response.send_message(content=f"The links to the message attachments:\n{links_message}", ephemeral=True)
+        else:
+            await interaction.response.send_message(content="The selected message has no attachments", ephemeral=True)
+    except Exception as e:
+        await interaction.response.send_message(f"Error while running the command: {e}")
+
 # Pin context command
 @bot.tree.context_menu(name="Pin")
 async def pin_message(interaction: discord.Interaction, message: discord.Message):
