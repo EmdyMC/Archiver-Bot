@@ -219,12 +219,11 @@ async def pin_message(interaction: discord.Interaction, message: discord.Message
 
 # Archived designer command
 @bot.tree.command(name="archived_designer", description="Bestow the archived designer role on someone")
-@app_commands.describe(user_id_str="The designer's ID")
+@app_commands.describe(user_id="The designer's ID")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def archived_designer(interaction: discord.Interaction, user_id_str: str):
+async def archived_designer(interaction: discord.Interaction, user_id: str):
     try:
-        user_id = int(user_id_str)
-        member = await interaction.guild.fetch_member(user_id)
+        member = await interaction.guild.fetch_member(int(user_id))
     except:
         await interaction.response.send_message("Could not find a member with that ID, please enter a valid user ID")
         return
