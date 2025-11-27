@@ -221,7 +221,7 @@ async def fetch_links(interaction: discord.Interaction, message_id: str):
         else:
             await interaction.response.send_message(content="The selected message has no attachments", ephemeral=True)
     except Exception as e:
-        await interaction.response.send_message(f"Error while running the command: {e}")
+        await interaction.response.send_message(f"Error while running the command: {e}", ephemeral=True)
 
 # Pin context command
 @bot.tree.context_menu(name="Pin")
