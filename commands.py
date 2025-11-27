@@ -207,7 +207,7 @@ async def help(interaction: discord.Interaction):
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def fetch_links(interaction: discord.Interaction, message_id: str):
     try: 
-        message = interaction.channel.fetch_message(int(message_id))
+        message = await interaction.channel.fetch_message(int(message_id))
         if message.attachments:
             links = []
             for attachment in message.attachments:
