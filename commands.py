@@ -216,6 +216,23 @@ async def pin_message(interaction: discord.Interaction, message: discord.Message
         return
     except Exception as e:
         await interaction.response.send_message(content=f"An error occured: {e}", ephemeral=True)
+
+# Archived designer command
+@bot.tree.command(name="archived_designer", description="Bestow the archived designer role on someone")
+@app_commands.describe(user_id="The designer's ID")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def archived_designer(interaction: discord.Interaction, user_id: int):
+    try:
+        member = await interaction.guild.fetch_member(user_id)
+    except:
+        await interaction.response.send_message("Could not find a member with that ID, please enter a valid user ID")
+        return
+    try:
+        designer_role = await interaction.guild.get_role(ARCHIVED_DESIGNER)
+        await member.add_roles(designer_role)
+        await interaction.response.send_message(content="Role granted successfully", ephemeral=True)
+    except Exception as e:
+        interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}")
     
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
