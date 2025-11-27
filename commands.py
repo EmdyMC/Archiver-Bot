@@ -219,7 +219,7 @@ async def pin_message(interaction: discord.Interaction, message: discord.Message
 
 # Archived designer command
 @bot.tree.command(name="archived_designer", description="Bestow the archived designer role on someone")
-@app_commands.describe(user_id="The designer's ID")
+@app_commands.describe(user_id_str="The designer's ID")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def archived_designer(interaction: discord.Interaction, user_id_str: str):
     try:
