@@ -215,7 +215,7 @@ async def fetch_links(interaction: discord.Interaction, message_id: str):
                 index = url.find('?')
                 if index != -1:
                     url = url[:index]
-                links.append(f"- {attachment.filename}: {url}")
+                links.append(f"- <{url}>")
             links_message = "\n".join(links)              
             await interaction.response.send_message(content=f"The links to the message attachments:\n{links_message}", ephemeral=True)
         else:
