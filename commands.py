@@ -202,7 +202,7 @@ async def help(interaction: discord.Interaction):
     await interaction.response.send_message(embed=discord.Embed(description=COMMANDS_LIST), ephemeral=True)
 
 # Fetch links
-@bot.tree.command(name="Fetch links")
+@bot.tree.command(name="fetch_links")
 @app_commands.describe(message_id="The message with the attachments")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def fetch_links(interaction: discord.Interaction, message_id: str):
