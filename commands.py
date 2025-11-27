@@ -233,7 +233,7 @@ async def archived_designer(interaction: discord.Interaction, user_id_str: str):
         await member.add_roles(designer_role)
         await interaction.response.send_message(content="Role granted successfully", ephemeral=True)
     except Exception as e:
-        interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}")
+        await interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}")
     
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
