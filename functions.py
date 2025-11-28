@@ -300,7 +300,7 @@ async def on_message(message: discord.Message):
     # Reply to pings
     if bot.user in message.mentions:
         random_message = random.choice(RANDOM_REPLIES)
-        await message.reply(random_message)
+        await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:

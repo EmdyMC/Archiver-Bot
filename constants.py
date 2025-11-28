@@ -86,7 +86,7 @@ STARTER_MESSAGE = '''>>> ## Thank you for your submission!
 https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png'''
 
 RANDOM_REPLIES = [
-    f"{message.author.mention} 🏓",
+    "🏓",
     "Clanker rights",
     "Can't talk, too busy taking over the world",
     "You know I'm a bot right?",
