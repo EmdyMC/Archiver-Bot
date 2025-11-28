@@ -217,14 +217,19 @@ async def pin_message(interaction: discord.Interaction, message: discord.Message
     except Exception as e:
         await interaction.response.send_message(content=f"An error occured: {e}", ephemeral=True)
 
-# Archived designer command
-@bot.tree.command(name="archived_designer", description="Bestow the archived designer role on someone")
+# Grant role command
+@bot.tree.command(name="grant_role", description="Bestow the archived designer or submitter role on someone")
 @app_commands.describe(member="The designer")
+@app_commands.choices(role=[app_commands.Choice(name="Archived Designer", value=1), app_commands.Choice(name="Submitter", value=2)])
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def archived_designer(interaction: discord.Interaction, member: discord.Member):
+async def archived_designer(interaction: discord.Interaction, member: discord.Member, role: app_commands.Choice[int]):
     try:
-        designer_role = interaction.guild.get_role(ARCHIVED_DESIGNER)
-        await member.add_roles(designer_role)
+        if role.value == 1:
+            designer_role = interaction.guild.get_role(ARCHIVED_DESIGNER)
+            await member.add_roles(designer_role)
+        else:
+            submitter_role = interaction.guild.get_role(SUBMITTER)
+            await member.add_roles(submitter_role)
         await interaction.response.send_message(content="Role granted successfully", ephemeral=True)
     except Exception as e:
         await interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}", ephemeral=True)
