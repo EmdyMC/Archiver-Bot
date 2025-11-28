@@ -116,6 +116,7 @@ class PublishChannelSelectView(discord.ui.View):
         selected_channel = self.channel_select.values[0]
         publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
         await interaction.response.send_modal(publish_modal)
+        await interaction.edit_original_response(view=None)
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
@@ -136,11 +137,13 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             required=True
         )
         self.add_item(self.post_content)
-        self.update = discord.ui.TextInput(
+        self.update = discord.ui.Select(
             label="Announce update",
-            placeholder="Leave empty for False, write something for True",
-            style=discord.TextStyle.short,
-            required=False
+            placeholder="Yes/No",
+            options=[discord.SelectOption(label="Yes", value=True), discord.SelectOption(label="No", value=False, default=True)],
+            min_values=1,
+            max_values=1,
+            custom_id="announce_update"
         )
         self.add_item(self.update)
     async def on_submit(self, interaction: discord.Interaction):
@@ -155,7 +158,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
             new_thread = thread_with_message.thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
-            if bool(self.update.value.strip()):
+            if self.update.values[0]:
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n\n[Submission thread]({interaction.channel.jump_url})")
             # Handle reposting from the archive and not a submission thread
