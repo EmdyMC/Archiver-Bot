@@ -213,7 +213,7 @@ async def open_all_archived(interaction: discord.Interaction):
                 await thread.edit(archived=False)
                 opened_posts += 1
             except discord.Forbidden:
-                await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>", ephemeral=True)
+                await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{faq_channel.id}>", ephemeral=True)
                 return
     return opened_posts
 
