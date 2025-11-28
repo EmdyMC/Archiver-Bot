@@ -167,22 +167,11 @@ async def delete_post(interaction: discord.Interaction, thread: discord.Thread):
     
 # Edit post title
 @bot.tree.command(name="edit_post_title", description="Edit the title of an archive post")
-@app_commands.describe(post_id="Post ID")
+@app_commands.describe(thread="Post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def edit_post(interaction: discord.Interaction, post_id: str):
-    try:
-        thread_id = int(post_id)
-        thread = await bot.fetch_channel(thread_id)
-        if not isinstance(thread, discord.Thread):
-            await interaction.response.send_message("Provided ID is not that of a thread, please enter a valid thread ID", ephemeral=True)
-        else:
-            edit_modal = EditTitleBox(post=thread)
-            await interaction.response.send_modal(edit_modal)
-    except ValueError:
-        await interaction.response.send_message(content="Thread ID must be a valid number.", ephemeral=True)
-        return
-    except Exception as e:
-        await interaction.response.send_message(f"An error occured: {e}", ephemeral=True)
+async def edit_post(interaction: discord.Interaction, thread: discord.Thread):
+    edit_modal = EditTitleBox(post=thread)
+    await interaction.response.send_modal(edit_modal)
 
 # Help
 @bot.tree.command(name="help", description="sends a list of commands that Archiver Bot provides")
