@@ -45,7 +45,7 @@ async def open_archived(interaction: discord.Interaction):
     opened_posts = await open_all_archived(interaction)
         
     if opened_posts > 0:
-        report = f"## Successfully opened {opened_posts} forum post(s)"
+        report = f"**Successfully opened {opened_posts} forum post(s)**"
         await interaction.followup.send(content=report)
     else:
         await interaction.followup.send("No closed forum posts found in the archives")

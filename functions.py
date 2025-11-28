@@ -278,7 +278,7 @@ async def update_tracker_list():
 
 # Message actions
 @bot.event
-async def on_message(message):
+async def on_message(message: discord.Message):
     #Ignore own messages
     if message.author == bot.user:
         return
@@ -299,7 +299,8 @@ async def on_message(message):
             await logs.send(embed=embed)
     # Reply to pings
     if bot.user in message.mentions:
-        await message.channel.send(f'{message.author.mention} 🏓')
+        random_message = random.choice(RANDOM_REPLIES)
+        await message.reply(random_message)
     await bot.process_commands(message)
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
