@@ -308,9 +308,18 @@ async def on_message(message: discord.Message):
         if message.id == message.channel.id:
             try:
                 await message.pin()
-                await message.channel.send(content=STARTER_MESSAGE)
-                embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
-                await logs.send(embed=embed)
+                embed = discord.Embed(
+                    title="Thank you for your submission!",
+                    description="""
+- 📌 The submitter of the post can pin messages in the thread using the application command shown below. 
+- ❌ This thread is for archival-related discussion only. No development or help questions are allowed.
+- ⌚ Please be patient, as the archival team has a lot of posts to process. We will review this post as soon as possible."""
+                )
+                file = discord.File("how_to_pin.png", filename="how_to_pin.png")
+                embed.set_image(url="https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png")
+                await message.channel.send(file=file, embed=embed)
+                log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
+                await logs.send(embed=log_embed)
             except Exception as e:
                 embed = discord.Embed(title=f"An error occurred {e}")
                 await logs.send(embed=embed)

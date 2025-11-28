@@ -245,3 +245,7 @@ class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
 class UploadFilesBox(discord.ui.Modal, title="Upload files"):
     def __init__(self):
         super().__init__()
+        self.upload_field = discord.ui.Label(text="Upload", component=discord.ui.FileUpload(max_values=10))
+        self.add_item(self.upload_field)
+    async def on_submit(self, interaction:discord.Interaction):
+        return
