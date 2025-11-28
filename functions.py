@@ -315,9 +315,8 @@ async def on_message(message: discord.Message):
 - ❌ This thread is for archival-related discussion only. No development or help questions are allowed.
 - ⌚ Please be patient, as the archival team has a lot of posts to process. We will review this post as soon as possible."""
                 )
-                file = discord.File("how_to_pin.png", filename="how_to_pin.png")
-                embed.set_image(url="https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png")
-                await message.channel.send(file=file, embed=embed)
+                embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png")
+                await message.channel.send(embed=embed)
                 log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
                 await logs.send(embed=log_embed)
             except Exception as e:
@@ -348,8 +347,8 @@ async def track(thread):
 
 # Submission tracker
 @bot.event
-async def on_thread_create(thread):
-    if thread.parent.id == SUBMISSIONS_CHANNEL:
+async def on_thread_create(thread: discord.Thread):
+    if thread.parent.id == SUBMISSIONS_CHANNEL and thread.name != "Test":
         await track(thread)
 
 # Role error handling
