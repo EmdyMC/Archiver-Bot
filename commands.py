@@ -143,17 +143,15 @@ async def delete(interaction: discord.Interaction, message: discord.Message):
 @bot.tree.context_menu(name="Publish post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def publish(interaction: discord.Interaction, message: discord.Message):
-    await interaction.response.defer(ephemeral=True)
     publish_channel_select = PublishChannelSelectView(draft=message)
-    msg = await interaction.followup.send(view=publish_channel_select, ephemeral=True)
-    publish_channel_select.message = msg
+    await interaction.response.send_message(view=publish_channel_select, ephemeral=True)
 
 # Append post
 @bot.tree.context_menu(name="Append post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def append(interaction: discord.Interaction, message: discord.Message):
-    append_modal = AppendBox(draft=message)
-    await interaction.response.send_modal(append_modal)
+    append_thread_select = AppendThreadSelectView(draft=message)
+    await interaction.response.send_message(view=append_thread_select, ephemeral=True)
 
 # Delete post
 @bot.tree.command(name="delete_post", description="remove a post from the archive")

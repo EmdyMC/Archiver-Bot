@@ -101,10 +101,9 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
 # Channel selector view
 class PublishChannelSelectView(discord.ui.View):
-    def __init__(self, draft, *, timeout=5):
-        super().__init__(timeout=timeout)
+    def __init__(self, draft):
+        super().__init__()
         self.draft = draft
-        self.message: discord.Message | None = None
         self.channel_select = discord.ui.ChannelSelect(
             placeholder="Choose the channel to publish to. . .",
             min_values=1,
@@ -117,12 +116,6 @@ class PublishChannelSelectView(discord.ui.View):
         selected_channel = self.channel_select.values[0]
         publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
         await interaction.response.send_modal(publish_modal)
-    async def on_timeout(self):
-        if self.message:
-            try:
-                await self.message.edit(view=None)
-            except:
-                pass
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
@@ -176,17 +169,29 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error publishing post to archive", description=f"{e}"))
 
+# Channel selector view
+class AppendThreadSelectView(discord.ui.View):
+    def __init__(self, draft):
+        super().__init__()
+        self.draft = draft
+        self.channel_select = discord.ui.ChannelSelect(
+            placeholder="Choose the thread to append post to. . .",
+            min_values=1,
+            max_values=1,
+            channel_types=[discord.ChannelType.public_thread]
+        )
+        self.channel_select.callback = self.select_callback
+        self.add_item(self.channel_select)
+    async def select_callback(self, interaction: discord.Interaction):
+        selected_thread = self.channel_select.values[0]
+        append_modal = AppendBox(draft=self.draft, channel=selected_thread)
+        await interaction.response.send_modal(append_modal)
+
 # Append Box
 class AppendBox(discord.ui.Modal, title="Append to post"):
-    def __init__(self, draft: discord.Message):
+    def __init__(self, draft: discord.Message, thread: discord.Thread):
         super().__init__()
-        self.thread = discord.ui.TextInput(
-            label="Thread ID", 
-            placeholder="The ID of the archive thread to post in",
-            style=discord.TextStyle.short,
-            required=True
-        )
-        self.add_item(self.thread)
+        self.thread = thread
         self.post_content = discord.ui.TextInput(
             label="Post Content",
             default=draft.content,
@@ -197,16 +202,8 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        try:
-            thread_id = int(self.thread.value)
-        except ValueError:
-            await interaction.followup.send(content="Thread ID must be a valid number.", ephemeral=True)
-            return
-        archive_thread = bot.get_channel(thread_id)
-        if not isinstance(archive_thread, discord.Thread):
-            await interaction.followup.send(content="The given ID is not a thread", ephemeral=True)
-            return
-        if not isinstance(archive_thread.parent, discord.ForumChannel) or archive_thread.parent.category.id in NON_ARCHIVE_CATEGORIES:
+        archive_thread = bot.get_channel(self.thread.id)
+        if archive_thread.parent.category.id in NON_ARCHIVE_CATEGORIES:
             await interaction.followup.send(content="The given thread ID is not in an archive forum", ephemeral=True)
             return
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
@@ -215,7 +212,7 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
             return
         try:
             appended_post = await archive_thread.send(content=self.post_content.value)
-            await logs.send(embed=discord.Embed(title="Post appended", description=f"**{appended_post.content[:900]}**\n\nIn: <#{thread_id}>\n\nBy: {interaction.user.mention}"))
+            await logs.send(embed=discord.Embed(title="Post appended", description=f"**{appended_post.content[:900]}**\n\nIn: <#{archive_thread.id}>\n\nBy: {interaction.user.mention}"))
             await interaction.followup.send(content="Post published", ephemeral=True)
         except Exception as e:
             await interaction.followup.send(content=f"Error appending post to archive {e}", ephemeral=True)
