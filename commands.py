@@ -233,11 +233,18 @@ async def archived_designer(interaction: discord.Interaction, member: discord.Me
         await interaction.response.send_message(content="Role granted successfully", ephemeral=True)
     except Exception as e:
         await interaction.response.send_message(f"Error while trying to grant the role to {member.name}: {e}", ephemeral=True)
-    
+
+# Upload files
+@bot.tree.command(name="upload", description="Upload files straight to the file link dump thread and get the links")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def upload(interaction: discord.Interaction):
+    upload_modal = UploadFilesBox()
+    await interaction.response.send_modal(upload_modal)
+
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
-@app_commands.checks.has_role(1161821342514036776)
+@app_commands.checks.has_role(MODERATOR_ID)
 async def restart(interaction: discord.Interaction, do_update:bool=True):
     await interaction.response.defer()
     if do_update:

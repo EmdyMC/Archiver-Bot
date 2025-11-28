@@ -240,3 +240,8 @@ class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
             await interaction.response.send_message(content="Thread title change request sent", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"An error occured: {e}", ephemeral=True)
+
+# Upload Files
+class UploadFilesBox(discord.ui.Modal, title="Upload files"):
+    def __init__(self):
+        super().__init__()

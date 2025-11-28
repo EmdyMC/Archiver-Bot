@@ -206,6 +206,15 @@ async def open_all_archived(interaction: discord.Interaction):
                     except discord.Forbidden:
                         await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
                         return
+    faq_channel = bot.get_channel(FAQ_CHANNEL)
+    async for thread in faq_channel.archived_threads(limit=None):
+        if thread.archived:
+            try:
+                await thread.edit(archived=False)
+                opened_posts += 1
+            except discord.Forbidden:
+                await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
+                return
     return opened_posts
 
 # Fetch thread ID given name
