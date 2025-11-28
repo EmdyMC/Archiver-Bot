@@ -101,7 +101,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
 # Channel selector view
 class PublishChannelSelectView(discord.ui.View):
-    def __init__(self, draft, *, timeout=10):
+    def __init__(self, draft, *, timeout=5):
         super().__init__(timeout=timeout)
         self.draft = draft
         self.message: discord.Message | None = None
