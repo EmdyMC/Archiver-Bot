@@ -115,7 +115,7 @@ class PublishChannelSelectView(discord.ui.View):
         self.add_item(self.channel_select)
     async def select_callback(self, interaction: discord.Interaction):
         selected_channel = self.channel_select.values[0]
-        publish_modal = PublishBox(draft=self.draft, channel=selected_channel, view=self)
+        publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
         await interaction.response.send_modal(publish_modal)
     async def on_timeout(self):
         if self.message:
