@@ -114,15 +114,15 @@ class PublishChannelSelectView(discord.ui.View):
         self.add_item(self.channel_select)
     async def select_callback(self, interaction: discord.Interaction):
         selected_channel = self.channel_select.values[0]
-        await interaction.message.edit(view=None)
-        publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
+        publish_modal = PublishBox(draft=self.draft, channel=selected_channel, selector_message=interaction.message)
         await interaction.response.send_modal(publish_modal)
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
-    def __init__(self, draft: discord.Message, channel: discord.ForumChannel):
+    def __init__(self, draft: discord.Message, channel: discord.ForumChannel, selector_message=discord.Message):
         super().__init__()
         self.channel = channel
+        self.selector_message = selector_message
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
             default=draft.channel.name,
@@ -149,6 +149,10 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
         archive_channel = await bot.fetch_channel(self.channel.id)
+        try:
+            await self.selector_message.edit(view=None)
+        except discord.NotFound:
+            pass
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
             await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel.jump_url}>\nBy: {interaction.user.mention}"))
