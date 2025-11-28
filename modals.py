@@ -99,18 +99,29 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             await interaction.response.send_message(content=f"Error running edit command: {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error running edit command", description=f"{e}"))      
 
-# Publish Box
-class PublishBox(discord.ui.Modal, title="Publish Post"):
-    def __init__(self, draft: discord.Message):
+# Channel selector view
+class PublishChannelSelectView(discord.ui.View):
+    def __init__(self, draft):
         super().__init__()
-        self.channel_select = discord.ui.ChannelSelect( 
-            placeholder="Select an archive channel",
+        self.draft = draft
+        self.channel_select = discord.ui.ChannelSelect(
+            placeholder="Choose the channel to publish to. . .",
             min_values=1,
             max_values=1,
-            channel_types=[discord.ChannelType.forum],
-            custom_id="channel_select_field"
+            channel_types=[discord.ChannelType.forum]
         )
+        self.channel_select.callback = self.channel_select
         self.add_item(self.channel_select)
+    async def select_callback(self, interaction: discord.Interaction):
+        selected_channel = self.channel_select.values[0]
+        publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
+        await interaction.response.send_modal(publish_modal)
+
+# Publish Box
+class PublishBox(discord.ui.Modal, title="Publish Post"):
+    def __init__(self, draft: discord.Message, channel: discord.ForumChannel):
+        super().__init__()
+        self.channel = channel
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
             default=draft.channel.name,
@@ -135,7 +146,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        archive_channel = self.channel_select.values[0]
+        archive_channel = self.channel
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
             await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel.jump_url}>\nBy: {interaction.user.mention}"))
@@ -152,7 +163,6 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
                 await interaction.channel.edit(applied_tags=[interaction.channel.parent.get_tag(ARCHIVED_TAG)])
                 link = await interaction.channel.send(content=f"Submission archived as {new_thread.jump_url} in {archive_channel.jump_url}")
                 await link.pin()
-                #await interaction.channel.edit(locked=True)
             available_tags = new_thread.parent.available_tags
             await interaction.followup.send(content="Set post tags. . .", view=TagSelectView(tags=available_tags, thread=new_thread), ephemeral=True)
         except Exception as e:

@@ -87,7 +87,7 @@ class DeleteMessageApprovalView(discord.ui.View):
         if self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Message deletion request by {self.requester.mention}"), view=None)
 
-#Delete thread approval
+# Delete thread approval
 class DeleteThreadApprovalView(discord.ui.View):
     def __init__(self, target_post_id: int, requester: discord.Member, timeout=3600):
         super().__init__(timeout=timeout)
