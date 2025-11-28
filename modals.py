@@ -184,7 +184,7 @@ class AppendThreadSelectView(discord.ui.View):
         self.add_item(self.channel_select)
     async def select_callback(self, interaction: discord.Interaction):
         selected_thread = self.channel_select.values[0]
-        append_modal = AppendBox(draft=self.draft, channel=selected_thread)
+        append_modal = AppendBox(draft=self.draft, thread=selected_thread)
         await interaction.response.send_modal(append_modal)
 
 # Append Box
