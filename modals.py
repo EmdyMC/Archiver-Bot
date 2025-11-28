@@ -110,7 +110,7 @@ class PublishChannelSelectView(discord.ui.View):
             max_values=1,
             channel_types=[discord.ChannelType.forum]
         )
-        self.channel_select.callback = self.channel_select
+        self.channel_select.callback = self.select_callback
         self.add_item(self.channel_select)
     async def select_callback(self, interaction: discord.Interaction):
         selected_channel = self.channel_select.values[0]

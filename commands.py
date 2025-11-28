@@ -144,7 +144,7 @@ async def delete(interaction: discord.Interaction, message: discord.Message):
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def publish(interaction: discord.Interaction, message: discord.Message):
     publish_channel_select = PublishChannelSelectView(draft=message)
-    await interaction.response.send_message(view=publish_channel_select)
+    await interaction.response.send_message(view=publish_channel_select, ephemeral=True)
 
 # Append post
 @bot.tree.context_menu(name="Append post")
