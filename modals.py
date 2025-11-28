@@ -146,7 +146,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        archive_channel = self.channel
+        archive_channel = await bot.fetch_channel(self.channel.id)
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
             await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel.jump_url}>\nBy: {interaction.user.mention}"))
