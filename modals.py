@@ -34,10 +34,10 @@ class SendBox(discord.ui.Modal, title="Send Message"):
         logs = bot.get_channel(LOG_CHANNEL)
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
-            await self.target_channel.send(content=self.message_text.value, embed=new_embed, allowed_mentions=discord.AllowedMentions.none())
+            await self.target_channel.send(content=self.message_text.value, embed=new_embed)
             await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
         else:
-            await self.target_channel.send(content=self.message_text.value, allowed_mentions=discord.AllowedMentions.none())
+            await self.target_channel.send(content=self.message_text.value)
             await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
         await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
@@ -152,7 +152,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel.jump_url}>\nBy: {interaction.user.mention}"))
             return
         try:
-            thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
+            thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value, allowed_mentions=discord.AllowedMentions.none())
             new_thread = thread_with_message.thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
             if bool(self.update.value.strip()):
@@ -211,7 +211,7 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value}```\n\nIn: <#{interaction.channel_id}>\nBy: {interaction.user.mention}"))
             return
         try:
-            appended_post = await archive_thread.send(content=self.post_content.value)
+            appended_post = await archive_thread.send(content=self.post_content.value, allowed_mentions=discord.AllowedMentions.none())
             await logs.send(embed=discord.Embed(title="Post appended", description=f"**{appended_post.content[:900]}**\n\nIn: <#{archive_thread.id}>\n\nBy: {interaction.user.mention}"))
             await interaction.followup.send(content="Post published", ephemeral=True)
         except Exception as e:
