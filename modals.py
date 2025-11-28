@@ -103,13 +103,15 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 class PublishBox(discord.ui.Modal, title="Publish Post"):
     def __init__(self, draft: discord.Message):
         super().__init__()
-        self.channel = discord.ui.TextInput(
-            label=f"Channel ID", 
-            placeholder="The ID of the forum channel to post in",
-            style=discord.TextStyle.short,
-            required=True
+        self.channel_select = discord.ui.ChannelSelect( 
+            placeholder="Select an archive channel",
+            min_values=1,
+            max_values=1,
+            required=True,
+            channel_types=[discord.ChannelType.forum],
+            custom_id="channel_select_field"
         )
-        self.add_item(self.channel)
+        self.add_item(self.channel_select)
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
             default=draft.channel.name,
@@ -134,21 +136,14 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        try:
-            channel_id = int(self.channel.value)
-        except ValueError:
-            await interaction.followup.send(content="Channel ID must be a valid number.", ephemeral=True)
-            return
-        archive_channel = bot.get_channel(channel_id)
-        if not isinstance(archive_channel, discord.ForumChannel) or archive_channel.category.id in NON_ARCHIVE_CATEGORIES:
-            await interaction.followup.send(content="The given channel ID is not an archive forum", ephemeral=True)
-            return
+        archive_channel = self.channel_select.values[0]
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
             await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel.jump_url}>\nBy: {interaction.user.mention}"))
             return
         try:
-            new_thread, start_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
+            thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
+            new_thread = thread_with_message.thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
             if bool(self.update.value.strip()):
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
