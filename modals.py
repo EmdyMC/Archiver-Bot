@@ -101,9 +101,10 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
 
 # Channel selector view
 class PublishChannelSelectView(discord.ui.View):
-    def __init__(self, draft):
-        super().__init__()
+    def __init__(self, draft, *, timeout=10):
+        super().__init__(timeout=timeout)
         self.draft = draft
+        self.message: discord.Message | None = None
         self.channel_select = discord.ui.ChannelSelect(
             placeholder="Choose the channel to publish to. . .",
             min_values=1,
@@ -114,9 +115,14 @@ class PublishChannelSelectView(discord.ui.View):
         self.add_item(self.channel_select)
     async def select_callback(self, interaction: discord.Interaction):
         selected_channel = self.channel_select.values[0]
-        publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
+        publish_modal = PublishBox(draft=self.draft, channel=selected_channel, view=self)
         await interaction.response.send_modal(publish_modal)
-        await interaction.message.edit(view=None)
+    async def on_timeout(self):
+        if self.message:
+            try:
+                await self.message.edit(view=None)
+            except:
+                pass
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
