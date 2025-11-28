@@ -107,7 +107,6 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             placeholder="Select an archive channel",
             min_values=1,
             max_values=1,
-            required=True,
             channel_types=[discord.ChannelType.forum],
             custom_id="channel_select_field"
         )
