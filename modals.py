@@ -114,9 +114,9 @@ class PublishChannelSelectView(discord.ui.View):
         self.add_item(self.channel_select)
     async def select_callback(self, interaction: discord.Interaction):
         selected_channel = self.channel_select.values[0]
+        await interaction.message.edit(view=None)
         publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
         await interaction.response.send_modal(publish_modal)
-        await interaction.edit_original_response(view=None)
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
@@ -138,9 +138,8 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         )
         self.add_item(self.post_content)
         self.update = discord.ui.Select(
-            label="Announce update",
-            placeholder="Yes/No",
-            options=[discord.SelectOption(label="Yes", value=True), discord.SelectOption(label="No", value=False, default=True)],
+            placeholder="Announce Update?",
+            options=[discord.SelectOption(label="Yes", value="true"), discord.SelectOption(label="No", value="false", default=True)],
             min_values=1,
             max_values=1,
             custom_id="announce_update"
@@ -158,7 +157,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value)
             new_thread = thread_with_message.thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
-            if self.update.values[0]:
+            if self.update.values[0] == "true":
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n\n[Submission thread]({interaction.channel.jump_url})")
             # Handle reposting from the archive and not a submission thread
