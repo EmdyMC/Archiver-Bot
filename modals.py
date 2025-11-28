@@ -34,10 +34,10 @@ class SendBox(discord.ui.Modal, title="Send Message"):
         logs = bot.get_channel(LOG_CHANNEL)
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
-            await self.target_channel.send(content=self.message_text.value, embed=new_embed)
+            await self.target_channel.send(content=self.message_text.value, embed=new_embed, allowed_mentions=discord.AllowedMentions.none())
             await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
         else:
-            await self.target_channel.send(content=self.message_text.value)
+            await self.target_channel.send(content=self.message_text.value, allowed_mentions=discord.AllowedMentions.none())
             await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
         await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
