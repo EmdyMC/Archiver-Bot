@@ -119,9 +119,16 @@ class PublishChannelSelectView(discord.ui.View):
 
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
-    def __init__(self, draft: discord.Message, channel: discord.ForumChannel):
+    def __init__(self, draft: discord.Message):
         super().__init__()
-        self.channel = channel
+        channel_select = discord.ui.ChannelSelect(
+            placeholder="Choose the channel to publish to. . .",
+            min_values=1,
+            max_values=1,
+            channel_types=[discord.ChannelType.forum]
+        )
+        self.channel = discord.ui.Label(text="Channel to publish to", component=channel_select)
+        self.add_item(self.channel)
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
             default=draft.channel.name,
@@ -245,16 +252,5 @@ class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
 class UploadFilesBox(discord.ui.Modal, title="Upload files"):
     def __init__(self):
         super().__init__()
-        self.upload_field = discord.ui.Label(text="Select channel", component=discord.ui.ChannelSelect())
-        self.add_item(self.upload_field)
-        self.update = discord.ui.Label(text="Announce Updates?", component=discord.ui.Select(
-            placeholder="Yes/No",
-            options=[discord.SelectOption(label="Yes", value=True), discord.SelectOption(label="No", value=False, default=True)],
-            min_values=1,
-            max_values=1,
-            custom_id="announce_update"
-        )
-        )
-        self.add_item(self.update)
     async def on_submit(self, interaction:discord.Interaction):
         return
