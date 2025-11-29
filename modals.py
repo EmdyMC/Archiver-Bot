@@ -121,13 +121,13 @@ class PublishChannelSelectView(discord.ui.View):
 class PublishBox(discord.ui.Modal, title="Publish Post"):
     def __init__(self, draft: discord.Message):
         super().__init__()
-        channel_select = discord.ui.ChannelSelect(
+        self.channel_select = discord.ui.ChannelSelect(
             placeholder="Choose the channel to publish to. . .",
             min_values=1,
             max_values=1,
             channel_types=[discord.ChannelType.forum]
         )
-        self.channel = discord.ui.Label(text="Channel to publish to", component=channel_select)
+        self.channel = discord.ui.Label(text="Channel to publish to", component=self.channel_select)
         self.add_item(self.channel)
         self.post_title = discord.ui.TextInput(
             label="Post Title", 
@@ -153,7 +153,8 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        archive_channel = await bot.fetch_channel(self.channel.id)
+        channel = self.channel_select.values[0]
+        archive_channel = await bot.fetch_channel(channel.id)
         if any(phrase in self.post_content.value for phrase in ILLEGAL_COMPONENTS):
             await interaction.followup.send(content="That message content is not allowed", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Illegal content in post", description=f"```{self.post_content.value[:900]}```\n\nIn: <#{interaction.channel.jump_url}>\nBy: {interaction.user.mention}"))
