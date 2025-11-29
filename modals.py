@@ -248,7 +248,6 @@ class UploadFilesBox(discord.ui.Modal, title="Upload files"):
         self.upload_field = discord.ui.Label(text="Select channel", component=discord.ui.ChannelSelect())
         self.add_item(self.upload_field)
         self.update = discord.ui.Label(text="Announce Updates?", component=discord.ui.Select(
-            label="Announce update",
             placeholder="Yes/No",
             options=[discord.SelectOption(label="Yes", value=True), discord.SelectOption(label="No", value=False, default=True)],
             min_values=1,
