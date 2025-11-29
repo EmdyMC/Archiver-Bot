@@ -99,24 +99,6 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
             await interaction.response.send_message(content=f"Error running edit command: {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error running edit command", description=f"{e}"))      
 
-# Channel selector view
-class PublishChannelSelectView(discord.ui.View):
-    def __init__(self, draft):
-        super().__init__()
-        self.draft = draft
-        self.channel_select = discord.ui.ChannelSelect(
-            placeholder="Choose the channel to publish to. . .",
-            min_values=1,
-            max_values=1,
-            channel_types=[discord.ChannelType.forum]
-        )
-        self.channel_select.callback = self.select_callback
-        self.add_item(self.channel_select)
-    async def select_callback(self, interaction: discord.Interaction):
-        selected_channel = self.channel_select.values[0]
-        publish_modal = PublishBox(draft=self.draft, channel=selected_channel)
-        await interaction.response.send_modal(publish_modal)
-
 # Publish Box
 class PublishBox(discord.ui.Modal, title="Publish Post"):
     def __init__(self, draft: discord.Message):
@@ -143,13 +125,15 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             required=True
         )
         self.add_item(self.post_content)
-        self.update = discord.ui.TextInput(
-            label="Announce update",
-            placeholder="Leave empty for False, write something for True",
-            style=discord.TextStyle.short,
-            required=False
+        self.update = discord.ui.Select(
+            placeholder="Announce Update?",
+            options=[discord.SelectOption(label="Yes", value="true"), discord.SelectOption(label="No", value="false", default=True)],
+            min_values=1,
+            max_values=1,
+            custom_id="announce_update"
         )
-        self.add_item(self.update)
+        self.update_selector = discord.ui.Label(text="Announce Updates?", component=self.update)
+        self.add_item(self.update_selector)
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
@@ -163,7 +147,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value, allowed_mentions=discord.AllowedMentions.none())
             new_thread = thread_with_message.thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
-            if bool(self.update.value.strip()):
+            if self.update.values[0] == "true":
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
                 await archive_updates.send(content=f"Archived {new_thread.jump_url} in {archive_channel.jump_url}\n\n[Submission thread]({interaction.channel.jump_url})")
             # Handle reposting from the archive and not a submission thread
