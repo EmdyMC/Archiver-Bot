@@ -161,24 +161,6 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error publishing post to archive", description=f"{e}"))
 
-# Channel selector view
-class AppendThreadSelectView(discord.ui.View):
-    def __init__(self, draft):
-        super().__init__()
-        self.draft = draft
-        self.channel_select = discord.ui.ChannelSelect(
-            placeholder="Choose the thread to append post to. . .",
-            min_values=1,
-            max_values=1,
-            channel_types=[discord.ChannelType.public_thread]
-        )
-        self.channel_select.callback = self.select_callback
-        self.add_item(self.channel_select)
-    async def select_callback(self, interaction: discord.Interaction):
-        selected_thread = self.channel_select.values[0]
-        append_modal = AppendBox(draft=self.draft, thread=selected_thread)
-        await interaction.response.send_modal(append_modal)
-
 # Append Box
 class AppendBox(discord.ui.Modal, title="Append to post"):
     def __init__(self, draft: discord.Message):
