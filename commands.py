@@ -150,8 +150,8 @@ async def publish(interaction: discord.Interaction, message: discord.Message):
 @bot.tree.context_menu(name="Append post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def append(interaction: discord.Interaction, message: discord.Message):
-    append_thread_select = AppendThreadSelectView(draft=message)
-    await interaction.response.send_message(view=append_thread_select, ephemeral=True)
+    append_modal = AppendBox(draft=message)
+    await interaction.response.send_modal(append_modal)
 
 # Delete post
 @bot.tree.command(name="delete_post", description="remove a post from the archive")

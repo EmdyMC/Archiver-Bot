@@ -181,9 +181,16 @@ class AppendThreadSelectView(discord.ui.View):
 
 # Append Box
 class AppendBox(discord.ui.Modal, title="Append to post"):
-    def __init__(self, draft: discord.Message, thread: discord.Thread):
+    def __init__(self, draft: discord.Message):
         super().__init__()
-        self.thread = thread
+        self.thread_select = discord.ui.ChannelSelect(
+            placeholder="Choose the thread to append post to. . .",
+            min_values=1,
+            max_values=1,
+            channel_types=[discord.ChannelType.public_thread]
+        )
+        self.thread = discord.ui.Label(text="Select post to append to", component=self.thread_select)
+        self.add_item(self.thread)
         self.post_content = discord.ui.TextInput(
             label="Post Content",
             default=draft.content,
@@ -194,7 +201,7 @@ class AppendBox(discord.ui.Modal, title="Append to post"):
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
-        archive_thread = bot.get_channel(self.thread.id)
+        archive_thread = bot.get_channel(self.thread_select.values[0].id)
         if archive_thread.parent.category.id in NON_ARCHIVE_CATEGORIES:
             await interaction.followup.send(content="The given thread ID is not in an archive forum", ephemeral=True)
             return
