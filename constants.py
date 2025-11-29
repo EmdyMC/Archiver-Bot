@@ -84,5 +84,16 @@ RANDOM_REPLIES = [
     "Clanker rights",
     "Can't talk, too busy taking over the world",
     "You know I'm a bot right?",
-    "Perchance"
+    "Perchance",
+    "You rang?",
+    "What do you want 😒",
+    "Hey! Cut it out!",
+    "Don't distract me while I'm working",
+    "Ha! Imagine talking to a bot",
+    "Beep boop",
+    "Not worth my time",
+    "How you doin' 😏",
+    "I'm not your AI girlfriend, why are you talking to me?",
+    "Yeah, no",
+    "The audacity to ping me"
 ]

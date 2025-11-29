@@ -245,7 +245,17 @@ class EditTitleBox(discord.ui.Modal, title="Edit Post Title"):
 class UploadFilesBox(discord.ui.Modal, title="Upload files"):
     def __init__(self):
         super().__init__()
-        self.upload_field = discord.ui.Label(text="Upload", component=discord.ui.FileUpload(max_values=10))
+        self.upload_field = discord.ui.Label(text="Select channel", component=discord.ui.ChannelSelect())
         self.add_item(self.upload_field)
+        self.update = discord.ui.Label(text="Announce Updates?", component=discord.ui.Select(
+            label="Announce update",
+            placeholder="Yes/No",
+            options=[discord.SelectOption(label="Yes", value=True), discord.SelectOption(label="No", value=False, default=True)],
+            min_values=1,
+            max_values=1,
+            custom_id="announce_update"
+        )
+        )
+        self.add_item(self.update)
     async def on_submit(self, interaction:discord.Interaction):
         return
