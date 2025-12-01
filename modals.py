@@ -91,7 +91,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
                     new_embeds.append(cloned)
                 log_embed = discord.Embed(title="Bot message edited", description=f"**Before:**\nContent: {self.original_content}\nEmbed title: {self.rich_embeds[0].title}\nDescription: {self.rich_embeds[0].description}\n**After:**\nContent: {new_content}\nEmbed title: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}")
             
-            await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments)
+            await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments, allowed_mentions=discord.AllowedMentions.none())
             if log_embed:
                 await logs.send(embed=log_embed)
             await interaction.response.send_message(content="Message successfully edited!", ephemeral=True)
