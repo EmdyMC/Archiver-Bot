@@ -285,7 +285,7 @@ async def on_message(message: discord.Message):
     if isinstance(message.channel, discord.DMChannel):
         try:
             helper_thread = await bot.fetch_channel(1413793955295920178)
-            await helper_thread.send(embed=discord.Embed(title="DM received", description=f"From user: {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold))
+            await helper_thread.send(embed=discord.Embed(title="DM received", description=f"From user: {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold()))
         except Exception as e:
             logs = bot.get_channel(LOG_CHANNEL)
             await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))

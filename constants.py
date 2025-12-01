@@ -95,5 +95,6 @@ RANDOM_REPLIES = [
     "How you doin' 😏",
     "I'm not your AI girlfriend, why are you talking to me?",
     "Yeah, no",
-    "The audacity to ping me"
+    "The audacity to ping me",
+    "Sup?"
 ]
