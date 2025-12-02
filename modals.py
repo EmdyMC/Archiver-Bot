@@ -135,7 +135,6 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         self.update_selector = discord.ui.Label(text="Announce Updates?", component=self.update)
         self.add_item(self.update_selector)
     async def on_submit(self, interaction: discord.Interaction):
-        global last_archive_thread
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
         channel = self.channel_select.values[0]
@@ -186,6 +185,7 @@ class AppendPrompt(discord.ui.View):
         append_modal = AppendBox(draft=self.message)
         await interaction.response.send_modal(append_modal)
     async def append_to_last(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         archive_thread = getattr(interaction.client, "last_archive_thread", None)
         logs = bot.get_channel(LOG_CHANNEL)
         try:
