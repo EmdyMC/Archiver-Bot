@@ -36,7 +36,7 @@ ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
 DISCORD_CHAR_LIMIT = 1800
 
-last_archive_thread: discord.Thread
+last_archive_thread = None
 
 # Embed text
 

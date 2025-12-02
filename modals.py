@@ -135,6 +135,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         self.update_selector = discord.ui.Label(text="Announce Updates?", component=self.update)
         self.add_item(self.update_selector)
     async def on_submit(self, interaction: discord.Interaction):
+        global last_archive_thread
         await interaction.response.defer(ephemeral=True)
         logs = bot.get_channel(LOG_CHANNEL)
         channel = self.channel_select.values[0]
