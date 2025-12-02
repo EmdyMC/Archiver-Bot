@@ -36,6 +36,8 @@ ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
 DISCORD_CHAR_LIMIT = 1800
 
+last_archive_thread: discord.Thread
+
 # Embed text
 
 OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage

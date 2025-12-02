@@ -146,6 +146,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         try:
             thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value, allowed_mentions=discord.AllowedMentions.none())
             new_thread = thread_with_message.thread
+            last_archive_thread = new_thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
             if self.update.values[0] == "true":
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
@@ -160,6 +161,39 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         except Exception as e:
             await interaction.followup.send(content=f"Error publishing post to archive {e}", ephemeral=True)
             await logs.send(embed=discord.Embed(title="Error publishing post to archive", description=f"{e}"))
+
+# Append to last view
+class AppendPrompt(discord.ui.View):
+    def __init__(self, message: discord.Message):
+        super().__init__()
+        self.message = message
+        self.yes = discord.ui.Button(
+            label="Yes",
+            custom_id="yes",
+            style=discord.ButtonStyle.green
+        )
+        self.yes.callback = self.append_to_last
+        self.no = discord.ui.Button(
+            label="No",
+            custom_id="no",
+            style=discord.ButtonStyle.gray
+        )
+        self.no.callback = self.append_to_new
+        self.add_item(self.yes)
+        self.add_item(self.no)
+    async def append_to_new(self, interaction: discord.Interaction):
+        append_modal = AppendBox(draft=self.message)
+        await interaction.response.send_modal(append_modal)
+    async def append_to_last(self, interaction: discord.Interaction):
+        archive_thread = last_archive_thread
+        logs = bot.get_channel(LOG_CHANNEL)
+        try:
+            appended_post = await archive_thread.send(content=self.message.content, allowed_mentions=discord.AllowedMentions.none())
+            await logs.send(embed=discord.Embed(title="Post appended", description=f"**{appended_post.content[:900]}**\n\nIn: <#{archive_thread.id}>\n\nBy: {interaction.user.mention}"))
+            await interaction.followup.send(content="Post published", ephemeral=True)
+        except Exception as e:
+            await interaction.followup.send(content=f"Error appending post to archive {e}", ephemeral=True)
+            await logs.send(embed=discord.Embed(title="Error appending post to archive", description=f"{e}"))
 
 # Append Box
 class AppendBox(discord.ui.Modal, title="Append to post"):
