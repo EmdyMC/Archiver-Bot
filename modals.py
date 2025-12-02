@@ -168,13 +168,13 @@ class AppendPrompt(discord.ui.View):
         super().__init__()
         self.message = message
         self.yes = discord.ui.Button(
-            label="Yes",
+            label="Same thread",
             custom_id="yes",
             style=discord.ButtonStyle.green
         )
         self.yes.callback = self.append_to_last
         self.no = discord.ui.Button(
-            label="No",
+            label="Different thread",
             custom_id="no",
             style=discord.ButtonStyle.gray
         )
