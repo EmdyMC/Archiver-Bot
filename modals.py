@@ -147,7 +147,7 @@ class PublishBox(discord.ui.Modal, title="Publish Post"):
         try:
             thread_with_message = await archive_channel.create_thread(name=self.post_title.value, content=self.post_content.value, allowed_mentions=discord.AllowedMentions.none())
             new_thread = thread_with_message.thread
-            last_archive_thread = new_thread
+            interaction.client.last_archive_thread = new_thread
             await logs.send(embed=discord.Embed(title="Post made", description=f"Link: {new_thread.jump_url}\nIn: {archive_channel.jump_url}\nBy: {interaction.user.mention}"))
             if self.update.values[0] == "true":
                 archive_updates = bot.get_channel(ARCHIVE_UPDATES)
@@ -186,7 +186,7 @@ class AppendPrompt(discord.ui.View):
         append_modal = AppendBox(draft=self.message)
         await interaction.response.send_modal(append_modal)
     async def append_to_last(self, interaction: discord.Interaction):
-        archive_thread = last_archive_thread
+        archive_thread = getattr(interaction.client, "last_archive_thread", None)
         logs = bot.get_channel(LOG_CHANNEL)
         try:
             appended_post = await archive_thread.send(content=self.message.content, allowed_mentions=discord.AllowedMentions.none())

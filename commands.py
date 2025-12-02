@@ -150,7 +150,7 @@ async def publish(interaction: discord.Interaction, message: discord.Message):
 @bot.tree.context_menu(name="Append post")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def append(interaction: discord.Interaction, message: discord.Message):
-    if last_archive_thread is None:
+    if getattr(interaction.client, "last_archive_thread", None) is None:
         append_modal = AppendBox(draft=message)
         await interaction.response.send_modal(append_modal)
     else:
