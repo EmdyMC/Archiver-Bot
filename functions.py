@@ -293,9 +293,9 @@ async def on_message(message: discord.Message):
     if message.flags.is_crossposted and message.channel.id == SNAPSHOT_CHANNEL:
         logs = bot.get_channel(LOG_CHANNEL)
         try:
-            pinned_messages = await message.channel.pins(limit=1)
+            pinned_messages = await message.channel.pins(limit=5)
             if pinned_messages:
-                await pinned_messages[0].unpin()
+                await pinned_messages[-1].unpin()
                 embed = discord.Embed(title=f"Old pinned message removed", description=f"In: {message.channel.name}")
                 await logs.send(embed=embed)
             await message.pin()
@@ -437,5 +437,6 @@ async def on_thread_update(before, after):
                                 await logs.send(embed=embed)
                             # Update tracker list
                             await update_tracker_list()
+                            return
 
             await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
