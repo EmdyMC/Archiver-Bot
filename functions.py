@@ -412,12 +412,22 @@ async def on_thread_update(before, after):
                     embed_colour = discord.Colour.light_gray()
                 tag_list.append(f"{tag_emote} {tag_name}".strip())
                 
-                # Remove the tracker channel message
+                # Submission accepted or rejected
                 if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
                     tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
                     async for message in tracker_channel.history(limit=100, oldest_first=True):
                         if str(before.id) in message.content:
                             logs = bot.get_channel(LOG_CHANNEL)
+                            # Send vote results in thread
+                            tracker_thread = await get_thread_by_name(tracker_channel, before.name)
+                            vote_results = "**Votes as of submission resolution:**\n"
+                            for reaction in message.reactions:
+                                vote_results += f"{reaction.emoji} - "
+                                users = [user.mention async for user in reaction.users() if user.id != bot.user.id]
+                                vote_results += ", ".join(users)
+                                vote_results += "\n"
+                            await tracker_thread.send(content=vote_results, allowed_mentions=discord.AllowedMentions.none())
+                            # Delete tracker message
                             try:
                                 await message.delete()
                                 embed = discord.Embed(title=f"Tracker post removed", description=f"**{before.name}**")
