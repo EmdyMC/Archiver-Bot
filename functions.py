@@ -437,6 +437,13 @@ async def on_thread_update(before, after):
                                 await logs.send(embed=embed)
                             # Update tracker list
                             await update_tracker_list()
-                            return
+                            break
 
             await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
+
+@tasks.loop(hours=48)
+async def archive_management():
+    await bot.wait_until_ready()
+    logs = bot.get_channel(LOG_CHANNEL)
+    await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
+    
