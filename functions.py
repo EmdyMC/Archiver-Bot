@@ -449,4 +449,4 @@ async def archive_management():
     await bot.wait_until_ready()
     logs = bot.get_channel(LOG_CHANNEL)
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
-    await open_all_archived()
+    await open_all_archived(run_channel=logs)
