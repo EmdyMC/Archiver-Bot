@@ -41,6 +41,7 @@ async def close_resolved(interaction: discord.Interaction):
 @bot.tree.command(name="open_archived", description="Opens all posts in the archive")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def open_archived(interaction: discord.Interaction):
+    await interaction.response.send_message(content="Checking posts. . .", ephemeral=True)
     await open_all_archived(run_channel=interaction.channel)
 
 # Tag selector command
