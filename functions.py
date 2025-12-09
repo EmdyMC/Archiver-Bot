@@ -444,7 +444,7 @@ async def on_thread_update(before, after):
 
             await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
 
-@tasks.loop(minutes=2)
+@tasks.loop(hours=24)
 async def archive_management():
     await bot.wait_until_ready()
     logs = bot.get_channel(LOG_CHANNEL)
