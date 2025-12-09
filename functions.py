@@ -192,10 +192,9 @@ async def send_chunked_messages(channel, header, items, id_list):
         id_list.append(sent_message.id)
 
 # Open all archive threads
-async def open_all_archived(interaction: discord.Interaction):
-    guild = interaction.guild
+async def open_all_archived(run_channel: discord.TextChannel):
     opened_posts = 0
-    
+    guild = run_channel.guild
     for channel in guild.channels:
         if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES):
             async for thread in channel.archived_threads(limit=None):
@@ -204,7 +203,7 @@ async def open_all_archived(interaction: discord.Interaction):
                         await thread.edit(archived=False)
                         opened_posts += 1
                     except discord.Forbidden:
-                        await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>", ephemeral=True)
+                        await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
                         return
     faq_channel = bot.get_channel(FAQ_CHANNEL)
     async for thread in faq_channel.archived_threads(limit=None):
@@ -213,9 +212,13 @@ async def open_all_archived(interaction: discord.Interaction):
                 await thread.edit(archived=False)
                 opened_posts += 1
             except discord.Forbidden:
-                await interaction.followup.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{faq_channel.id}>", ephemeral=True)
+                await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{faq_channel.id}>")
                 return
-    return opened_posts
+    if opened_posts > 0:
+        report = f"**Successfully opened {opened_posts} forum post(s)**"
+        await run_channel.send(content=report)
+    else:
+        await run_channel.send("No closed forum posts found in the archives")
 
 # Fetch thread ID given name
 async def get_thread_by_name(channel, name):
@@ -441,9 +444,9 @@ async def on_thread_update(before, after):
 
             await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
 
-@tasks.loop(hours=48)
+@tasks.loop(minutes=2)
 async def archive_management():
     await bot.wait_until_ready()
     logs = bot.get_channel(LOG_CHANNEL)
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
-    
+    await open_all_archived()

@@ -10,6 +10,8 @@ async def on_ready():
     LOG_OUTPUT = await bot.fetch_channel(LOG_CHANNEL)
     await LOG_OUTPUT.send(embed=online_notif)
     await bot.tree.sync()
+    if not archive_management.is_running():
+        archive_management.start()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
