@@ -237,8 +237,10 @@ async def get_thread_by_name(channel, name):
 async def update_tracker_list():
     pending_messages = []
     awaiting_testing = []
+    accepted_posts = []
     tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
     logs = bot.get_channel(LOG_CHANNEL)
+    submissions_forum = bot.get_channel(SUBMISSIONS_CHANNEL)
     try:
         async with aiofiles.open("messages.json", mode='r') as list:
             content = await list.read()
@@ -251,8 +253,6 @@ async def update_tracker_list():
                     continue
         
         async for tracking_message in tracker_channel.history(limit=None):
-            if CROSS_EMOJI in tracking_message.content:
-                continue
             reactions = tracking_message.reactions
             if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
                 awaiting_testing.append("- **"+tracking_message.content[3:].replace("\n", " ")+" **")
@@ -260,16 +260,26 @@ async def update_tracker_list():
                 if tracking_message.content == "":
                     continue
                 pending_messages.append("- **"+tracking_message.content[3:].replace("\n", " ")+" **")
-    except:
-        await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel", description="Error opening the messages.json file"))
+
+        for thread in submissions_forum.threads:
+            for tag in thread.applied_tags:
+                if tag.id == ACCEPTED_TAG:
+                    accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
+        async for thread in submissions_forum.archived_threads(limit=None):
+            for tag in thread.applied_tags:
+                if tag.id == ACCEPTED_TAG:
+                    accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
+    except Exception as e:
+        await logs.send(embed=discord.Embed(title="Could not fetch messages in tracker channel", description=f"{e}"))
     
     tracker_list_messages = []
 
-    if pending_messages or awaiting_testing:
+    if pending_messages or awaiting_testing or accepted_posts:
         pending_messages.reverse()
         awaiting_testing.reverse()
         await send_chunked_messages(tracker_channel, "## 🕥 Pending Decision", pending_messages, tracker_list_messages)
         await send_chunked_messages(tracker_channel, "## 🧪 Awaiting Testing", awaiting_testing, tracker_list_messages)
+        await send_chunked_messages(tracker_channel, "## ✅ Pending Archival", accepted_posts, tracker_list_messages)
         try:
             async with aiofiles.open("messages.json", mode='w') as list:
                 await list.write(json.dumps(tracker_list_messages))
