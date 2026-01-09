@@ -464,4 +464,4 @@ async def archive_management():
 @tasks.loop(hours=168)
 async def ping_aria():
     archiver_chat = bot.get_channel(ARCHIVER_CHAT)
-    await archiver_chat.send("<@1170351112973467681> where ingame mod :peeposmile:")
+    await archiver_chat.send("<@1170351112973467681> where ingame mod <:peeposmile:1355391302505599259>")
