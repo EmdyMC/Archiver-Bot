@@ -12,6 +12,8 @@ async def on_ready():
     await bot.tree.sync()
     if not archive_management.is_running():
         archive_management.start()
+    if not ping_aria.is_running():
+        ping_aria.start()
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
