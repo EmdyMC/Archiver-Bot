@@ -240,6 +240,39 @@ async def upload(interaction: discord.Interaction):
     upload_modal = UploadFilesBox()
     await interaction.response.send_modal(upload_modal)
 
+# Parse command
+@bot.tree.command(name="parse_archive", description="Parse the posts in the archive to check for errors")
+@app_commands.checks.has_any_role(*HIGHER_ROLES)
+async def parse(interaction: discord.Interaction):
+    await interaction.response.send_message("Beginning parsing. . .")
+    parse_channel_list = [channel for channel in interaction.guild.channels if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES)]
+
+    # Status update message variables
+    total_channels = len(parse_channel_list)
+    current_channel_index = 1
+    embed = discord.Embed(title="Parsing Status",colour=discord.Colour.green())
+    reply_channel_obj = interaction.channel
+    update_message_obj = await reply_channel_obj.send(embed=embed)
+
+    # Iterate over every thread in the post and parse it
+    parse_text_data = []
+    for channel in parse_channel_list:
+        # Update the status message
+        embed.description = f"{current_channel_index}/{total_channels} -> {channel.name}"
+        await update_message_obj.edit(embed=embed)
+        current_channel_index += 1
+
+        # Process every thread in the forum channel
+        async for thread in iter_all_threads(channel):
+            parse_text_data.append(await get_post_data(thread, channel, bot))
+    
+    if parse_text_data:
+        file_path = Path.cwd()/"archive_backup.json"
+        json_string = json.dumps(parse_text_data, indent=4)
+        async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
+            await f.write(json_string)
+        await reply_channel_obj.send(content="JSON File", file=discord.File(file_path))
+
 # Restarts the bot and updates code from git if specified.
 @bot.tree.command(name="restart", description="Restarts and updates the bot")
 @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")

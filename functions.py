@@ -454,14 +454,45 @@ async def on_thread_update(before, after):
 
             await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
 
-@tasks.loop(hours=24)
+@tasks.loop(hours=12)
 async def archive_management():
     await bot.wait_until_ready()
     logs = bot.get_channel(LOG_CHANNEL)
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
     await open_all_archived(run_channel=logs)
 
-@tasks.loop(hours=168)
+@tasks.loop(hours=48)
 async def ping_aria():
     archiver_chat = bot.get_channel(ARCHIVER_CHAT)
     await archiver_chat.send("<@1170351112973467681> where ingame mod <:peeposmile:1355391302505599259>")
+
+def get_post_metadata(thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
+    #Returns a dict of metadata to add on top of the post message
+    return {
+        "thread_id": str(thread.id),
+        "thread_name": thread.name,
+        "channel_id": str(channel.id),
+        "channel_name": channel.name,
+        "author_id": str(thread.owner_id),
+        "created_at": str(thread.created_at),
+        "tags": [tag.name for tag in thread.applied_tags],
+        "messages": []
+    }
+
+async def get_post_data(thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
+    #Gets the metadata for the post along with all the post messages
+    # Add all the post messages to the metadata
+    metadata = get_post_metadata(thread, channel, bot)
+    async for message in thread.history(limit=None, oldest_first=True):
+        # Add it if the message exists and is not a discord message (pin/rename thread)
+        if message.content and message.type == discord.MessageType.default:
+            metadata["messages"].append(message.content)
+    return metadata
+
+async def iter_all_threads(channel: discord.ForumChannel):
+    #Iterates over all threads, active or not
+    for thread in channel.threads:
+        yield thread
+
+    async for thread in channel.archived_threads(limit=None):
+        yield thread
