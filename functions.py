@@ -1,4 +1,4 @@
-from init import*
+from init import *
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -112,6 +112,9 @@ class DeleteThreadApprovalView(discord.ui.View):
         logs = bot.get_channel(LOG_CHANNEL)
         try:
             target_post = await bot.fetch_channel(self.target_post_id)
+            parsed_file = Path.cwd() / "parsed" / f"{self.target_post_id}.json"
+            if parsed_file.exists():
+                parsed_file.unlink()
             await logs.send(embed=discord.Embed(title="Thread deleted", description=f"Requested by: {self.requester.mention}\nApproved by: {interaction.user.mention}\nThread: {target_post.name}\n In: {target_post.parent.jump_url}"))
             await interaction.followup.edit_message(message_id=interaction.message.id, embed=discord.Embed(title="✅ Approved",description=f"Thread deletion request by {self.requester.mention} approved by {interaction.user.mention}\nThread: {target_post.name} in {target_post.parent.jump_url}"), view=None)
             await target_post.delete()
@@ -175,6 +178,39 @@ class EditTitleApproval(discord.ui.View):
     async def on_timeout(self):
         if self.approval_message and self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Thread title change request by {self.requester.mention}"), view=None)
+
+class ParserErrorItem(discord.ui.Container):
+    def __init__(self, bot: commands.Bot, thread: discord.Thread, error: Exception, i: int):
+        super().__init__()
+        self.accent_color = discord.Color.red()
+        self.bot = bot
+        self.thread = thread
+        self.i = i
+        self.text_display = discord.ui.TextDisplay(f"{thread.jump_url}: **{type(error).__name__}**: {error}")
+        self.action_row = discord.ui.ActionRow()
+        self.add_item(self.text_display)
+        self.add_item(self.action_row)
+
+    @classmethod
+    async def create(cls: Type["ParserErrorItem"], bot: commands.Bot, thread: discord.Thread, error: Exception, i: int):
+        reverse_messages = reversed([message async for message in thread.history()])
+        instance = cls(bot, thread, error, i)
+        for i, message in enumerate(reverse_messages):
+            if (i >= 5):
+                instance.add_item(discord.ui.TextDisplay("-# Max 5 buttons exceeded, edit directly in thread instead."))
+                break
+            button = discord.ui.Button(label=f"Edit {i}")
+            button.callback = instance.get_editor(message)
+            instance.action_row.add_item(button)
+        return instance
+    
+    def get_editor(self, message: discord.Message):
+        from modals import PostEditAndParseModal
+        async def edit(interaction: discord.Interaction[commands.Bot]):
+            if interaction.user.get_role(ARCHIVER_ID) is None:
+                raise app_commands.errors.MissingRole(ARCHIVER_ID)
+            await interaction.response.send_modal(PostEditAndParseModal(self.bot, message, interaction.message, self.i))
+        return edit
 
 # Send chunked messages
 async def send_chunked_messages(channel, header, items, id_list):

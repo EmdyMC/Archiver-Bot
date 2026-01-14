@@ -4,10 +4,12 @@ from discord.ext import tasks
 from discord import app_commands
 from constants import *
 from pathlib import Path
+from typing import Type
 import asyncio
 import aiofiles
 import json
 import random
+import difflib
 
 intents = discord.Intents.none()
 intents.guilds = True

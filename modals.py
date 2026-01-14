@@ -263,3 +263,62 @@ class UploadFilesBox(discord.ui.Modal, title="Upload files"):
         super().__init__()
     async def on_submit(self, interaction:discord.Interaction):
         return
+
+class PostEditModal(discord.ui.Modal, title="Edit Post"):
+    def __init__(self, bot: commands.Bot, message: discord.Message):
+        super().__init__()
+        self.bot = bot
+        self.message = message
+        self.change_notes = discord.ui.TextInput(label="Change Notes", style=discord.TextStyle.long)
+        self.message_input = discord.ui.TextInput(label="Edit Raw Post", style=discord.TextStyle.paragraph, default=message.content)
+        self.add_item(self.change_notes)
+        self.add_item(self.message_input)
+    
+    async def on_submit(self, interaction: discord.Interaction[commands.Bot]):
+        assert isinstance(self.message.channel, discord.Thread)
+        await self.message.edit(content=self.message_input.value)
+        logs = bot.get_channel(LOG_CHANNEL)
+        await logs.send(view=ContainedTextView(f"**Updated** {self.message.jump_url}:\n{self.change_notes.value}\n```diff\n..."))
+        await interaction.response.defer()
+
+class ContainedTextView(discord.ui.LayoutView):
+    def __init__(self, text: str, color: discord.Color=discord.Color.default()):
+        super().__init__()
+        self.container = discord.ui.Container(discord.ui.TextDisplay(text), accent_color=color)
+        self.add_item(self.container)
+
+class PostEditAndParseModal(PostEditModal):
+    def __init__(self, bot: commands.Bot, message: discord.Message, parse_response_message: discord.Message, i: int):
+        super().__init__(bot, message)
+        self.parse_response_message = parse_response_message
+        self.i = i
+    
+    async def on_submit(self, interaction: discord.Interaction[commands.Bot]):
+        from functions import ParserErrorItem
+        from parser import message_parse
+        await super().on_submit(interaction)
+
+        data = await get_post_data(self.message.thread, self.message.channel.parent, self.bot)
+
+        try:
+            parse_result = message_parse("\n".join(data["messages"]).split("\n"))
+        except Exception as e:
+            new_item = await ParserErrorItem.create(self.bot, self.message.thread, e, self.i)
+            new_view = discord.ui.LayoutView()
+            new_view.add_item(new_item)
+            await self.parse_response_message.channel.send(view=new_view)
+            return
+        
+        new_item = discord.ui.TextDisplay(f"{self.message.jump_url}: Parse successful.")
+        new_view = discord.ui.LayoutView()
+        new_view.add_item(new_item)
+        await self.parse_response_message.channel.send(view=new_view)
+        
+        del data["messages"]
+        data["variants"] = parse_result
+        parsed_path = Path.cwd() / "parsed" / f"{self.message.thread.id}.json"
+        
+        with open(parsed_path, "w") as f:
+            json.dump(data, f, indent=4)
+            
+        await self.parse_response_message.channel.send(content=f"{self.message.jump_url}: Parse successful.")
