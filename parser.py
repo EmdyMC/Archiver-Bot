@@ -7,7 +7,7 @@ from functools import wraps
 from typing import Callable
 from dataclasses import dataclass
 
-from .MessageDict import Message
+from MessageDict import Message
 
 type section = list[str]
 type dict_section = dict[str, section]
