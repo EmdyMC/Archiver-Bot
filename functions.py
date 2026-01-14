@@ -479,11 +479,6 @@ async def archive_management():
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
     await open_all_archived(run_channel=logs)
 
-@tasks.loop(hours=48)
-async def ping_aria():
-    archiver_chat = bot.get_channel(ARCHIVER_CHAT)
-    await archiver_chat.send("<@1170351112973467681> where ingame mod <:peeposmile:1355391302505599259>")
-
 def get_post_metadata(thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
     #Returns a dict of metadata to add on top of the post message
     return {
