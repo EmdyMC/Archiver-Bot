@@ -241,7 +241,7 @@ async def upload(interaction: discord.Interaction):
     await interaction.response.send_modal(upload_modal)
 
 # Send PRR link
-@bot.tre.command(name="PRR", description="Send a link to the Practical Redstone Reloaded playlist")
+@bot.tree.command(name="PRR", description="Send a link to the Practical Redstone Reloaded playlist")
 async def prr(interaction: discord.Interaction):
     await interaction.response.send_message(content="https://youtube.com/playlist?list=PLmEBf0WZp2qs8aoteq1SaMg2pm-IILr88")
 
