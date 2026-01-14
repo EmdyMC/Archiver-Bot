@@ -342,6 +342,24 @@ async def on_message(message: discord.Message):
             except Exception as e:
                 embed = discord.Embed(title=f"An error occurred {e}")
                 await logs.send(embed=embed)
+    if isinstance(message.channel, discord.Thread) and message.channel.parent_id == HELP_FORUM:
+        logs = bot.get_channel(LOG_CHANNEL)
+        if message.id == message.channel.id:
+            try:
+                await message.pin()
+                embed = discord.Embed(
+                    title="Thank you for submitting your question!",
+                    description="""
+- ✅ The submitter of this question can mark posts as solved by using `/tag_selector` and selecting `✅ Solved`.
+- 📖 Refer to the [guide](https://discord.com/channels/1161803566265143306/1378040485133680772) to get faster and better answers to your questions. Add any relevant information to your post.
+- ⌚ Please be patient and polite. Remember that all helpers are volunteers."""
+                )
+                await message.channel.send(embed=embed)
+                log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
+                await logs.send(embed=log_embed)
+            except Exception as e:
+                embed = discord.Embed(title=f"An error occurred {e}")
+                await logs.send(embed=embed)
 
 # Add to tracker
 async def track(thread):
