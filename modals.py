@@ -85,7 +85,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         )
         content_diff = get_diff_block(self.original_content, new_content)
         if content_diff:
-            log_embed.add_field(name="Content Change", value=f"```diff\n{content_diff}\n```", inline=False)
+            log_embed.add_field(name="Content Change", value=f"```ansi\n{content_diff}\n```", inline=False)
         try:
             if self.rich_embeds:
                 new_embeds = []
@@ -100,9 +100,9 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
                 desc_diff = get_diff_block(self.rich_embeds[0].description, new_embeds[0].description)
 
                 if title_diff:
-                    log_embed.add_field(name="Embed Title Change", value=f"```diff\n{title_diff}\n```", inline=False)
+                    log_embed.add_field(name="Embed Title Change", value=f"```ansi\n{title_diff}\n```", inline=False)
                 if desc_diff:
-                    log_embed.add_field(name="Embed Description Change", value=f"```diff\n{desc_diff}\n```", inline=False)
+                    log_embed.add_field(name="Embed Description Change", value=f"```ansi\n{desc_diff}\n```", inline=False)
             else:
                 pass
             await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments, allowed_mentions=discord.AllowedMentions.none())
