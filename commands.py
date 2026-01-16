@@ -242,11 +242,6 @@ async def upload(interaction: discord.Interaction):
     upload_modal = UploadFilesBox()
     await interaction.response.send_modal(upload_modal)
 
-# Send PRR link
-@bot.tree.command(name="prr", description="Send a link to the Practical Redstone Reloaded playlist")
-async def prr(interaction: discord.Interaction):
-    await interaction.response.send_message(content="https://youtube.com/playlist?list=PLmEBf0WZp2qs8aoteq1SaMg2pm-IILr88")
-
 # Parse command
 @bot.tree.command(name="parse_archive", description="Parse the posts in the archive to check for errors")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
