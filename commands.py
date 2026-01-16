@@ -48,7 +48,6 @@ async def open_archived(interaction: discord.Interaction):
 
 # Tag selector command
 @bot.tree.command(name="tag_selector", description="Edit the tags of a forum post")
-@app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
 async def selector(interaction: discord.Interaction):
     if not isinstance(interaction.channel, discord.Thread):
         await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum post"), ephemeral = True)
@@ -58,7 +57,7 @@ async def selector(interaction: discord.Interaction):
         return
     in_help_forum = interaction.channel.parent_id == HELP_FORUM
     has_higher_role = any(role.id in HIGHER_ROLES for role in interaction.user.roles)
-    if not in_help_forum and not has_higher_role:
+    if (not in_help_forum and not has_higher_role) or (in_help_forum and interaction.user.id != interaction.channel.owner_id):
         await interaction.response.send_message(embed = discord.Embed(title = "You do not have the permissions to run that command here"), ephemeral = True)
         return
     thread = interaction.channel
