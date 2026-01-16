@@ -227,13 +227,43 @@ async def send_chunked_messages(channel, header, items, id_list):
         sent_message = await channel.send(message_content)
         id_list.append(sent_message.id)
 
+# Generate difflib messages
 def get_diff_block(old_text, new_text):
     old_text, new_text = str(old_text or ""), str(new_text or "")
     if old_text == new_text:
         return None
+
+    diff = difflib.unified_diff(
+        old_text.splitlines(), 
+        new_text.splitlines(), 
+        n=1, 
+        lineterm=''
+    )
+
+    lines = list(diff)[2:]
     
-    diff = difflib.ndiff(old_text.splitlines(), new_text.splitlines())
-    return "\n".join([line for line in diff if not line.startswith('?')])
+    ansi_lines = []
+    current_len = 0
+    
+    for line in lines:
+        formatted_line = ""
+        if line.startswith('+'):
+            formatted_line = f"\u001b[0;37;42m{line}\u001b[0m" # Green BG
+        elif line.startswith('-'):
+            formatted_line = f"\u001b[0;37;41m{line}\u001b[0m" # Red BG
+        elif line.startswith('@@'):
+            formatted_line = f"\u001b[0;34m{line}\u001b[0m"   # Blue for hunk headers
+        else:
+            formatted_line = line # Normal context
+
+        if current_len + len(formatted_line) > 980:
+            ansi_lines.append("\u001b[0;33m... [More changes hidden due to length]\u001b[0m")
+            break
+            
+        ansi_lines.append(formatted_line)
+        current_len += len(formatted_line) + 1 
+
+    return "\n".join(ansi_lines) if ansi_lines else None
 
 # Open all archive threads
 async def open_all_archived(run_channel: discord.TextChannel):
