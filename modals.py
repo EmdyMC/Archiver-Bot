@@ -78,19 +78,33 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         new_content = self.message_text.value
         logs = bot.get_channel(LOG_CHANNEL)
         new_embeds = []
-        log_embed = None
+        log_embed = discord.Embed(
+            title="Bot Message Edited", 
+            description=f"**By:** {interaction.user.mention}",
+            color=discord.Color.blue()
+        )
+        content_diff = get_diff_block(self.original_content, new_content)
+        if content_diff:
+            log_embed.add_field(name="Content Change", value=f"```diff\n{content_diff}\n```", inline=False)
         try:
-            if not self.rich_embeds:
-                log_embed = discord.Embed(title="Bot message edited", description=f"**Before:**\n{self.original_content}\n**After:**\n{new_content}\n\n**By:** {interaction.user.mention}")
-            else:
+            if self.rich_embeds:
+                new_embeds = []
                 for i, embed in enumerate(self.rich_embeds):
                     cloned = discord.Embed.from_dict(embed.to_dict())
                     if i == 0 and hasattr(self, 'embed_title'):
                         cloned.title = self.embed_title.value
                         cloned.description = self.embed_text.value
                     new_embeds.append(cloned)
-                log_embed = discord.Embed(title="Bot message edited", description=f"**Before:**\nContent: {self.original_content}\nEmbed title: {self.rich_embeds[0].title}\nDescription: {self.rich_embeds[0].description}\n**After:**\nContent: {new_content}\nEmbed title: {new_embeds[0].title}\nDescription: {new_embeds[0].description}\n\n**By:** {interaction.user.mention}")
-            
+
+                title_diff = get_diff_block(self.rich_embeds[0].title, new_embeds[0].title)
+                desc_diff = get_diff_block(self.rich_embeds[0].description, new_embeds[0].description)
+
+                if title_diff:
+                    log_embed.add_field(name="Embed Title Change", value=f"```diff\n{title_diff}\n```", inline=False)
+                if desc_diff:
+                    log_embed.add_field(name="Embed Description Change", value=f"```diff\n{desc_diff}\n```", inline=False)
+            else:
+                pass
             await self.target_message.edit(content=new_content, embeds=new_embeds, attachments=self.original_attachments, allowed_mentions=discord.AllowedMentions.none())
             if log_embed:
                 await logs.send(embed=log_embed)
@@ -278,7 +292,7 @@ class PostEditModal(discord.ui.Modal, title="Edit Post"):
         assert isinstance(self.message.channel, discord.Thread)
         await self.message.edit(content=self.message_input.value)
         logs = bot.get_channel(LOG_CHANNEL)
-        await logs.send(view=ContainedTextView(f"**Updated** {self.message.jump_url}:\n{self.change_notes.value}\n```diff\n..."))
+        await logs.send(view=ContainedTextView(f"**Updated** {self.message.jump_url}:\n{self.change_notes.value}\n```diff\n{"\n".join(difflib.unified_diff(self.message.content.splitlines(), self.message_input.value.splitlines(), lineterm="")) or "No change."}```"))
         await interaction.response.defer()
 
 class ContainedTextView(discord.ui.LayoutView):

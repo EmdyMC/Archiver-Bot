@@ -227,6 +227,14 @@ async def send_chunked_messages(channel, header, items, id_list):
         sent_message = await channel.send(message_content)
         id_list.append(sent_message.id)
 
+def get_diff_block(old_text, new_text):
+    old_text, new_text = str(old_text or ""), str(new_text or "")
+    if old_text == new_text:
+        return None
+    
+    diff = difflib.ndiff(old_text.splitlines(), new_text.splitlines())
+    return "\n".join(diff)
+
 # Open all archive threads
 async def open_all_archived(run_channel: discord.TextChannel):
     opened_posts = 0
