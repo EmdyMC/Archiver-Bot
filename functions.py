@@ -233,7 +233,7 @@ def get_diff_block(old_text, new_text):
         return None
     
     diff = difflib.ndiff(old_text.splitlines(), new_text.splitlines())
-    return "\n".join(diff)
+    return "\n".join([line for line in diff if not line.startswith('?')])
 
 # Open all archive threads
 async def open_all_archived(run_channel: discord.TextChannel):

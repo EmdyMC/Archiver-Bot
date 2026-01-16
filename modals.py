@@ -81,7 +81,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         log_embed = discord.Embed(
             title="Bot Message Edited", 
             description=f"**By:** {interaction.user.mention}",
-            color=discord.Color.blue()
+            color=discord.Color.yellow()
         )
         content_diff = get_diff_block(self.original_content, new_content)
         if content_diff:
@@ -296,7 +296,7 @@ class PostEditModal(discord.ui.Modal, title="Edit Post"):
         await interaction.response.defer()
 
 class ContainedTextView(discord.ui.LayoutView):
-    def __init__(self, text: str, color: discord.Color=discord.Color.default()):
+    def __init__(self, text: str, color: discord.Color=discord.Color.yellow()):
         super().__init__()
         self.container = discord.ui.Container(discord.ui.TextDisplay(text), accent_color=color)
         self.add_item(self.container)
