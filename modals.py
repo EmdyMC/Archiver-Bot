@@ -292,7 +292,7 @@ class PostEditModal(discord.ui.Modal, title="Edit Post"):
         assert isinstance(self.message.channel, discord.Thread)
         await self.message.edit(content=self.message_input.value)
         logs = bot.get_channel(LOG_CHANNEL)
-        await logs.send(view=ContainedTextView(f"**Updated** {self.message.jump_url}:\n{self.change_notes.value}\n```diff\n{"\n".join(difflib.unified_diff(self.message.content.splitlines(), self.message_input.value.splitlines(), lineterm="")) or "No change."}```"))
+        await logs.send(view=ContainedTextView(f"**Updated** {self.message.jump_url}:\n{self.change_notes.value}\nBy: {interaction.user.mention}\n```diff\n{"\n".join(difflib.unified_diff(self.message.content.splitlines(), self.message_input.value.splitlines(), lineterm="")) or "No change."}```"))
         await interaction.response.defer()
 
 class ContainedTextView(discord.ui.LayoutView):
