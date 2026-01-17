@@ -307,6 +307,7 @@ message_parse_schema = dict_postprocess_parse(
                 [
                     SchemaItem([""], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0])),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem(["Notes", "Note"], "notes", flattened_list_parse(), required=False)
                 ],
             ), required=False),
             SchemaItem(["Lag Info"], "lag_info", schema_dict_parse(

@@ -25,6 +25,7 @@ class Rate(TypedDict):
 class Rates(TypedDict):
     drops: list[Rate]
     consumption: list[Rate]
+    notes: list[str] | None
     
 class LagEnvironment(TypedDict):
     cpu: str
