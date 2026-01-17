@@ -59,7 +59,7 @@ def prefix_dict_parse(
         current_key = ""
         for line in data:
             if line.startswith(prefix):
-                current_key = line[len(prefix) :]
+                current_key = line[len(prefix) :].strip()
             else:
                 parsed_data[current_key].append(line)
         return dict(parsed_data)
@@ -305,7 +305,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem([""], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0])),
+                    SchemaItem([""], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
@@ -313,8 +313,8 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Lag Info"], "lag_info", schema_dict_parse(
                 list_dict_parse(),
                 [
-                    SchemaItem(["Test environment"], "environment", environment_parse()),
-                    SchemaItem(["Idle"], "idle", variant_parse(lag_parse, lambda data: ": " in data[0])),
+                    SchemaItem(["Test environment"], "environment", environment_parse(), required=False),
+                    SchemaItem(["Idle"], "idle", variant_parse(lag_parse, lambda data: ": " in data[0]), required=False),
                     SchemaItem(["Active"], "active", variant_parse(lag_parse, lambda data: ": " in data[0])),
                 ],
             ), required=False),
