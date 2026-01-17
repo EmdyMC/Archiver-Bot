@@ -283,7 +283,7 @@ class PostEditModal(discord.ui.Modal, title="Edit Post"):
         super().__init__()
         self.bot = bot
         self.message = message
-        self.change_notes = discord.ui.TextInput(label="Change Notes", style=discord.TextStyle.long)
+        self.change_notes = discord.ui.TextInput(label="Change Notes", style=discord.TextStyle.long, required=False)
         self.message_input = discord.ui.TextInput(label="Edit Raw Post", style=discord.TextStyle.paragraph, default=message.content)
         self.add_item(self.change_notes)
         self.add_item(self.message_input)
