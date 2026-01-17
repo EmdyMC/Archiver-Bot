@@ -513,8 +513,13 @@ async def on_thread_update(before, after):
                     embed_colour = discord.Colour.light_gray()
                 tag_list.append(f"{tag_emote} {tag_name}".strip())
                 
+                # Resend tracker list when a design is archived
+                if tag_added.id == ARCHIVED_TAG and before.parent.id == SUBMISSIONS_CHANNEL:
+                    await update_tracker_list()
+
                 # Submission accepted or rejected
                 if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
+                    # Find tracker message
                     tracker_channel = bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
                     async for message in tracker_channel.history(limit=100, oldest_first=True):
                         if str(before.id) in message.content:
