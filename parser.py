@@ -290,7 +290,7 @@ message_parse_schema = dict_postprocess_parse(
         prefix_dict_parse("## "),
         [
             SchemaItem(["Designer", "Designers", "Designer(s)"], "designers", list_postprocess_parse(list_parse(), contributor_parse())),
-            SchemaItem(["Credits"], "credits", list_postprocess_parse(list_parse(), contributor_parse()), required=False),
+            SchemaItem(["Credits", "Credit"], "credits", list_postprocess_parse(list_parse(), contributor_parse()), required=False),
             SchemaItem(["Versions"], "versions", version_parse()),
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
@@ -307,7 +307,7 @@ message_parse_schema = dict_postprocess_parse(
                     SchemaItem(["Active"], "active", variant_parse(lag_parse, lambda data: ": " in data[0])),
                 ],
             ), required=False),
-            SchemaItem(["Video Links"], "video_links", flattened_list_parse(), required=False),
+            SchemaItem(["Video Links", "Video Link"], "video_links", flattened_list_parse(), required=False),
             SchemaItem(["Files"], "files", schema_dict_parse(
                 list_dict_parse(),
                 [

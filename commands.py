@@ -246,7 +246,7 @@ async def upload(interaction: discord.Interaction):
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def parse(interaction: discord.Interaction):
     await interaction.response.send_message("Beginning parsing. . .")
-    parse_channel_list = [channel for channel in interaction.guild.channels if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES)]
+    parse_channel_list = [channel for channel in interaction.guild.channels if isinstance(channel, discord.ForumChannel) and (channel.category_id in MAIN_ARCHIVE_CATEGORIES)]
     exceptions_view = discord.ui.LayoutView(timeout=None)
     count = errors = total = 0
     (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
