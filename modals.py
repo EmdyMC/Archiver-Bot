@@ -334,5 +334,3 @@ class PostEditAndParseModal(PostEditModal):
         
         with open(parsed_path, "w") as f:
             json.dump(data, f, indent=4)
-            
-        await self.parse_response_message.channel.send(content=f"{self.message.jump_url}: Parse successful.")

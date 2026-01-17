@@ -179,6 +179,7 @@ class EditTitleApproval(discord.ui.View):
         if self.approval_message and self.approval_message:
             await self.approval_message.edit(embed=discord.Embed(title="⌛ Timed Out",description=f"Thread title change request by {self.requester.mention}"), view=None)
 
+# Parse error views
 class ParserErrorItem(discord.ui.Container):
     def __init__(self, bot: commands.Bot, thread: discord.Thread, error: Exception, i: int):
         super().__init__()
