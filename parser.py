@@ -123,20 +123,30 @@ def schema_dict_parse[T](
     def parse(data: section) -> dict:
         result: dict[str, T] = {}
         parsed_data = parser_(data)
-        parsed_data_iter = iter(parsed_data.items())
-        k, v = next(parsed_data_iter)
-        for field in config:
-            if k in field.display_names:
-                result[field.name] = field.parser(v)
-                k, v = next(parsed_data_iter, (None, None)) # After iteration is done, just don't match anything and exhaust defaults, or error.
-            elif not field.required:
-                result[field.name] = field.default
-            else:
-                raise ValueError(f"Required field {field.name} not found, {f"found {k}" if k is not None else "reached end of post"}.\nConfig: {[f"{"?" if not field.required else ""}{field.name}" for field in config]}.")
-        if k is not None:
-            raise ValueError(f"Extra field {k} at the end, after {field.name}.\nConfig: {[f"{"?" if not field.required else ""}{field.name}" for field in config]}.")
-        return result
 
+        used_keys = set()
+
+        for field in config:
+            match_found = False
+            for display_name in field.display_names:
+                if display_name in parsed_data:
+                    result[field.name] = field.parser(parsed_data[display_name])
+                    used_keys.add(display_name)
+                    match_found = True
+                    break           
+            if not match_found:
+                if field.required:
+                    raise ValueError(f"Required field {field.name} not found in the section.")
+                else:
+                    result[field.name] = field.default
+        
+        extra_keys = set(parsed_data.keys()) - used_keys
+        if extra_keys:
+            extra_keys.discard("")
+            if extra_keys:
+                raise ValueError(f"Extra or unrecognised fields found: {', '.join(extra_keys)}")
+        
+        return result
     return parse
 
 
@@ -335,6 +345,9 @@ message_parse_schema = dict_postprocess_parse(
 
 
 def message_parse(data: section) -> list[Message]:
+    # Filter crossposts
+    if data and any(line.strip().endswith("Original Post") for line in data[:2]):
+        return []
     return [{"variant_name": name, **rest} for name, rest in message_parse_schema(data).items()]
 
 
