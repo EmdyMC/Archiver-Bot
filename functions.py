@@ -27,7 +27,7 @@ class TagSelectView(discord.ui.View):
             emoji = tag.emoji or ""
             log_message.append(f"{emoji} {tag.name}".strip())
         if log_message:
-            embed = discord.Embed(title=f"Tags {",  ".join(log_message)} added", description=f"To post: **{self.thread.name}**\nBy: {interaction.user.mention}")
+            embed = discord.Embed(title=f"Tags {",  ".join(log_message)} added", description=f"To post: **{self.thread.jump_url}**\nBy: {interaction.user.mention}")
             await logs.send(embed=embed)
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
@@ -407,7 +407,7 @@ async def on_message(message: discord.Message):
                 )
                 embed.set_image(url="https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png")
                 await message.channel.send(embed=embed)
-                log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
+                log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.jump_url}")
                 await logs.send(embed=log_embed)
             except Exception as e:
                 embed = discord.Embed(title=f"An error occurred {e}")
@@ -425,7 +425,7 @@ async def on_message(message: discord.Message):
 - ⌚ Please be patient and polite. Remember that all helpers are volunteers."""
                 )
                 await message.channel.send(embed=embed)
-                log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.name}")
+                log_embed = discord.Embed(title=f"Message pinned", description=f"In: {message.channel.jump_url}")
                 await logs.send(embed=log_embed)
             except Exception as e:
                 embed = discord.Embed(title=f"An error occurred {e}")

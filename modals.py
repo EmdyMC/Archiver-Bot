@@ -35,10 +35,10 @@ class SendBox(discord.ui.Modal, title="Send Message"):
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
             await self.target_channel.send(content=self.message_text.value, embed=new_embed)
-            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
+            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n**Embed content:**\nTitle: {new_embed.title}\nDescription: {new_embed.description}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.jump_url}"))
         else:
             await self.target_channel.send(content=self.message_text.value)
-            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.name}"))
+            await logs.send(embed=discord.Embed(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.jump_url}"))
         await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
@@ -79,7 +79,7 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         logs = bot.get_channel(LOG_CHANNEL)
         new_embeds = []
         log_embed = discord.Embed(
-            title="Bot Message Edited", 
+            title=f"[Bot Message Edited]({self.target_message.jump_url})", 
             description=f"**By:** {interaction.user.mention}",
             color=discord.Color.yellow()
         )
