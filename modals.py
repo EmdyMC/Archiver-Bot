@@ -79,8 +79,8 @@ class EditBox(discord.ui.Modal, title="Edit Message"):
         logs = bot.get_channel(LOG_CHANNEL)
         new_embeds = []
         log_embed = discord.Embed(
-            title=f"[Bot Message Edited]({self.target_message.jump_url})", 
-            description=f"**By:** {interaction.user.mention}",
+            title="Bot Message Edited", 
+            description=f"**Message:** {self.target_message.jump_url}\n**By:** {interaction.user.mention}",
             color=discord.Color.yellow()
         )
         content_diff = get_diff_block(self.original_content, new_content)

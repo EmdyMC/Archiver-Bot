@@ -277,7 +277,7 @@ async def parse(interaction: discord.Interaction, channel: discord.ForumChannel)
         return
     await interaction.response.send_message("Beginning parsing. . .")
     exceptions_view = discord.ui.LayoutView(timeout=None)
-    count = errors = total = 0
+    errors = total = 0
     (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
 
     # Process every thread in the forum channel
@@ -287,21 +287,10 @@ async def parse(interaction: discord.Interaction, channel: discord.ForumChannel)
         try:
             parse_result = message_parse("\n".join(data["messages"]).split("\n"))
         except Exception as e:
-            error_view = await ParserErrorItem.create(bot, thread, e, count)
-            if exceptions_view.total_children_count < 40 - error_view._total_count:
-                exceptions_view.add_item(error_view)
-                if exceptions_view.content_length() > 4000:
-                    exceptions_view.remove_item(error_view)
-                    await interaction.channel.send(view=exceptions_view)
-                    error_view.i = 0
-                    exceptions_view = discord.ui.LayoutView(timeout=None)
-                    exceptions_view.add_item(error_view)
-                    count = 0
-                count += 1
-            else:
-                await interaction.channel.send(view=exceptions_view)
-                count = 0
-                exceptions_view = discord.ui.LayoutView(timeout=None)
+            error_view = await ParserErrorItem.create(bot, thread, e, 1)
+            exceptions_view.add_item(error_view)
+            await interaction.channel.send(view=exceptions_view)
+            exceptions_view = discord.ui.LayoutView(timeout=None)
             errors += 1
             continue
         del data["messages"]
@@ -320,7 +309,7 @@ async def parse(interaction: discord.Interaction):
     await interaction.response.send_message("Beginning parsing. . .")
     parse_channel_list = [channel for channel in interaction.guild.channels if isinstance(channel, discord.ForumChannel) and (channel.category_id in MAIN_ARCHIVE_CATEGORIES)]
     exceptions_view = discord.ui.LayoutView(timeout=None)
-    count = errors = total = 0
+    errors = total = 0
     (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
 
     # Status update message variables
@@ -344,21 +333,10 @@ async def parse(interaction: discord.Interaction):
             try:
                 parse_result = message_parse("\n".join(data["messages"]).split("\n"))
             except Exception as e:
-                error_view = await ParserErrorItem.create(bot, thread, e, count)
-                if exceptions_view.total_children_count < 40 - error_view._total_count:
-                    exceptions_view.add_item(error_view)
-                    if exceptions_view.content_length() > 4000:
-                        exceptions_view.remove_item(error_view)
-                        await interaction.channel.send(view=exceptions_view)
-                        error_view.i = 0
-                        exceptions_view = discord.ui.LayoutView(timeout=None)
-                        exceptions_view.add_item(error_view)
-                        count = 0
-                    count += 1
-                else:
-                    await interaction.channel.send(view=exceptions_view)
-                    count = 0
-                    exceptions_view = discord.ui.LayoutView(timeout=None)
+                error_view = await ParserErrorItem.create(bot, thread, e, 1)
+                exceptions_view.add_item(error_view)
+                await interaction.channel.send(view=exceptions_view)
+                exceptions_view = discord.ui.LayoutView(timeout=None)
                 errors += 1
                 continue
             del data["messages"]
