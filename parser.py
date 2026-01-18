@@ -99,18 +99,19 @@ def list_dict_parse() -> parser[dict_section]:
         result: defaultdict[str, section] = defaultdict(list)
         current_key = ""
         for line in data:
-            if line.startswith("- "):
-                if ": " in line:
+            clean_line = line.lstrip()
+            if clean_line.startswith("- "):
+                if ": " in clean_line:
                     # print(line[2:].split(": ", 1))
-                    current_key, value = line[2:].split(": ", 1)
+                    current_key, value = clean_line[2:].split(": ", 1)
                     if value.strip() != "":
                         result[current_key].append("- " + value)
                 else:
-                    current_key = line[2:]
+                    current_key = clean_line[2:]
                     if current_key.endswith(":"):
                         current_key = current_key[:-1]
             else:
-                result[current_key].append(line[2:])
+                result[current_key].append(clean_line[2:])
         return dict(result)
 
     return parse
@@ -328,7 +329,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem([""], "drops", recursive_variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem([""], "drops", recursive_variant_parse(rates_parse, lambda data: not re.match(r"- .*?:\s*\d+", next(iter(list_dict_parse()(data).values()))[0])), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
