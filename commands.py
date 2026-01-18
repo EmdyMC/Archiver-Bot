@@ -251,7 +251,7 @@ async def parse_thread(interaction: discord.Interaction, thread: discord.Thread)
         return
     exceptions_view = discord.ui.LayoutView(timeout=None)
     (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
-    data = get_post_data(thread, thread.parent, bot)
+    data = await get_post_data(thread, thread.parent, bot)
     try:
         parse_result = message_parse("\n".join(data["messages"]).split("\n"))
     except Exception as e:
