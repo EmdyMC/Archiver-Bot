@@ -246,9 +246,12 @@ async def upload(interaction: discord.Interaction):
 @app_commands.describe(thread="The post to be parsed")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def parse_thread(interaction: discord.Interaction, thread: discord.Thread):
+    if thread.parent.category_id in NON_ARCHIVE_CATEGORIES:
+        await interaction.response.send_message("That is not an archive thread, it cannot be parsed.", ephemeral=True)
+        return
     exceptions_view = discord.ui.LayoutView(timeout=None)
     (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
-    data = get_post_data(thread)
+    data = get_post_data(thread, thread.parent, bot)
     try:
         parse_result = message_parse("\n".join(data["messages"]).split("\n"))
     except Exception as e:
@@ -262,13 +265,16 @@ async def parse_thread(interaction: discord.Interaction, thread: discord.Thread)
     json_string = json.dumps(data, indent=4)
     async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
         await f.write(json_string)
-    interaction.response.send_message(content=f"Parsed {thread.name} successfully", ephemeral=True)
+    await interaction.response.send_message(content=f"Parsed {thread.name} successfully", ephemeral=True)
 
 # Parse channel
 @bot.tree.command(name="parse_channel", description="Parse the posts in a selected channel")
 @app_commands.describe(channel="The channel to be parsed")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def parse(interaction: discord.Interaction, channel: discord.ForumChannel):
+    if channel.category_id in NON_ARCHIVE_CATEGORIES:
+        await interaction.response.send_message("That is not an archive channel, it cannot be parsed.", ephemeral=True)
+        return
     await interaction.response.send_message("Beginning parsing. . .")
     exceptions_view = discord.ui.LayoutView(timeout=None)
     count = errors = total = 0
