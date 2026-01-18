@@ -299,7 +299,6 @@ async def parse(interaction: discord.Interaction, channel: discord.ForumChannel)
         json_string = json.dumps(data, indent=4)
         async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
             await f.write(json_string)
-    await interaction.channel.send(view=exceptions_view)
     await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
 # Parse archive
@@ -345,7 +344,6 @@ async def parse(interaction: discord.Interaction):
             json_string = json.dumps(data, indent=4)
             async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
                 await f.write(json_string)
-    await interaction.channel.send(view=exceptions_view)
     await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
 # Restarts the bot and updates code from git if specified.
