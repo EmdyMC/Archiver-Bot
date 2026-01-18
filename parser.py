@@ -154,7 +154,7 @@ def variant_parse[T](
     parser_: Callable[[str], parser[list[T]]], predicate: Callable[[section], bool]
 ) -> parser[list[T]]:
     def parse(data: section) -> list[T]:
-        # Test
+        # SKip rate tables
         if data[0].startswith("- See"):
             return []
 
@@ -168,6 +168,29 @@ def variant_parse[T](
 
     return parse
 
+def recursive_variant_parse[T](
+    parser_: Callable[[str], parser[list[T]]], 
+    predicate: Callable[[section], bool],
+    parent_variant: str = ""
+) -> parser[list[T]]:
+    def parse(data: section) -> list[T]:
+        # Skip rate tables
+        if data[0].startswith("- See"):
+            return []
+
+        if predicate(data):
+            result: list[T] = []
+            for variant, data_ in list_dict_parse()(data).items():
+                full_variant_path = f"{parent_variant} - {variant}" if parent_variant else variant
+                if any(line.strip().startswith("- ") for line in data_):
+                    result.extend(recursive_variant_parse(parser_, predicate, full_variant_path)(data_))
+                else:
+                    result.extend(parser_(full_variant_path)(data_))
+            return result
+        else:
+            return parser_(parent_variant)(data)
+
+    return parse
 
 def version_parse() -> parser[dict[str, str]]:
     @single_line_parser
@@ -305,7 +328,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem([""], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem([""], "drops", recursive_variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
@@ -316,6 +339,7 @@ message_parse_schema = dict_postprocess_parse(
                     SchemaItem(["Test environment"], "environment", environment_parse(), required=False),
                     SchemaItem(["Idle"], "idle", variant_parse(lag_parse, lambda data: ": " in data[0]), required=False),
                     SchemaItem(["Active"], "active", variant_parse(lag_parse, lambda data: ": " in data[0]), required=False),
+                    SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
             ), required=False),
             SchemaItem(["Video Links", "Video Link"], "video_links", flattened_list_parse(), required=False),
