@@ -87,6 +87,7 @@ def flattened_list_parse() -> parser[section]:
 
 def optionally_single_entry_flattened_list_parse() -> parser[section]:
     def parse(data: section) -> section:
+        if not data: return []
         if data[0].startswith("- "):
             return flattened_list_parse()(data)
         return data
@@ -158,7 +159,8 @@ def variant_parse[T](
     parser_: Callable[[str], parser[list[T]]], predicate: Callable[[section], bool]
 ) -> parser[list[T]]:
     def parse(data: section) -> list[T]:
-        # SKip rate tables
+        if not data: return []
+        # Skip rate tables
         if data[0].startswith("- See"):
             return []
 
@@ -178,6 +180,7 @@ def recursive_variant_parse[T](
     parent_variant: str = ""
 ) -> parser[list[T]]:
     def parse(data: section) -> list[T]:
+        if not data: return []
         # Skip rate tables
         if data[0].startswith("- See"):
             return []
@@ -322,7 +325,7 @@ def rates_predicate(data: section) -> bool:
         return False
     
     for values in parsed.values():
-        if values:
+        if values and len(values) > 0:
             return ": " not in values[0]
             
     return True
@@ -344,7 +347,7 @@ message_parse_schema = dict_postprocess_parse(
                 prefix_dict_parse("### "),
                 [
                     SchemaItem([""], "drops", recursive_variant_parse(rates_parse, rates_predicate), required=False),
-                    SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, rates_predicate), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
             ), required=False),
@@ -352,8 +355,8 @@ message_parse_schema = dict_postprocess_parse(
                 list_dict_parse(),
                 [
                     SchemaItem(["Test environment"], "environment", environment_parse(), required=False),
-                    SchemaItem(["Idle"], "idle", variant_parse(lag_parse, lambda data: ": " in data[0]), required=False),
-                    SchemaItem(["Active"], "active", variant_parse(lag_parse, lambda data: ": " in data[0]), required=False),
+                    SchemaItem(["Idle"], "idle", variant_parse(lag_parse, rates_predicate), required=False),
+                    SchemaItem(["Active"], "active", variant_parse(lag_parse, rates_predicate), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
             ), required=False),
