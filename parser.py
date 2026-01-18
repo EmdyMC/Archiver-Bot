@@ -346,7 +346,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem([""], "drops", recursive_variant_parse(rates_parse, rates_predicate), required=False),
+                    SchemaItem(["", "Drops"], "drops", recursive_variant_parse(rates_parse, rates_predicate), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, rates_predicate), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
