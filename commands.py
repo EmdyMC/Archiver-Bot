@@ -257,7 +257,7 @@ async def parse_thread(interaction: discord.Interaction, thread: discord.Thread)
     except Exception as e:
         error_view = await ParserErrorItem.create(bot, thread, e, 1)
         exceptions_view.add_item(error_view)
-        await interaction.channel.send(view=exceptions_view)
+        await interaction.response.send_message(view=exceptions_view)
         return
     del data["messages"]
     data["variants"] = parse_result
