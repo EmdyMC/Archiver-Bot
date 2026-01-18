@@ -93,29 +93,32 @@ def optionally_single_entry_flattened_list_parse() -> parser[section]:
 
     return parse
 
-
 def list_dict_parse() -> parser[dict_section]:
     def parse(data: section) -> dict_section:
         result: defaultdict[str, section] = defaultdict(list)
         current_key = ""
         for line in data:
-            clean_line = line.lstrip()
-            if clean_line.startswith("- "):
-                if ": " in clean_line:
-                    # print(line[2:].split(": ", 1))
-                    current_key, value = clean_line[2:].split(": ", 1)
-                    if value.strip() != "":
-                        result[current_key].append("- " + value)
+            stripped = line.lstrip()
+            if not stripped: 
+                continue
+            
+            if stripped.startswith("- "):
+                content = stripped[2:].strip()
+                # Check if this line is an actual data entry
+                if ": " in content:
+                    key, value = content.split(": ", 1)
+                    if value.strip():
+                        result[key].append("- " + value)
+                        current_key = key
                 else:
-                    current_key = clean_line[2:]
-                    if current_key.endswith(":"):
-                        current_key = current_key[:-1]
-            else:
-                result[current_key].append(clean_line[2:])
+                    # This is a variant header
+                    current_key = content.rstrip(":")
+                    if current_key not in result:
+                        result[current_key] = []
+            elif current_key:
+                result[current_key].append(stripped)
         return dict(result)
-
     return parse
-
 
 def schema_dict_parse[T](
     parser_: parser[dict_section],
@@ -312,6 +315,17 @@ def rates_parse(variant: str) -> parser[list[dict]]:
 
     return parse
 
+def rates_predicate(data: section) -> bool:
+    # Returns True if the section contains nested variants, False if it contains rates
+    parsed = list_dict_parse()(data)
+    if not parsed:
+        return False
+    
+    for values in parsed.values():
+        if values:
+            return ": " not in values[0]
+            
+    return True
 
 def lag_parse(variant: str) -> parser[list[dict]]:
     return single_line_parser(lambda data: [{"variant": variant, "lag": data}])
@@ -329,7 +343,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem([""], "drops", recursive_variant_parse(rates_parse, lambda data: not re.match(r"- .*?:\s*\d+", next(iter(list_dict_parse()(data).values()))[0])), required=False),
+                    SchemaItem([""], "drops", recursive_variant_parse(rates_parse, rates_predicate), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
