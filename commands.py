@@ -56,7 +56,7 @@ async def selector(interaction: discord.Interaction):
         await interaction.response.send_message(embed = discord.Embed(title = "This is not a thread in a forum channel"), ephemeral = True)
         return
     in_help_forum = interaction.channel.parent_id == HELP_FORUM
-    has_higher_role = any(role.id in HIGHER_ROLES for role in interaction.user.roles)
+    has_higher_role = any(role.id in *HIGHER_ROLES for role in interaction.user.roles)
     if (not in_help_forum and not has_higher_role) or (in_help_forum and interaction.user.id != interaction.channel.owner_id):
         await interaction.response.send_message(embed = discord.Embed(title = "You do not have the permissions to run that command here"), ephemeral = True)
         return
