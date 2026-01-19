@@ -99,26 +99,20 @@ def list_dict_parse() -> parser[dict_section]:
         result: defaultdict[str, section] = defaultdict(list)
         current_key = ""
         for line in data:
-            stripped = line.lstrip()
-            if not stripped: 
-                continue
-            
-            if stripped.startswith("- "):
-                content = stripped[2:].strip()
-                # Check if this line is an actual data entry
-                if ": " in content:
-                    key, value = content.split(": ", 1)
-                    if value.strip():
-                        result[key].append("- " + value)
-                        current_key = key
+            if line.startswith("- "):
+                if ": " in line:
+                    # print(line[2:].split(": ", 1))
+                    current_key, value = line[2:].split(": ", 1)
+                    if value.strip() != "":
+                        result[current_key].append("- " + value)
                 else:
-                    # This is a variant header
-                    current_key = content.rstrip(":")
-                    if current_key not in result:
-                        result[current_key] = []
-            elif current_key:
-                result[current_key].append(stripped)
+                    current_key = line[2:]
+                    if current_key.endswith(":"):
+                        current_key = current_key[:-1]
+            else:
+                result[current_key].append(line[2:])
         return dict(result)
+
     return parse
 
 def schema_dict_parse[T](
@@ -171,31 +165,6 @@ def variant_parse[T](
             return result
         else:
             return parser_("")(data)
-
-    return parse
-
-def recursive_variant_parse[T](
-    parser_: Callable[[str], parser[list[T]]], 
-    predicate: Callable[[section], bool],
-    parent_variant: str = ""
-) -> parser[list[T]]:
-    def parse(data: section) -> list[T]:
-        if not data: return []
-        # Skip rate tables
-        if data[0].startswith("- See"):
-            return []
-
-        if predicate(data):
-            result: list[T] = []
-            for variant, data_ in list_dict_parse()(data).items():
-                full_variant_path = f"{parent_variant} - {variant}" if parent_variant else variant
-                if any(line.strip().startswith("- ") for line in data_):
-                    result.extend(recursive_variant_parse(parser_, predicate, full_variant_path)(data_))
-                else:
-                    result.extend(parser_(full_variant_path)(data_))
-            return result
-        else:
-            return parser_(parent_variant)(data)
 
     return parse
 
@@ -346,7 +315,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem(["", "Drops"], "drops", recursive_variant_parse(rates_parse, rates_predicate), required=False),
+                    SchemaItem(["", "Drops"], "drops", variant_parse(rates_parse, rates_predicate), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, rates_predicate), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
