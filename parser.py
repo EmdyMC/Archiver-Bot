@@ -287,18 +287,6 @@ def rates_parse(variant: str) -> parser[list[dict]]:
 
     return parse
 
-def rates_predicate(data: section) -> bool:
-    # Returns True if the section contains nested variants, False if it contains rates
-    parsed = list_dict_parse()(data)
-    if not parsed:
-        return False
-    
-    for values in parsed.values():
-        if values and len(values) > 0:
-            return ": " not in values[0]
-            
-    return True
-
 def lag_parse(variant: str) -> parser[list[dict]]:
     return single_line_parser(lambda data: [{"variant": variant, "lag": data}])
 
@@ -315,8 +303,8 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem(["", "Drops"], "drops", variant_parse(rates_parse, rates_predicate), required=False),
-                    SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, rates_predicate), required=False),
+                    SchemaItem(["", "Drops"], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
             ), required=False),
@@ -324,8 +312,8 @@ message_parse_schema = dict_postprocess_parse(
                 list_dict_parse(),
                 [
                     SchemaItem(["Test environment"], "environment", environment_parse(), required=False),
-                    SchemaItem(["Idle"], "idle", variant_parse(lag_parse, rates_predicate), required=False),
-                    SchemaItem(["Active"], "active", variant_parse(lag_parse, rates_predicate), required=False),
+                    SchemaItem(["Idle"], "idle", variant_parse(lag_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem(["Active"], "active", variant_parse(lag_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
             ), required=False),
