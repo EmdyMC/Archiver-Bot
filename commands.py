@@ -19,8 +19,11 @@ async def close_resolved(interaction: discord.Interaction):
     for channel in guild.channels:
         if isinstance(channel, discord.ForumChannel):
             for thread in channel.threads:
-                if thread.archived or thread.locked:
+                if thread.archived:
                     continue
+                if thread.locked:
+                    thread.edit(locked=False)
+                    thread.edit(archived=True, locked=True)
                 if any(tag.name.lower() in tags for tag in thread.applied_tags):
                     try:
                         await thread.edit(archived=True)

@@ -153,7 +153,6 @@ def variant_parse[T](
     parser_: Callable[[str], parser[list[T]]], predicate: Callable[[section], bool]
 ) -> parser[list[T]]:
     def parse(data: section) -> list[T]:
-        if not data: return []
         # Skip rate tables
         if data[0].startswith("- See"):
             return []
@@ -303,7 +302,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(["Rates"], "rates", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
-                    SchemaItem(["", "Drops"], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
+                    SchemaItem([""], "drops", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Consumes"], "consumption", variant_parse(rates_parse, lambda data: ": " in next(iter(list_dict_parse()(data).values()))[0]), required=False),
                     SchemaItem(["Notes"], "notes", flattened_list_parse(), required=False)
                 ],
