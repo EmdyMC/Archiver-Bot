@@ -348,9 +348,9 @@ async def update_tracker_list():
     if pending_messages or awaiting_testing or accepted_posts:
         pending_messages.reverse()
         awaiting_testing.reverse()
-        await send_chunked_messages(tracker_channel, "## 🕥 Pending Decision", pending_messages, tracker_list_messages)
-        await send_chunked_messages(tracker_channel, "## 🧪 Awaiting Testing", awaiting_testing, tracker_list_messages)
-        await send_chunked_messages(tracker_channel, "## ✅ Pending Archival", accepted_posts, tracker_list_messages)
+        await send_chunked_messages(tracker_channel, f"## 🕥 Pending Decision ({len(pending_messages)})", pending_messages, tracker_list_messages)
+        await send_chunked_messages(tracker_channel, f"## 🧪 Awaiting Testing ({len(awaiting_testing)})", awaiting_testing, tracker_list_messages)
+        await send_chunked_messages(tracker_channel, f"## ✅ Pending Archival ({len(accepted_posts)})", accepted_posts, tracker_list_messages)
         try:
             async with aiofiles.open("messages.json", mode='w') as list:
                 await list.write(json.dumps(tracker_list_messages))
