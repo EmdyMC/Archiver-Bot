@@ -262,6 +262,15 @@ def get_diff_block(old_text, new_text):
 
     return "\n".join(ansi_lines)
 
+# Timeout user
+async def timeout_user(seconds: int, user: discord.Member):
+    try:
+        until = datetime.now(UTC) + timedelta(seconds=seconds)
+        await user.timeout(until, reason="No chat user caught")
+    except discord.Forbidden:
+        logs = bot.get_channel(LOG_CHANNEL)
+        await logs.send(f"Could not timeout user {user.mention}, no permission.")
+
 # Open all archive threads
 async def open_all_archived(run_channel: discord.TextChannel):
     opened_posts = 0
@@ -397,6 +406,7 @@ async def on_message(message: discord.Message):
     if message.author.get_role(NO_CHAT):
         try:
             await message.delete()
+            await timeout_user(seconds=10, user=message.author)
             embed=discord.Embed(
                 title="Message blocked", 
                 description=f"""
@@ -405,7 +415,7 @@ If you wish to partake in the server fully make sure to select the correct optio
 )
             embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
             await message.author.send(embed=embed)
-            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to a message in {message.channel.jump_url} but has the no chat role. Notified via DM."))
+            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM."))
         except discord.Forbidden:
             await message.channel.send(embed=embed)
             await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role with DMs disabled. Notified in channel."))
