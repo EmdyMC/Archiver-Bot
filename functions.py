@@ -394,7 +394,8 @@ async def on_message(message: discord.Message):
         await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
     # Catch images sent by no chat users
-    if (message.attachments or message.embeds) and message.author.get_role(NO_CHAT):
+    if message.author.get_role(NO_CHAT):
+        await logs.send("No chat user message found")
         try:
             await message.delete()
             await message.author.send(content=f"""## Message blocked
