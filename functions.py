@@ -403,10 +403,10 @@ async def on_message(message: discord.Message):
         await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
     # Catch images sent by no chat users
-    if message.author.get_role(NO_CHAT):
+    if message.author.get_role(NO_CHAT) and not any(role.id in STAFF_ROLES for role in message.author.roles):
         try:
             await message.delete()
-            await timeout_user(seconds=10, user=message.author)
+            await timeout_user(seconds=20, user=message.author)
             embed=discord.Embed(
                 title="Message blocked", 
                 description=f"""
