@@ -363,19 +363,19 @@ async def update_tracker_list():
 # Message actions
 @bot.event
 async def on_message(message: discord.Message):
-    #Ignore own messages
+    logs = bot.get_channel(LOG_CHANNEL)
+    # Ignore own messages
     if message.author == bot.user:
         return
+    # Forward DMs
     if isinstance(message.channel, discord.DMChannel):
         try:
             helper_thread = await bot.fetch_channel(1413793955295920178)
             await helper_thread.send(embed=discord.Embed(title="DM received", description=f"From user: {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold()))
         except Exception as e:
-            logs = bot.get_channel(LOG_CHANNEL)
             await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
     # Pin snapshot updates
     if message.flags.is_crossposted and message.channel.id == SNAPSHOT_CHANNEL:
-        logs = bot.get_channel(LOG_CHANNEL)
         try:
             pinned_messages = await message.channel.pins(limit=5)
             if pinned_messages:
@@ -393,9 +393,18 @@ async def on_message(message: discord.Message):
         random_message = random.choice(RANDOM_REPLIES)
         await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
+    # Catch images sent by no chat users
+    if (message.attachments or message.embeds) and message.author.get_role(NO_CHAT):
+        try:
+            await message.delete()
+            await message.author.send(content=f"""## Message blocked
+                                 Your message on TMCC has been blocked as part of scam prevention efforts as you failed to select the right onboarding option when joining the server (see [attachment](https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png)) and your account is suspected to be compromised.
+                                  If you wish to partake in the server fully make sure to select the correct option in the "Channels and Roles" section and adhere to the rules of the server.""")
+            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send images in {message.channel.jump_url} but has the no chat role. Notified via DM."))
+        except discord.Forbidden:
+            await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send images in {message.channel.jump_url} but has the no chat role with DMs disabled. Could not notify."))
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
-        logs = bot.get_channel(LOG_CHANNEL)
         if message.id == message.channel.id:
             try:
                 await message.pin()
@@ -413,8 +422,8 @@ async def on_message(message: discord.Message):
             except Exception as e:
                 embed = discord.Embed(title=f"An error occurred {e}")
                 await logs.send(embed=embed)
+    # Pin first message in help forum and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == HELP_FORUM:
-        logs = bot.get_channel(LOG_CHANNEL)
         if message.id == message.channel.id:
             try:
                 await message.pin()
