@@ -497,14 +497,14 @@ def parse_lag_section(data: section) -> dict:
     # Split by ### headers
     sections = prefix_dict_parse("### ")(data)
 
-    # --- Main lag lines (before any ### header) ---
+    # Main lines
     main_lines = sections.get("", [])
     main_nodes = parse_nested_list(main_lines)
 
     for node in main_nodes:
         text = node.text.strip()
 
-        # --- Environment ---
+        # Environment
         if text.startswith("Test environment: CPU"):
             m = re.match(
                 r"Test environment: CPU (.*?)( with Lithium)?( in (.*?))?( using (.*))?$",
@@ -517,7 +517,7 @@ def parse_lag_section(data: section) -> dict:
                 default_variant = (m.group(6) or "").strip()
             continue
 
-        # --- Flat Idle / Active entries ---
+        # Flat lag entries
         m = re.match(r"(Idle|Active):\s*([\d\.]+)mspt", text)
         if m:
             section_name = m.group(1).lower()
@@ -528,12 +528,12 @@ def parse_lag_section(data: section) -> dict:
             })
             continue
 
-        # --- Nested lag entries ---
+        # Nested entries
         key = node.text.lower().rstrip(":").strip()
         if key in result:
             walk_lag(node.children, [], result[key], default_variant=default_variant)
 
-    # --- Notes section (optional) ---
+    # Notes
     if "Notes" in sections:
         notes_lines = sections["Notes"]
         result["notes"] = serialize_nodes(parse_nested_list(notes_lines))
@@ -603,7 +603,6 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
     for node in nodes:
         urls = re.findall(r"(https?://\S+)", node.text)
 
-        # --- One or more files on this line ---
         if urls:
             # Note only applies if there's exactly one file
             note = ""
@@ -618,7 +617,6 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
                     "note": note if len(urls) == 1 else "",
                 })
         else:
-            # --- Folder ---
             result.append({
                 "type": "folder",
                 "name": node.text.rstrip(":"),
