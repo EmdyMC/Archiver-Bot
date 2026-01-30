@@ -398,12 +398,17 @@ async def on_message(message: discord.Message):
         await logs.send("No chat user message found")
         try:
             await message.delete()
-            await message.author.send(content=f"""## Message blocked
-                                 Your message on TMCC has been blocked as part of scam prevention efforts as you failed to select the right onboarding option when joining the server (see [attachment](https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png)) and your account is suspected to be compromised.
-                                  If you wish to partake in the server fully make sure to select the correct option in the "Channels and Roles" section and adhere to the rules of the server.""")
-            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send images in {message.channel.jump_url} but has the no chat role. Notified via DM."))
+            embed=discord.Embed(
+                title="Message blocked", 
+                description="""
+Your message on TMCC has been blocked as part of scam prevention efforts as you failed to select the right onboarding option when joining the server (see below) and your account is suspected to be compromised.
+If you wish to partake in the server fully make sure to select the correct option in the "Channels and Roles" section and adhere to the rules of the server."""
+)
+            embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
+            await message.author.send(embed=embed)
+            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to a message in {message.channel.jump_url} but has the no chat role. Notified via DM."))
         except discord.Forbidden:
-            await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send images in {message.channel.jump_url} but has the no chat role with DMs disabled. Could not notify."))
+            await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role with DMs disabled. Could not notify."))
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
         if message.id == message.channel.id:
