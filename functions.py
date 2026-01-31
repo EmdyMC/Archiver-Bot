@@ -404,27 +404,32 @@ async def on_message(message: discord.Message):
     await bot.process_commands(message)
     # Catch images sent by no chat users
     if message.author.get_role(NO_CHAT) and not any(role.id in STAFF_ROLES for role in message.author.roles):
+        attachments = []
         try:
+            for attachment in message.attachments:
+                attachments.append(await attachment.to_file())
+            message_content = message.content
+            jump_url = message.channel.jump_url
+            author = message.author
             await message.delete()
-            await timeout_user(seconds=20, user=message.author)
-            embed=discord.Embed(
+            await timeout_user(seconds=20, user=author)
+            warn_embed=discord.Embed(
                 title="Message blocked", 
                 description=f"""
 {message.author.mention} Your message on TMCC has been blocked as part of scam prevention efforts as you failed to select the right onboarding option when joining the server (see below) and your account is suspected to be compromised.
 If you wish to partake in the server fully make sure to select the correct option in the "Channels and Roles" section and adhere to the rules of the server."""
 )
-            embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
-            await message.author.send(embed=embed)
-            log_embed = discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}")
-            if message.attachments:
-                log_embed.set_image(message.attachments[0].url)
-            await logs.send(embed=log_embed)
-        except discord.Forbidden:
-            await message.channel.send(embed=embed)
-            log_embed = discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}")
-            if message.attachments:
-                log_embed.set_image(message.attachments[0].url)
-            await logs.send(embed=log_embed)
+            warn_embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
+            try:
+                await message.author.send(embed=warn_embed)
+                dm_status = "Notified via DM"
+            except discord.Forbidden:
+                await message.channel.send(embed=warn_embed, delete_after=10)
+                dm_status = "DMs closed, notified in-channel"
+            log_embed = discord.Embed(title="No chat user caught", description=f"User {author.mention} tried to send a message in {jump_url} but has the no chat role. {dm_status}.\nContent: {message_content}", color=discord.Color.red())
+            await logs.send(embed=log_embed, files=attachments)
+        except Exception as e:
+            await logs.send(embed=discord.Embed(title="Error in no-chat filter", description=f"{e}", color=discord.Color.red()))
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
         if message.id == message.channel.id:
