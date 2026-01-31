@@ -45,14 +45,6 @@ def identity[T](x: T) -> T:
     return x
 
 
-def safe_predicate(data: section) -> bool:
-    parsed_dict = list_dict_parse()(data)
-    if not parsed_dict:
-        return False
-    first_val = next(iter(parsed_dict.values()), [])
-    return bool(first_val and ": " in first_val[0])
-
-
 def single_line_parser[T](function: Callable[[str], T]) -> parser[T]:
     @wraps(function)
     def wrapper(data: section) -> T:
@@ -367,7 +359,7 @@ def rates_section_parser() -> parser[dict]:
     def parse(data: section) -> dict:
         result = {
             "drops": [],
-            "consumes": [],
+            "consumption": [],
             "notes": [],
         }
 
@@ -387,7 +379,7 @@ def rates_section_parser() -> parser[dict]:
                 parse_nested_list(sections["Consumes"]),
                 [],
                 None,
-                result["consumes"],
+                result["consumption"],
             )
 
         if "Notes" in sections:
@@ -574,8 +566,8 @@ def walk_lag(nodes, conditions, out, default_variant=""):
         )
 
 
-def videos_parse() -> parser[dict[str, str]]:
-    def parse(data: list[str]) -> dict[str, str]:
+def videos_parse() -> parser[list[dict[str, str]]]:
+    def parse(data: list[str]) -> list[dict[str, str]]:
         result = []
         for line in data:
             if not line.startswith("- "):
@@ -626,21 +618,23 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
     return result
 
 
-def figures_parse() -> parser[list[str]]:
-    def parse(data: section) -> list[str]:
-        urls: list[str] = []
+def figures_parse() -> parser[list[dict]]:
+    def parse(data: section) -> list[dict]:
+        figures: list[dict] = []
 
         for line in data:
             stripped = line.lstrip()
             if not stripped.startswith("- "):
                 continue
 
-            # Extract URL
-            match = re.search(r"(https?://\S+)", stripped)
-            if match:
-                urls.append(match.group(1))
+            urls = re.findall(r"(https?://\S+)", stripped)
+            for url in urls:
+                figures.append({
+                    "url": url,
+                    "name": url.split("/")[-1],
+                })
 
-        return urls
+        return figures
 
     return parse
 
