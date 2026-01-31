@@ -783,7 +783,7 @@ if __name__ == "__main__":
         1383836451980050442, #chunk-loading
         1431068303228669952, #mob-switches
         1386442783338004501, #infrastructure
-        1386748149531541698, #terrain-clering
+        1386748149531541698, #terrain-clearing
         1431451350826487940, #entity-transport
     }
 
