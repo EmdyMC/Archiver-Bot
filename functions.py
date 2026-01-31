@@ -427,6 +427,8 @@ If you wish to partake in the server fully make sure to select the correct optio
                 await message.channel.send(embed=warn_embed, delete_after=10)
                 dm_status = "DMs closed, notified in-channel"
             log_embed = discord.Embed(title="No chat user caught", description=f"User {author.mention} tried to send a message in {jump_url} but has the no chat role. {dm_status}.\nContent: {message_content}", color=discord.Color.red())
+            if attachments:
+                log_embed.set_image(url=f"attachment://{attachments[0].filename}")
             await logs.send(embed=log_embed, files=attachments)
         except Exception as e:
             await logs.send(embed=discord.Embed(title="Error in no-chat filter", description=f"{e}", color=discord.Color.red()))
