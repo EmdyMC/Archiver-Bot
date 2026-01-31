@@ -418,7 +418,7 @@ If you wish to partake in the server fully make sure to select the correct optio
             await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}"))
         except discord.Forbidden:
             await message.channel.send(embed=embed)
-            await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role with DMs disabled. Notified in channel."))
+            await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role with DMs disabled. Notified in channel.\nContent: {message.content}"))
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
         if message.id == message.channel.id:
