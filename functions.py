@@ -415,7 +415,7 @@ If you wish to partake in the server fully make sure to select the correct optio
 )
             embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
             await message.author.send(embed=embed)
-            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM."))
+            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}"))
         except discord.Forbidden:
             await message.channel.send(embed=embed)
             await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role with DMs disabled. Notified in channel."))
