@@ -415,10 +415,16 @@ If you wish to partake in the server fully make sure to select the correct optio
 )
             embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
             await message.author.send(embed=embed)
-            await logs.send(embed=discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}"))
+            log_embed = discord.Embed(title="No chat user caught", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}")
+            if message.attachments:
+                log_embed.set_image(message.attachments[0].url)
+            await logs.send(embed=log_embed)
         except discord.Forbidden:
             await message.channel.send(embed=embed)
-            await logs.send(embed=discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role with DMs disabled. Notified in channel.\nContent: {message.content}"))
+            log_embed = discord.Embed(title="No chat user has DMs closed", description=f"User {message.author.mention} tried to send a message in {message.channel.jump_url} but has the no chat role. Notified via DM.\nContent: {message.content}")
+            if message.attachments:
+                log_embed.set_image(message.attachments[0].url)
+            await logs.send(embed=log_embed)
     # Pin first message in submission posts and send info message
     if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
         if message.id == message.channel.id:
