@@ -30,7 +30,7 @@ class Rate(TypedDict):
 class Rates(TypedDict):
     drops: list[Rate]
     consumption: list[Rate]
-    notes: list[str] | None
+    notes: list[TextNode] | None
     
 class LagEnvironment(TypedDict):
     cpu: str
@@ -76,6 +76,7 @@ class Instructions(TypedDict):
 
 class Figure(TypedDict):
     url: str
+    name: str
 
 class Message(TypedDict):
     designers: list[Contributor]
