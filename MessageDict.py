@@ -1,5 +1,10 @@
 from typing import TypedDict
+from typing import Literal
 
+class TextNode(TypedDict):
+    list_type: Literal["dashed", "numbered"]
+    text: str
+    children: list["TextNode"]
 
 class Contributor(TypedDict):
     id: int
@@ -14,10 +19,10 @@ class Versions(TypedDict):
     thread: str
 
 class Rate(TypedDict):
-    variant: str
+    variants: list[str]
     version: str
     drop: str
-    condition: str
+    conditions: str
     rates: float
     interval: str
     note: str
@@ -25,48 +30,65 @@ class Rate(TypedDict):
 class Rates(TypedDict):
     drops: list[Rate]
     consumption: list[Rate]
-    notes: list[str] | None
+    notes: list[TextNode] | None
     
 class LagEnvironment(TypedDict):
     cpu: str
-    lithium: bool
+    has_lithium: bool
     version: str
 
 class LagEntry(TypedDict):
-    variant: str
+    conditions: list[str]
     lag: float
 
 class LagInfo(TypedDict):
     environment: LagEnvironment
     idle: list[LagEntry]
     active: list[LagEntry]
+    notes: list[TextNode]
+
+class VideoLink(TypedDict):
+    name: str
+    url: str
+
+class FileNode(TypedDict):
+    type: Literal["file"]
+    name: str
+    url: str
+    note: str | None
+
+class FolderNode(TypedDict):
+    type: Literal["folder"]
+    name: str
+    children: list["FileTreeNode"]
+
+FileTreeNode = FileNode | FolderNode
 
 class Files(TypedDict):
-    schematics: list[str]
-    world_downloads: list[str]
-    images: list[str]
+    schematics: list[FileTreeNode]
+    world_downloads: list[FileTreeNode]
+    images: list[FileTreeNode]
 
 class Instructions(TypedDict):
-    notes: list[str]
-    build: list[str]
-    usage: list[str]
+    notes: list[TextNode]
+    build: list[TextNode]
+    usage: list[TextNode]
 
 class Figure(TypedDict):
+    url: str
     name: str
-    link: str
 
 class Message(TypedDict):
-    variant_name: str
     designers: list[Contributor]
     credits: list[Contributor]
     versions: Versions
     rates: Rates
     lag_info: LagInfo | None
-    video_links: list[str]
+    video_links: list[VideoLink]
     files: Files
-    description: list[str]
-    positives: list[str]
-    negatives: list[str]
-    design_specifications: list[str]
+    description: list[TextNode]
+    positives: list[TextNode]
+    negatives: list[TextNode]
+    design_specifications: list[TextNode]
     instructions: Instructions
     figures: list[Figure]
