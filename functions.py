@@ -385,8 +385,9 @@ async def on_message(message: discord.Message):
             for attachment in message.attachments:
                 attachments.append(await attachment.to_file())
             if message.attachments:
+                forward.description = f"From user: {message.author.mention}\nContent: {message.content}\nAttachment:"
                 forward.set_image(url=f"attachment://{attachments[0].filename}")
-            await helper_thread.send(embed=forward)
+            await helper_thread.send(embed=forward, files=attachments)
         except Exception as e:
             await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
     # Pin snapshot updates
