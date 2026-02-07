@@ -658,4 +658,4 @@ class ReplyBox(discord.ui.Modal, title="Reply to DM"):
     async def on_submit(self, interaction: discord.Interaction):
         helper_thread = await bot.fetch_channel(1413793955295920178)
         await self.DM.channel.send(self.message.value)
-        await helper_thread.send(embed=discord.Embed(title="DM Sent", description=f"**{interaction.user.mention} sent the following message to {self.DM.author.mention} in DMs:**\n{self.message.value}"))
+        await interaction.response.send_message(embed=discord.Embed(title="DM Sent", description=f"**{interaction.user.mention} sent the following message to {self.DM.author.mention} in DMs:**\n{self.message.value}"))
