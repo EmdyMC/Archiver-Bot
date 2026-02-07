@@ -431,7 +431,8 @@ If you wish to partake in the server fully make sure to select the correct optio
             warn_embed.set_image(url="https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png")
             try:
                 await message.author.send(embed=warn_embed)
-                dm_status = "Notified via DM"
+                await message.channel.send(embed=warn_embed, delete_after=10)
+                dm_status = "Notified via DM and in channel"
             except discord.Forbidden:
                 await message.channel.send(embed=warn_embed, delete_after=10)
                 dm_status = "DMs closed, notified in-channel"
