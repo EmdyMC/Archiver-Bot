@@ -640,6 +640,7 @@ class ReplyButton(discord.ui.View):
         self.DM = DM
         self.reply_button = discord.ui.Button(label="Reply", style=discord.ButtonStyle.blurple, custom_id="reply")
         self.reply_button.callback = self.reply
+        self.add_item(self.reply_button)
     async def reply(self, interaction:discord.Interaction):
         await interaction.response.send_modal(ReplyBox(DM=self.DM))
 
