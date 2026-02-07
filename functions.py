@@ -1,5 +1,4 @@
 from init import *
-from modals import ReplyButton
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -633,3 +632,29 @@ async def iter_all_threads(channel: discord.ForumChannel):
 
     async for thread in channel.archived_threads(limit=None):
         yield thread
+
+# Reply view
+class ReplyButton(discord.ui.View):
+    def __init__(self, DM: discord.Message):
+        super().__init__()
+        self.DM = DM
+        self.reply_button = discord.ui.Button(label="Reply", style=discord.ButtonStyle.blurple, custom_id="reply")
+        self.reply_button.callback = self.reply
+    async def reply(self, interaction:discord.Interaction):
+        await interaction.response.send_modal(ReplyBox(DM=self.DM))
+
+# Reply modal
+class ReplyBox(discord.ui.Modal, title="Reply to DM"):
+    def __init__(self, DM: discord.Message):
+        super().__init__()
+        self.message = discord.ui.TextInput(
+            label="Message content:",
+            style=discord.TextStyle.long,
+            required=True
+        )
+        self.add_item(self.message)
+        self.DM = DM
+    async def on_submit(self, interaction: discord.Interaction):
+        helper_thread = await bot.fetch_channel(1413793955295920178)
+        await self.DM.channel.send(self.message.value)
+        await helper_thread.send(embed=discord.Embed(title="DM Sent", description=f"**{interaction.user.mention} sent the following message to {self.DM.author.mention} in DMs:**\n{self.message.value}"))
