@@ -1,4 +1,5 @@
 from init import *
+from modals import ReplyButton
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -388,6 +389,8 @@ async def on_message(message: discord.Message):
                 forward.description = f"From user: {message.author.mention}\nContent: {message.content}\nAttachment:"
                 forward.set_image(url=f"attachment://{attachments[0].filename}")
             await helper_thread.send(embed=forward, files=attachments)
+            reply_view = ReplyButton(DM=message)
+            await helper_thread.send(view=reply_view)
         except Exception as e:
             await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
     # Pin snapshot updates
