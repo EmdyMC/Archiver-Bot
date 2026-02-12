@@ -380,6 +380,7 @@ async def on_message(message: discord.Message):
     if isinstance(message.channel, discord.DMChannel):
         try:
             helper_thread = await bot.fetch_channel(1413793955295920178)
+            reply_view = ReplyButton(DM=message)
             forward = discord.Embed(title="DM received", description=f"From user: {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
             attachments = []
             for attachment in message.attachments:
@@ -387,9 +388,7 @@ async def on_message(message: discord.Message):
             if message.attachments:
                 forward.description = f"From user: {message.author.mention}\nContent: {message.content}\nAttachment:"
                 forward.set_image(url=f"attachment://{attachments[0].filename}")
-            await helper_thread.send(embed=forward, files=attachments)
-            reply_view = ReplyButton(DM=message)
-            await helper_thread.send(view=reply_view)
+            await helper_thread.send(embed=forward, files=attachments, view=reply_view)
         except Exception as e:
             await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
     # Pin snapshot updates
