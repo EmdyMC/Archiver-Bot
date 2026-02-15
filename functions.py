@@ -381,7 +381,8 @@ async def on_message(message: discord.Message):
         try:
             helper_thread = await bot.fetch_channel(1413793955295920178)
             reply_view = ReplyButton(DM=message)
-            forward = discord.Embed(title="DM received", description=f"From user: {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
+            forward = discord.Embed(title="DM received", description=f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
+            forward.set_thumbnail({message.author.display_avatar.url})
             attachments = []
             for attachment in message.attachments:
                 attachments.append(await attachment.to_file())
@@ -636,7 +637,7 @@ async def iter_all_threads(channel: discord.ForumChannel):
 # Reply view
 class ReplyButton(discord.ui.View):
     def __init__(self, DM: discord.Message):
-        super().__init__()
+        super().__init__(timeout=None)
         self.DM = DM
         self.reply_button = discord.ui.Button(label="Reply", style=discord.ButtonStyle.blurple, custom_id="reply")
         self.reply_button.callback = self.reply
