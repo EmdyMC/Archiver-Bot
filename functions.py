@@ -382,7 +382,7 @@ async def on_message(message: discord.Message):
             helper_thread = await bot.fetch_channel(1413793955295920178)
             reply_view = ReplyButton(DM=message)
             forward = discord.Embed(title="DM received", description=f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
-            forward.set_thumbnail(message.author.display_avatar.url)
+            forward.set_thumbnail(url=message.author.display_avatar.url)
             attachments = []
             for attachment in message.attachments:
                 attachments.append(await attachment.to_file())
