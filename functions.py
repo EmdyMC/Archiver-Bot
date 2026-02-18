@@ -379,7 +379,7 @@ async def on_message(message: discord.Message):
     # Forward DMs
     if isinstance(message.channel, discord.DMChannel):
         try:
-            helper_thread = await bot.fetch_channel(1413793955295920178)
+            helper_thread = await bot.fetch_channel(BOT_DM_THREAD)
             reply_view = ReplyButton(DM=message)
             forward = discord.Embed(title="DM received", description=f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
             forward.set_thumbnail(url=message.author.display_avatar.url)
@@ -387,8 +387,7 @@ async def on_message(message: discord.Message):
             for attachment in message.attachments:
                 attachments.append(await attachment.to_file())
             if message.attachments:
-                forward.description = f"From user: {message.author.mention}\nContent: {message.content}\nAttachment:"
-                forward.set_image(url=f"attachment://{attachments[0].filename}")
+                forward.description = f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}\nAttachment:"
             await helper_thread.send(embed=forward, files=attachments, view=reply_view)
         except Exception as e:
             await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
@@ -657,6 +656,6 @@ class ReplyBox(discord.ui.Modal, title="Reply to DM"):
         self.add_item(self.message)
         self.DM = DM
     async def on_submit(self, interaction: discord.Interaction):
-        helper_thread = await bot.fetch_channel(1413793955295920178)
+        helper_thread = await bot.fetch_channel(BOT_DM_THREAD)
         await self.DM.channel.send(self.message.value)
-        await interaction.response.send_message(embed=discord.Embed(title="DM Sent", description=f"**{interaction.user.mention} sent the following message to {self.DM.author.mention} in DMs:**\n{self.message.value}"))
+        await interaction.response.send_message(embed=discord.Embed(title="DM Sent", description=f"**{interaction.user.mention} sent the following message to {self.DM.author.name} {self.DM.author.mention} in DMs:**\n{self.message.value}"))
