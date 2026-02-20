@@ -379,7 +379,7 @@ async def on_message(message: discord.Message):
     # Forward DMs
     if isinstance(message.channel, discord.DMChannel):
         async with aiofiles.open(BLACKLIST, mode='r') as f:
-            content = f.read()
+            content = await f.read()
             users = json.loads(content)
             if message.author.id not in users:
                 try:
@@ -650,14 +650,14 @@ class ReplyButton(discord.ui.View):
         self.add_item(self.delete_button)
         self.block_button = discord.ui.Button(label="Block", style=discord.ButtonStyle.red, custom_id="block")
         self.block_button.callback = self.block
-        self.add_item(self.delete_button)
+        self.add_item(self.block_button)
     async def reply(self, interaction:discord.Interaction):
         await interaction.response.send_modal(ReplyBox(DM=self.DM))
     async def delete(self):
         await self.DM.delete()
     async def block(self, interaction:discord.Interaction):
         async with aiofiles.open(BLACKLIST, mode='r') as f:
-            content = f.read()
+            content = await f.read()
             users = json.loads(content)
             if self.DM.author.id not in users:
                 users.append(self.DM.author.id)
