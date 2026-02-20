@@ -38,6 +38,7 @@ CLOCK_EMOJI = "🕥"
 CROSS_EMOJI = "❌"
 ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
+BLACKLIST = "blacklist.json"
 DISCORD_CHAR_LIMIT = 1800
 
 # Embed text

@@ -378,19 +378,23 @@ async def on_message(message: discord.Message):
         return
     # Forward DMs
     if isinstance(message.channel, discord.DMChannel):
-        try:
-            helper_thread = await bot.fetch_channel(BOT_DM_THREAD)
-            reply_view = ReplyButton(DM=message)
-            forward = discord.Embed(title="DM received", description=f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
-            forward.set_thumbnail(url=message.author.display_avatar.url)
-            attachments = []
-            for attachment in message.attachments:
-                attachments.append(await attachment.to_file())
-            if message.attachments:
-                forward.description = f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}\nAttachment:"
-            await helper_thread.send(embed=forward, files=attachments, view=reply_view)
-        except Exception as e:
-            await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
+        async with aiofiles.open(BLACKLIST, mode='r') as f:
+            content = f.read()
+            users = json.loads(content)
+            if message.author.id not in users:
+                try:
+                    helper_thread = await bot.fetch_channel(BOT_DM_THREAD)
+                    reply_view = ReplyButton(DM=message)
+                    forward = discord.Embed(title="DM received", description=f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}", color=discord.Color.dark_gold())
+                    forward.set_thumbnail(url=message.author.display_avatar.url)
+                    attachments = []
+                    for attachment in message.attachments:
+                        attachments.append(await attachment.to_file())
+                    if message.attachments:
+                        forward.description = f"From user: {message.author.name} {message.author.mention}\nContent: {message.content}\nAttachment:"
+                    await helper_thread.send(embed=forward, files=attachments, view=reply_view)
+                except Exception as e:
+                    await logs.send(embed=discord.Embed(title="Error forwarding DM", description=f"{e}"))
     # Pin snapshot updates
     if message.flags.is_crossposted and message.channel.id == SNAPSHOT_CHANNEL:
         try:
@@ -641,9 +645,27 @@ class ReplyButton(discord.ui.View):
         self.reply_button = discord.ui.Button(label="Reply", style=discord.ButtonStyle.blurple, custom_id="reply")
         self.reply_button.callback = self.reply
         self.add_item(self.reply_button)
+        self.delete_button = discord.ui.Button(label="Delete", style=discord.ButtonStyle.red, custom_id="delete")
+        self.delete_button.callback = self.delete
+        self.add_item(self.delete_button)
+        self.block_button = discord.ui.Button(label="Block", style=discord.ButtonStyle.red, custom_id="block")
+        self.block_button.callback = self.block
+        self.add_item(self.delete_button)
     async def reply(self, interaction:discord.Interaction):
         await interaction.response.send_modal(ReplyBox(DM=self.DM))
-
+    async def delete(self):
+        await self.DM.delete()
+    async def block(self, interaction:discord.Interaction):
+        async with aiofiles.open(BLACKLIST, mode='r') as f:
+            content = f.read()
+            users = json.loads(content)
+            if self.DM.author.id not in users:
+                users.append(self.DM.author.id)
+                async with aiofiles.open(BLACKLIST, mode='w') as f:
+                    await f.write(json.dumps(users, indent=4))
+                await interaction.response.send_message(embed=discord.Embed(title="User Blocked", description=f"{self.DM.author.name} {self.DM.author.mention} added to blacklist"))
+            else:
+                await interaction.response.send_message(embed=discord.Embed(title="User Already Blocked", description=f"{self.DM.author.name} {self.DM.author.mention} already in blacklist"))
 # Reply modal
 class ReplyBox(discord.ui.Modal, title="Reply to DM"):
     def __init__(self, DM: discord.Message):
