@@ -415,7 +415,7 @@ async def on_message(message: discord.Message):
         await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
     # Catch images sent by no chat users
-    if message.author.get_role(NO_CHAT) and not any(role.id in STAFF_ROLES for role in message.author.roles):
+    if not any(NO_CHAT == role.id for role in message.author.roles) and not any(role.id in STAFF_ROLES for role in message.author.roles):
         attachments = []
         try:
             for attachment in message.attachments:
