@@ -654,8 +654,7 @@ class ReplyButton(discord.ui.View):
     async def reply(self, interaction:discord.Interaction):
         await interaction.response.send_modal(ReplyBox(DM=self.DM))
     async def delete(self, interaction:discord.Interaction):
-        await self.DM.delete()
-        await interaction.response.send_message("Message deleted", ephemeral=True)
+        await interaction.message.delete()
     async def block(self, interaction:discord.Interaction):
         async with aiofiles.open(BLACKLIST, mode='r') as f:
             content = await f.read()
