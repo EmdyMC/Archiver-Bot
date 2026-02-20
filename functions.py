@@ -415,7 +415,7 @@ async def on_message(message: discord.Message):
         await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
     # Catch images sent by no chat users
-    if not any(NO_CHAT == role.id for role in message.author.roles) and not any(role.id in STAFF_ROLES for role in message.author.roles):
+    if message.author.get_role(NO_CHAT) and not any(role.id in STAFF_ROLES for role in message.author.roles):
         attachments = []
         try:
             for attachment in message.attachments:
@@ -653,8 +653,9 @@ class ReplyButton(discord.ui.View):
         self.add_item(self.block_button)
     async def reply(self, interaction:discord.Interaction):
         await interaction.response.send_modal(ReplyBox(DM=self.DM))
-    async def delete(self):
+    async def delete(self, interaction:discord.Interaction):
         await self.DM.delete()
+        await interaction.response.send_message("Message deleted", ephemeral=True)
     async def block(self, interaction:discord.Interaction):
         async with aiofiles.open(BLACKLIST, mode='r') as f:
             content = await f.read()
