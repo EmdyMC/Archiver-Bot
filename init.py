@@ -17,4 +17,4 @@ intents.guilds = True
 intents.members = True
 intents.messages = True
 intents.message_content = True
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='!', intents=intents, member_cache_flags=discord.MemberCacheFlags.from_intents(intents), chunk_guilds_at_startup=False)
