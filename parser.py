@@ -5,6 +5,7 @@ import re
 from collections import Counter, defaultdict
 from functools import wraps
 from typing import Callable
+from typing import get_origin
 from dataclasses import dataclass
 
 from MessageDict import Message
@@ -61,6 +62,12 @@ def list_postprocess_parse[T](
     parser_: parser[list[section]], postprocessor: parser[T]
 ) -> parser[list[T]]:
     return lambda data: [postprocessor(x) for x in parser_(data)]
+
+
+def list_postprocess_flattened_parse[T](
+    parser_: parser[list[section]], postprocessor: parser[T]
+) -> parser[list[T]]:
+    return lambda data: [y for x in parser_(data) for y in postprocessor(x)]
 
 
 def dict_postprocess_parse[T](
@@ -197,16 +204,19 @@ def schema_dict_parse[T](
                 if field.required:
                     raise ValueError(f"Required field **{field.name}** not found in the section.")
                 else:
-                    # Infer empty default if none provided
+                    # Even more sensible empty defaults
                     if field.default is not None:
                         result[field.name] = field.default
                     else:
-                        # Sensible empty defaults
-                        result[field.name] = (
-                            [] if field.parser.__annotations__.get("return", None) in (list, list[str], list[dict])
-                            else {} if field.parser.__annotations__.get("return", None) == dict
-                            else ""
-                        )
+                        return_type = field.parser.__annotations__.get("return", None)
+                        origin = get_origin(return_type)
+
+                        if origin is list:
+                            result[field.name] = []
+                        elif origin is dict:
+                            result[field.name] = {}
+                        else:
+                            result[field.name] = ""
         
         extra_keys = set(parsed_data.keys()) - used_keys
         if extra_keys:
@@ -270,7 +280,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
 
     def parse_contributor(text: str) -> dict:
         result = {
-            "id": 0,
+            "id": "",
             "name": "",
             "channel_link": "",
         }
@@ -278,10 +288,10 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         # Discord ID
         id_match = DISCORD_ID_RE.search(text)
         if id_match:
-            result["id"] = int(id_match.group(1))
+            result["id"] = id_match.group(1)
             text = DISCORD_ID_RE.sub("", text)
 
-            # 🔧 NEW: remove leftover empty parentheses
+            # Remove empty parentheses
             text = re.sub(r"\(\s*\)", "", text)
 
         text = text.strip()
@@ -396,14 +406,14 @@ def parse_rate_line(text: str):
     RATE_LINE_RE = re.compile(
         r"""
         ^                           # start
-        (?:(\([^)]*\))\s*)?         # optional (Version)
+        (?:(\([^)]*\))\s*)?         # Version (optional)
         (?P<drop>[^:(]+?)           # Drop name
-        (?:\s*\((?P<condition>[^)]*)\))?   # optional (Condition)
+        (?:\s*\((?P<condition>[^)]*)\))?   # Condition (optional)
         \s*:\s*
         (?P<rate>[\d\.]+)(?P<unit>[kKmM]?) # Rate
         /
         (?P<interval>[^\s(]+)       # Interval
-        (?:\s*\((?P<note>[^)]*)\))? # optional (Note)
+        (?:\s*\((?P<note>[^)]*)\))? # Note (optional)
         \s*$
         """,
         re.VERBOSE
@@ -421,10 +431,11 @@ def parse_rate_line(text: str):
     }[m.group("unit").lower()]
 
     version = (m.group(1) or "").strip("()")
+    drops = parse_drop_field()([m.group("drop").strip()]),
 
     return {
         "version": version,
-        "drop": m.group("drop").strip(),
+        "drop": drops,
         "conditions": m.group("condition") or "",
         "rates": float(rate * unit),
         "interval": m.group("interval"),
@@ -474,6 +485,24 @@ def walk_rates(
             "interval": rate_data["interval"],
             "note": rate_data["note"],
         })
+
+
+def parse_drop_field() -> parser[dict[str, list[str] | str]]:
+    @single_line_parser
+    def parse(data: str) -> dict[str, list[str] | str]:
+        text = data.strip()
+        if "/" in text:
+            items = [x.strip() for x in text.split("/")]
+            type_ = "exclusive"
+        elif "," in text:
+            items = [x.strip() for x in text.split(",")]
+            type_ = "concurrent"
+        else:
+            items = [text]
+            type_ = "concurrent"  # single drop can be treated as concurrent
+        return {"items": items, "type": type_}
+
+    return parse
 
 
 def parse_lag_section(data: section) -> dict:
@@ -647,13 +676,13 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(
                 ["Designer", "Designers", "Designer(s)"],
                 "designers",
-                list_postprocess_parse(list_parse(), contributors_parse()),
-                required=False,),
+                list_postprocess_flattened_parse(list_parse(), contributors_parse()),
+                required=False, default=[]),
             SchemaItem(
                 ["Credits", "Credit"],
                 "credits",
-                list_postprocess_parse(list_parse(), contributors_parse()),
-                required=False,),
+                list_postprocess_flattened_parse(list_parse(), contributors_parse()),
+                required=False, default=[]),
             SchemaItem(["Versions"], "versions", version_parse()),
             SchemaItem(
                 ["Rates"],
@@ -701,17 +730,17 @@ message_parse_schema = dict_postprocess_parse(
                         ["Notes"],
                         "notes",
                         lambda data: serialize_nodes(parse_nested_list(data)),
-                        required=False),
+                        required=False,default=[]),
                     SchemaItem(
                         ["Build"],
                         "build",
                         lambda data: serialize_nodes(parse_nested_list(data)),
-                        required=False),
+                        required=False,default=[]),
                     SchemaItem(
                         ["How to Use", "How to use", "Usage"],
                         "usage",
                         lambda data: serialize_nodes(parse_nested_list(data)),
-                        required=False),
+                        required=False,default=[]),
                 ],
             ), required=False),
             SchemaItem(["Figures"], "figures", figures_parse(), required=False),
