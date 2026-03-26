@@ -7,7 +7,7 @@ class TextNode(TypedDict):
     children: list["TextNode"]
 
 class Contributor(TypedDict):
-    id: int
+    id: str
     name: str
     channel_link: str
     contribution: str
@@ -18,10 +18,14 @@ class Versions(TypedDict):
     modifications: str
     thread: str
 
+class Drop(TypedDict):
+    type: Literal["concurrent", "exclusive"]
+    items: list[str]
+
 class Rate(TypedDict):
     variants: list[str]
     version: str
-    drop: str
+    drop: list[Drop]
     conditions: str
     rates: float
     interval: str
