@@ -694,7 +694,7 @@ message_parse_schema = dict_postprocess_parse(
                 "lag_info",
                 parse_lag_section,  # Pass the section directly
                 required=False,),
-            SchemaItem(["Video Links", "Video Link"], "video_links", videos_parse(), required=False),
+            SchemaItem(["Video Links", "Video Link"], "video_links", videos_parse(), required=False, default=[]),
             SchemaItem(
                 ["Files"],
                 "files",
@@ -704,25 +704,25 @@ message_parse_schema = dict_postprocess_parse(
                         SchemaItem(
                             ["Schematic", "Schematics"],
                             "schematics",
-                            lambda data: files_from_nodes(parse_nested_list(data)),
+                            lambda data: files_from_nodes(parse_nested_list(data))
                         ),
                         SchemaItem(
                             ["World Download", "World Downloads"],
                             "world_downloads",
                             lambda data: files_from_nodes(parse_nested_list(data)),
-                            required=False,
+                            required=False, default=[]
                         ),
                         SchemaItem(
                             ["Image", "Images"],
                             "images",
-                            lambda data: files_from_nodes(parse_nested_list(data)),
+                            lambda data: files_from_nodes(parse_nested_list(data))
                         ),
                     ],
                 )),
             SchemaItem(["Description"], "description", lambda data: serialize_nodes(parse_nested_list(data))),
-            SchemaItem(["Positives"], "positives", lambda data: serialize_nodes(parse_nested_list(data)), required=False),
-            SchemaItem(["Negatives"], "negatives", lambda data: serialize_nodes(parse_nested_list(data)), required=False),
-            SchemaItem(["Design Specifications"], "design_specifications", lambda data: serialize_nodes(parse_nested_list(data)), required=False),
+            SchemaItem(["Positives"], "positives", lambda data: serialize_nodes(parse_nested_list(data)), required=False, default=[]),
+            SchemaItem(["Negatives"], "negatives", lambda data: serialize_nodes(parse_nested_list(data)), required=False, default=[]),
+            SchemaItem(["Design Specifications"], "design_specifications", lambda data: serialize_nodes(parse_nested_list(data)), required=False, default=[]),
             SchemaItem(["Instructions"], "instructions", schema_dict_parse(
                 prefix_dict_parse("### "),
                 [
@@ -743,17 +743,22 @@ message_parse_schema = dict_postprocess_parse(
                         required=False,default=[]),
                 ],
             ), required=False),
-            SchemaItem(["Figures"], "figures", figures_parse(), required=False),
+            SchemaItem(["Figures"], "figures", figures_parse(), required=False, default=[]),
         ],
     ),
 )
 
 
-def message_parse(data: section) -> list[Message]:
-    # Filter crossposts
+def message_parse(data: section) -> Message:
     if data and any(line.strip().endswith("Original Post") for line in data[:2]):
-        return []
-    return [rest for _, rest in message_parse_schema(data).items()]
+        raise ValueError("Crosspost")
+
+    parsed = message_parse_schema(data)
+
+    if len(parsed) != 1:
+        raise ValueError("Multiple variants in post")
+
+    return next(iter(parsed.values()))
 
 
 if __name__ == "__main__":
@@ -834,9 +839,6 @@ if __name__ == "__main__":
 
             if not parsed:
                 raise ValueError("No parsable content")
-
-            if len(parsed) > 1:
-                raise ValueError("Multiple variants in post")
 
             # Merge parsed message content
             result.update(parsed[0])

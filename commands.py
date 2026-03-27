@@ -1,7 +1,6 @@
 import sys
 import os
 from modals import *
-from parser import message_parse
 from functions import ParserErrorItem
 
 # Close resolved posts command
@@ -244,109 +243,65 @@ async def upload(interaction: discord.Interaction):
     upload_modal = UploadFilesBox()
     await interaction.response.send_modal(upload_modal)
 
-# Parse thread
-@bot.tree.command(name="parse_post", description="Checks for errors and parses the selected post")
+# Single thread
+@bot.tree.command(name="parse_post", description="Parse the selected post and check for errors")
 @app_commands.describe(thread="The post to be parsed")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def parse_thread(interaction: discord.Interaction, thread: discord.Thread):
+async def parse_post(interaction: discord.Interaction, thread: discord.Thread):
     if thread.parent.category_id in NON_ARCHIVE_CATEGORIES:
         await interaction.response.send_message("That is not an archive thread, it cannot be parsed.", ephemeral=True)
         return
-    exceptions_view = discord.ui.LayoutView(timeout=None)
-    (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
-    data = await get_post_data(thread, thread.parent, bot)
-    try:
-        parse_result = message_parse("\n".join(data["messages"]).split("\n"))
-    except Exception as e:
-        error_view = await ParserErrorItem.create(bot, thread, e, 1)
-        exceptions_view.add_item(error_view)
-        await interaction.response.send_message(view=exceptions_view)
-        return
-    del data["messages"]
-    data["variants"] = parse_result
-    file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
-    json_string = json.dumps(data, indent=4)
-    async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
-        await f.write(json_string)
-    await interaction.response.send_message(content=f"Parsed {thread.name} successfully", ephemeral=True)
+
+    errors, total = await parse_threads([thread], interaction, reply_to_channel=False)
+    await interaction.response.send_message(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
 
 # Parse channel
-@bot.tree.command(name="parse_channel", description="Parse the posts in a selected channel")
+@bot.tree.command(name="parse_channel", description="Parse the posts in a selected channel and check for errors")
 @app_commands.describe(channel="The channel to be parsed")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def parse(interaction: discord.Interaction, channel: discord.ForumChannel):
+async def parse_channel(interaction: discord.Interaction, channel: discord.ForumChannel):
     if channel.category_id in NON_ARCHIVE_CATEGORIES:
         await interaction.response.send_message("That is not an archive channel, it cannot be parsed.", ephemeral=True)
         return
-    await interaction.response.send_message("Beginning parsing. . .")
-    exceptions_view = discord.ui.LayoutView(timeout=None)
-    errors = total = 0
-    (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
 
-    # Process every thread in the forum channel
-    async for thread in iter_all_threads(channel):
-        data = await get_post_data(thread, channel, bot)
-        total += 1
-        try:
-            parse_result = message_parse("\n".join(data["messages"]).split("\n"))
-        except Exception as e:
-            error_view = await ParserErrorItem.create(bot, thread, e, 1)
-            exceptions_view.add_item(error_view)
-            await interaction.channel.send(view=exceptions_view)
-            exceptions_view = discord.ui.LayoutView(timeout=None)
-            errors += 1
-            continue
-        del data["messages"]
-        data["variants"] = parse_result
-        file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
-        json_string = json.dumps(data, indent=4)
-        async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
-            await f.write(json_string)
+    await interaction.response.send_message("Beginning parsing. . .")
+    threads = [thread async for thread in iter_all_threads(channel)]
+    errors, total = await parse_threads(threads, interaction)
     await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
 # Parse archive
-@bot.tree.command(name="parse_archive", description="Parse the posts in the archive to check for errors")
+@bot.tree.command(name="parse_archive", description="Parse the posts in the archive and check for errors")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
-async def parse(interaction: discord.Interaction):
+async def parse_archive(interaction: discord.Interaction):
     await interaction.response.send_message("Beginning parsing. . .")
-    parse_channel_list = [channel for channel in interaction.guild.channels if isinstance(channel, discord.ForumChannel) and (channel.category_id in MAIN_ARCHIVE_CATEGORIES)]
-    exceptions_view = discord.ui.LayoutView(timeout=None)
-    errors = total = 0
-    (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
+    parse_channel_list = [
+        channel for channel in interaction.guild.channels 
+        if isinstance(channel, discord.ForumChannel) and (channel.category_id in MAIN_ARCHIVE_CATEGORIES)
+    ]
 
-    # Status update message variables
+    parsed_path = Path.cwd() / "parsed"
+    for file in parsed_path.glob("*.json"):
+        try:
+            file.unlink()
+        except Exception as e:
+            await interaction.channel.send(f"Failed to delete {file}: {e}")
+
+    errors = total = 0
     total_channels = len(parse_channel_list)
     current_channel_index = 1
-    embed = discord.Embed(title="Parsing Status",colour=discord.Colour.green())
-    reply_channel_obj = interaction.channel
-    update_message_obj = await reply_channel_obj.send(embed=embed)
+    embed = discord.Embed(title="Parsing Status", colour=discord.Colour.green())
+    update_message_obj = await interaction.channel.send(embed=embed)
 
-    # Iterate over every thread in the post and parse it
     for channel in parse_channel_list:
-        # Update the status message
         embed.description = f"{current_channel_index}/{total_channels} -> {channel.name}"
         await update_message_obj.edit(embed=embed)
         current_channel_index += 1
 
-        # Process every thread in the forum channel
-        async for thread in iter_all_threads(channel):
-            data = await get_post_data(thread, channel, bot)
-            total += 1
-            try:
-                parse_result = message_parse("\n".join(data["messages"]).split("\n"))
-            except Exception as e:
-                error_view = await ParserErrorItem.create(bot, thread, e, 1)
-                exceptions_view.add_item(error_view)
-                await interaction.channel.send(view=exceptions_view)
-                exceptions_view = discord.ui.LayoutView(timeout=None)
-                errors += 1
-                continue
-            del data["messages"]
-            data["variants"] = parse_result
-            file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
-            json_string = json.dumps(data, indent=4)
-            async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
-                await f.write(json_string)
+        threads = [thread async for thread in iter_all_threads(channel)]
+        channel_errors, channel_total = await parse_threads(threads, interaction)
+        errors += channel_errors
+        total += channel_total
+
     await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
 # Restarts the bot and updates code from git if specified.
