@@ -1,6 +1,5 @@
 import json
 import re
-import asyncio
 
 # import traceback
 from collections import Counter, defaultdict
@@ -292,11 +291,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         if id_match:
             result["id"] = id_match.group(1)
             
-            # man i sure do love python
-            loop = asyncio.get_event_loop()
-            future = asyncio.run_coroutine_threadsafe(get_username_from_id(int(result["id"])), loop)
-            name = future.result(timeout=60.0)  # blocks sync code until result
-
+            name = get_username_from_id(int(result["id"]))
             if name:
                 result["name"] = name
 
