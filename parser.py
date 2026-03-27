@@ -30,7 +30,7 @@ def reset_contributor_username_lookup(token: Token) -> None:
 
 
 @dataclass
-class SchemaItem[T]():
+class SchemaItem[T]:
     display_names: list[str]
     name: str
     parser: parser[T]
@@ -213,10 +213,12 @@ def schema_dict_parse[T](
                     result[field.name] = field.parser(parsed_data[display_name])
                     used_keys.add(display_name)
                     match_found = True
-                    break           
+                    break
             if not match_found:
                 if field.required:
-                    raise ValueError(f"Required field **{field.name}** not found in the section.")
+                    raise ValueError(
+                        f"Required field **{field.name}** not found in the section."
+                    )
                 else:
                     # Even more sensible empty defaults
                     if field.default is not None:
@@ -231,14 +233,17 @@ def schema_dict_parse[T](
                             result[field.name] = {}
                         else:
                             result[field.name] = ""
-        
+
         extra_keys = set(parsed_data.keys()) - used_keys
         if extra_keys:
             extra_keys.discard("")
             if extra_keys:
-                raise ValueError(f"Extra or unrecognised fields found: {', '.join(extra_keys)}")
-        
+                raise ValueError(
+                    f"Extra or unrecognised fields found: {', '.join(extra_keys)}"
+                )
+
         return result
+
     return parse
 
 
@@ -323,7 +328,8 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
             result["name"] = link_match.group(1).strip()
             result["channel_link"] = link_match.group(2).strip("<>")
         else:
-            result["name"] = text
+            if text:
+                result["name"] = text
 
         if not result["id"] and not result["name"]:
             raise ValueError(f"Invalid contributor: {text!r}")
@@ -373,13 +379,15 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         results: list[dict[str, str | int]] = []
         for c in contributors:
             for contrib in contributions:
-                results.append({
-                    "id": c["id"],
-                    "name": c["name"],
-                    "channel_link": c["channel_link"],
-                    "contribution": contrib["contribution"],
-                    "contribution_link": contrib["contribution_link"],
-                })
+                results.append(
+                    {
+                        "id": c["id"],
+                        "name": c["name"],
+                        "channel_link": c["channel_link"],
+                        "contribution": contrib["contribution"],
+                        "contribution_link": contrib["contribution_link"],
+                    }
+                )
 
         return results
 
@@ -401,7 +409,7 @@ def rates_section_parser() -> parser[dict]:
             walk_rates(
                 parse_nested_list(drops_data),
                 [],
-                None,              # no version at top level
+                None,  # no version at top level
                 result["drops"],
             )
 
@@ -414,9 +422,7 @@ def rates_section_parser() -> parser[dict]:
             )
 
         if "Notes" in sections:
-            result["notes"] = serialize_nodes(
-                parse_nested_list(sections["Notes"])
-            )
+            result["notes"] = serialize_nodes(parse_nested_list(sections["Notes"]))
 
         return result
 
@@ -425,7 +431,7 @@ def rates_section_parser() -> parser[dict]:
 
 def parse_rate_line(text: str):
     """
-    - Variant: 
+    - Variant:
       - (Version) Items (Condition): Amount/Interval (Note)
     """
     RATE_LINE_RE = re.compile(
@@ -441,7 +447,7 @@ def parse_rate_line(text: str):
         (?:\s*\((?P<note>[^)]*)\))? # Note (optional)
         \s*$
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     m = RATE_LINE_RE.match(text)
@@ -501,15 +507,17 @@ def walk_rates(
         # Leaf rate entry
         rate_data = parse_rate_line(text)
 
-        out.append({
-            "variants": variants.copy(),
-            "version": rate_data["version"] or (version or ""),
-            "items": rate_data["items"],
-            "conditions": rate_data["conditions"],
-            "amount": rate_data["amount"],
-            "interval": rate_data["interval"],
-            "note": rate_data["note"],
-        })
+        out.append(
+            {
+                "variants": variants.copy(),
+                "version": rate_data["version"] or (version or ""),
+                "items": rate_data["items"],
+                "conditions": rate_data["conditions"],
+                "amount": rate_data["amount"],
+                "interval": rate_data["interval"],
+                "note": rate_data["note"],
+            }
+        )
 
 
 def parse_drop_field() -> parser[dict[str, list[str] | str]]:
@@ -554,7 +562,7 @@ def parse_lag_section(data: section) -> dict:
         if text.startswith("Test environment: CPU"):
             m = re.match(
                 r"Test environment: CPU (.*?)( with Lithium)?( in (.*?))?( using (.*))?$",
-                text
+                text,
             )
             if m:
                 result["environment"]["cpu"] = m.group(1)
@@ -568,10 +576,9 @@ def parse_lag_section(data: section) -> dict:
         if m:
             section_name = m.group(1).lower()
             lag = float(m.group(2))
-            result[section_name].append({
-                "conditions": [default_variant] if default_variant else [],
-                "lag": lag
-            })
+            result[section_name].append(
+                {"conditions": [default_variant] if default_variant else [], "lag": lag}
+            )
             continue
 
         # Nested entries
@@ -596,19 +603,24 @@ def walk_lag(nodes, conditions, out, default_variant=""):
             lag = float(m.group(2))
             # Use label as condition if present, otherwise default_variant
             conds = [label] if label else ([default_variant] if default_variant else [])
-            out.append({
-                "conditions": conditions + conds,
-                "lag": lag,
-            })
+            out.append(
+                {
+                    "conditions": conditions + conds,
+                    "lag": lag,
+                }
+            )
             continue
 
         # Match bare "6mspt"
         lag_match = re.search(r"([\d\.]+)\s*mspt", node.text)
         if lag_match:
-            out.append({
-                "conditions": conditions + ([default_variant] if default_variant else []),
-                "lag": float(lag_match.group(1)),
-            })
+            out.append(
+                {
+                    "conditions": conditions
+                    + ([default_variant] if default_variant else []),
+                    "lag": float(lag_match.group(1)),
+                }
+            )
             continue
 
         # Otherwise, descend and treat this node as variant context
@@ -616,7 +628,7 @@ def walk_lag(nodes, conditions, out, default_variant=""):
             node.children,
             conditions + [node.text.rstrip(":")],
             out,
-            default_variant=default_variant
+            default_variant=default_variant,
         )
 
 
@@ -626,18 +638,20 @@ def videos_parse() -> parser[list[dict[str, str]]]:
         for line in data:
             if not line.startswith("- "):
                 raise ValueError("Incorrect video links field formatting.")
-            
+
             text = line[2:].strip()
 
             m = re.match(r"\[(.*?)\]\(<(.*?)>\)", text)
             if not m:
                 raise ValueError(f"Invalid video link format: {data!r}")
 
-            result.append({
-                "name": m.group(1),
-                "url": m.group(2),
-            })
-        
+            result.append(
+                {
+                    "name": m.group(1),
+                    "url": m.group(2),
+                }
+            )
+
         return result
 
     return parse
@@ -653,21 +667,25 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
             # Note only applies if there's exactly one file
             note = ""
             if len(urls) == 1:
-                note = node.text[:node.text.find(urls[0])].strip(": ")
+                note = node.text[: node.text.find(urls[0])].strip(": ")
 
             for url in urls:
-                result.append({
-                    "type": "file",
-                    "name": url.split("/")[-1],
-                    "url": url,
-                    "note": note if len(urls) == 1 else "",
-                })
+                result.append(
+                    {
+                        "type": "file",
+                        "name": url.split("/")[-1],
+                        "url": url,
+                        "note": note if len(urls) == 1 else "",
+                    }
+                )
         else:
-            result.append({
-                "type": "folder",
-                "name": node.text.rstrip(":"),
-                "children": files_from_nodes(node.children),
-            })
+            result.append(
+                {
+                    "type": "folder",
+                    "name": node.text.rstrip(":"),
+                    "children": files_from_nodes(node.children),
+                }
+            )
 
     return result
 
@@ -683,10 +701,12 @@ def figures_parse() -> parser[list[dict]]:
 
             urls = re.findall(r"(https?://\S+)", stripped)
             for url in urls:
-                figures.append({
-                    "url": url,
-                    "name": url.split("/")[-1],
-                })
+                figures.append(
+                    {
+                        "url": url,
+                        "name": url.split("/")[-1],
+                    }
+                )
 
         return figures
 
@@ -702,73 +722,117 @@ message_parse_schema = dict_postprocess_parse(
                 ["Designer", "Designers", "Designer(s)"],
                 "designers",
                 list_postprocess_flattened_parse(list_parse(), contributors_parse()),
-                required=False, default=[]),
+                required=False,
+                default=[],
+            ),
             SchemaItem(
                 ["Credits", "Credit"],
                 "credits",
                 list_postprocess_flattened_parse(list_parse(), contributors_parse()),
-                required=False, default=[]),
+                required=False,
+                default=[],
+            ),
             SchemaItem(["Versions"], "versions", version_parse()),
-            SchemaItem(
-                ["Rates"],
-                "rates",
-                rates_section_parser(),
-                required=False),
+            SchemaItem(["Rates"], "rates", rates_section_parser(), required=False),
             SchemaItem(
                 ["Lag Info"],
                 "lag_info",
                 parse_lag_section,  # Pass the section directly
-                required=False,),
-            SchemaItem(["Video Links", "Video Link"], "video_links", videos_parse(), required=False, default=[]),
+                required=False,
+            ),
+            SchemaItem(
+                ["Video Links", "Video Link"],
+                "video_links",
+                videos_parse(),
+                required=False,
+                default=[],
+            ),
             SchemaItem(
                 ["Files"],
                 "files",
                 schema_dict_parse(
-                    list_dict_parse(),   # Schematics / World Downloads / Images
+                    list_dict_parse(),  # Schematics / World Downloads / Images
                     [
                         SchemaItem(
                             ["Schematic", "Schematics"],
                             "schematics",
-                            lambda data: files_from_nodes(parse_nested_list(data))
+                            lambda data: files_from_nodes(parse_nested_list(data)),
                         ),
                         SchemaItem(
                             ["World Download", "World Downloads"],
                             "world_downloads",
                             lambda data: files_from_nodes(parse_nested_list(data)),
-                            required=False, default=[]
+                            required=False,
+                            default=[],
                         ),
                         SchemaItem(
                             ["Image", "Images"],
                             "images",
-                            lambda data: files_from_nodes(parse_nested_list(data))
+                            lambda data: files_from_nodes(parse_nested_list(data)),
                         ),
                     ],
-                )),
-            SchemaItem(["Description"], "description", lambda data: serialize_nodes(parse_nested_list(data))),
-            SchemaItem(["Positives"], "positives", lambda data: serialize_nodes(parse_nested_list(data)), required=False, default=[]),
-            SchemaItem(["Negatives"], "negatives", lambda data: serialize_nodes(parse_nested_list(data)), required=False, default=[]),
-            SchemaItem(["Design Specifications"], "design_specifications", lambda data: serialize_nodes(parse_nested_list(data)), required=False, default=[]),
-            SchemaItem(["Instructions"], "instructions", schema_dict_parse(
-                prefix_dict_parse("### "),
-                [
-                    SchemaItem(
-                        ["Notes"],
-                        "notes",
-                        lambda data: serialize_nodes(parse_nested_list(data)),
-                        required=False,default=[]),
-                    SchemaItem(
-                        ["Build"],
-                        "build",
-                        lambda data: serialize_nodes(parse_nested_list(data)),
-                        required=False,default=[]),
-                    SchemaItem(
-                        ["How to Use", "How to use", "Usage"],
-                        "usage",
-                        lambda data: serialize_nodes(parse_nested_list(data)),
-                        required=False,default=[]),
-                ],
-            ), required=False),
-            SchemaItem(["Figures"], "figures", figures_parse(), required=False, default=[]),
+                ),
+            ),
+            SchemaItem(
+                ["Description"],
+                "description",
+                lambda data: serialize_nodes(parse_nested_list(data)),
+            ),
+            SchemaItem(
+                ["Positives"],
+                "positives",
+                lambda data: serialize_nodes(parse_nested_list(data)),
+                required=False,
+                default=[],
+            ),
+            SchemaItem(
+                ["Negatives"],
+                "negatives",
+                lambda data: serialize_nodes(parse_nested_list(data)),
+                required=False,
+                default=[],
+            ),
+            SchemaItem(
+                ["Design Specifications"],
+                "design_specifications",
+                lambda data: serialize_nodes(parse_nested_list(data)),
+                required=False,
+                default=[],
+            ),
+            SchemaItem(
+                ["Instructions"],
+                "instructions",
+                schema_dict_parse(
+                    prefix_dict_parse("### "),
+                    [
+                        SchemaItem(
+                            ["Notes"],
+                            "notes",
+                            lambda data: serialize_nodes(parse_nested_list(data)),
+                            required=False,
+                            default=[],
+                        ),
+                        SchemaItem(
+                            ["Build"],
+                            "build",
+                            lambda data: serialize_nodes(parse_nested_list(data)),
+                            required=False,
+                            default=[],
+                        ),
+                        SchemaItem(
+                            ["How to Use", "How to use", "Usage"],
+                            "usage",
+                            lambda data: serialize_nodes(parse_nested_list(data)),
+                            required=False,
+                            default=[],
+                        ),
+                    ],
+                ),
+                required=False,
+            ),
+            SchemaItem(
+                ["Figures"], "figures", figures_parse(), required=False, default=[]
+            ),
         ],
     ),
 )
@@ -800,44 +864,44 @@ if __name__ == "__main__":
 
     whitelisted_channels = {
         # Monsters
-        1374185936564256768, #overworld-monsters
-        1310484985546805319, #slime
-        1374189324626821141, #nether-monsters
-        1262787177432092783, #gold-and-barter
-        1311841461029044326, #fortress-monsters
-        1374193787437322322, #end-monsters
+        1374185936564256768,  # overworld-monsters
+        1310484985546805319,  # slime
+        1374189324626821141,  # nether-monsters
+        1262787177432092783,  # gold-and-barter
+        1311841461029044326,  # fortress-monsters
+        1374193787437322322,  # end-monsters
         # Creatures
-        1162390388976394240, #villagers
-        1162119562922315856, #iron
-        1374195641374347344, #animals
-        1374197188791631883, #bees
-        1374199361751482470, #aquatic-creatures
+        1162390388976394240,  # villagers
+        1162119562922315856,  # iron
+        1374195641374347344,  # animals
+        1374197188791631883,  # bees
+        1374199361751482470,  # aquatic-creatures
         # Agriculture
-        1366955484401242192, #trees-and-leaves
-        1375250019216523264, #mushrooms-and-fungi
-        1358146379708370984, #moss-and-aquatic-plants
-        1358146101353381978, #tall-plants
-        1358145991169147133, #crops
-        1358146247680327902, #flowers-and-grasses
+        1366955484401242192,  # trees-and-leaves
+        1375250019216523264,  # mushrooms-and-fungi
+        1358146379708370984,  # moss-and-aquatic-plants
+        1358146101353381978,  # tall-plants
+        1358145991169147133,  # crops
+        1358146247680327902,  # flowers-and-grasses
         # Blocks & Items
-        1376314653788868669, #stone
-        1376642039256711329, #gravity-blocks
-        1374233269171916841, #block-converters
-        1374233112841682974, #obsidian-and-lava
-        1374233064384757800, #snow-and-ice
-        1374233292332732498, #item-dupers
-        1376632527703375973, #dirts
+        1376314653788868669,  # stone
+        1376642039256711329,  # gravity-blocks
+        1374233269171916841,  # block-converters
+        1374233112841682974,  # obsidian-and-lava
+        1374233064384757800,  # snow-and-ice
+        1374233292332732498,  # item-dupers
+        1376632527703375973,  # dirts
         # Item Processing
-        1378800846250184944, #storage-systems
-        1379588677948408012, #furnace-arrays
-        1379704764471967785, #potion-brewers
-        1266037379920167073, #crafting
+        1378800846250184944,  # storage-systems
+        1379588677948408012,  # furnace-arrays
+        1379704764471967785,  # potion-brewers
+        1266037379920167073,  # crafting
         # Infrastructure
-        1383836451980050442, #chunk-loading
-        1431068303228669952, #mob-switches
-        1386442783338004501, #infrastructure
-        1386748149531541698, #terrain-clearing
-        1431451350826487940, #entity-transport
+        1383836451980050442,  # chunk-loading
+        1431068303228669952,  # mob-switches
+        1386442783338004501,  # infrastructure
+        1386748149531541698,  # terrain-clearing
+        1431451350826487940,  # entity-transport
     }
 
     failed: Counter[str] = Counter()
@@ -871,12 +935,14 @@ if __name__ == "__main__":
 
         except Exception as e:
             print(
-                f'{entry["author_id"]}, '
-                f'https://discord.com/channels/1161803566265143306/{entry["thread_id"]}, '
+                f"{entry['author_id']}, "
+                f"https://discord.com/channels/1161803566265143306/{entry['thread_id']}, "
                 f'"{type(e).__name__}: {e}"'
             )
-            authors[f'<@{entry["author_id"]}>'] += 1
-            failed[f'https://discord.com/channels/1161803566265143306/{channel_id}'] += 1
+            authors[f"<@{entry['author_id']}>"] += 1
+            failed[
+                f"https://discord.com/channels/1161803566265143306/{channel_id}"
+            ] += 1
             return None
 
     # Load Archive
@@ -889,7 +955,7 @@ if __name__ == "__main__":
         if result is None:
             continue
 
-        out_path = f'data/out/{result["id"]}.json'
+        out_path = f"data/out/{result['id']}.json"
         with open(out_path, "w", encoding="utf-8") as file:
             json.dump(result, file, indent=4)
 
