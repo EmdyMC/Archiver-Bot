@@ -403,14 +403,18 @@ def rates_section_parser() -> parser[dict]:
 
 
 def parse_rate_line(text: str):
+    """
+    - Variant: 
+      - (Version) Items (Condition): Amount/Interval (Note)
+    """
     RATE_LINE_RE = re.compile(
         r"""
         ^                           # start
         (?:(\([^)]*\))\s*)?         # Version (optional)
-        (?P<drop>[^:(]+?)           # Drop name
+        (?P<items>[^:(]+?)           # Items
         (?:\s*\((?P<condition>[^)]*)\))?   # Condition (optional)
         \s*:\s*
-        (?P<rate>[\d\.]+)(?P<unit>[kKmM]?) # Rate
+        (?P<amount>[\d\.]+)(?P<unit>[kKmM]?) # Amount
         /
         (?P<interval>[^\s(]+)       # Interval
         (?:\s*\((?P<note>[^)]*)\))? # Note (optional)
@@ -423,7 +427,7 @@ def parse_rate_line(text: str):
     if not m:
         raise ValueError(f"Invalid rate line: {text!r}")
 
-    rate = float(m.group("rate"))
+    amount = float(m.group("amount"))
     unit = {
         "": 1,
         "k": 1e3,
@@ -431,13 +435,13 @@ def parse_rate_line(text: str):
     }[m.group("unit").lower()]
 
     version = (m.group(1) or "").strip("()")
-    drops = parse_drop_field()([m.group("drop").strip()]),
+    items = parse_drop_field()([m.group("items").strip()])
 
     return {
         "version": version,
-        "drop": drops,
+        "items": items,
         "conditions": m.group("condition") or "",
-        "rates": float(rate * unit),
+        "amount": float(amount * unit),
         "interval": m.group("interval"),
         "note": m.group("note") or "",
     }
@@ -479,9 +483,9 @@ def walk_rates(
         out.append({
             "variants": variants.copy(),
             "version": rate_data["version"] or (version or ""),
-            "drop": rate_data["drop"],
+            "items": rate_data["items"],
             "conditions": rate_data["conditions"],
-            "rates": rate_data["rates"],
+            "amount": rate_data["amount"],
             "interval": rate_data["interval"],
             "note": rate_data["note"],
         })
@@ -492,15 +496,15 @@ def parse_drop_field() -> parser[dict[str, list[str] | str]]:
     def parse(data: str) -> dict[str, list[str] | str]:
         text = data.strip()
         if "/" in text:
-            items = [x.strip() for x in text.split("/")]
-            type_ = "exclusive"
+            item_names = [x.strip() for x in text.split("/")]
+            _type = "exclusive"
         elif "," in text:
-            items = [x.strip() for x in text.split(",")]
-            type_ = "concurrent"
+            item_names = [x.strip() for x in text.split(",")]
+            _type = "concurrent"
         else:
-            items = [text]
-            type_ = "concurrent"  # single drop can be treated as concurrent
-        return {"items": items, "type": type_}
+            item_names = [text]
+            _type = "concurrent"  # single drop can be treated as concurrent
+        return {"type": _type, "names": item_names}
 
     return parse
 

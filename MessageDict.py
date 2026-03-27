@@ -18,23 +18,23 @@ class Versions(TypedDict):
     modifications: str
     thread: str
 
-class Drop(TypedDict):
+class RateItems(TypedDict):
     type: Literal["concurrent", "exclusive"]
-    items: list[str]
+    names: list[str]
 
 class Rate(TypedDict):
     variants: list[str]
     version: str
-    drop: list[Drop]
+    items: RateItems
     conditions: str
-    rates: float
+    amount: float
     interval: str
     note: str
 
 class Rates(TypedDict):
     drops: list[Rate]
     consumption: list[Rate]
-    notes: list[TextNode] | None
+    notes: list[TextNode]
     
 class LagEnvironment(TypedDict):
     cpu: str
@@ -59,7 +59,7 @@ class FileNode(TypedDict):
     type: Literal["file"]
     name: str
     url: str
-    note: str | None
+    note: str
 
 class FolderNode(TypedDict):
     type: Literal["folder"]
@@ -87,7 +87,7 @@ class Message(TypedDict):
     credits: list[Contributor]
     versions: Versions
     rates: Rates
-    lag_info: LagInfo | None
+    lag_info: LagInfo
     video_links: list[VideoLink]
     files: Files
     description: list[TextNode]
