@@ -1,5 +1,6 @@
 import json
 import re
+from contextvars import ContextVar, Token
 
 # import traceback
 from collections import Counter, defaultdict
@@ -7,13 +8,25 @@ from functools import wraps
 from typing import Callable
 from typing import get_origin
 from dataclasses import dataclass
-from iwannasleep import get_username_from_id
 
 from MessageDict import Message
 
 type section = list[str]
 type dict_section = dict[str, section]
 type parser[U] = Callable[[section], U]
+
+
+CONTRIBUTOR_USERNAME_LOOKUP: ContextVar[dict[int, str] | None] = ContextVar(
+    "contributor_username_lookup", default=None
+)
+
+
+def set_contributor_username_lookup(lookup: dict[int, str] | None) -> Token:
+    return CONTRIBUTOR_USERNAME_LOOKUP.set(lookup or {})
+
+
+def reset_contributor_username_lookup(token: Token) -> None:
+    CONTRIBUTOR_USERNAME_LOOKUP.reset(token)
 
 
 @dataclass
@@ -290,8 +303,10 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         id_match = DISCORD_ID_RE.search(text)
         if id_match:
             result["id"] = id_match.group(1)
-            
-            name = get_username_from_id(int(result["id"]))
+
+            username_lookup = CONTRIBUTOR_USERNAME_LOOKUP.get() or {}
+            user_id = int(result["id"])
+            name = username_lookup.get(user_id)
             if name:
                 result["name"] = name
 

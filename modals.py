@@ -309,10 +309,13 @@ class PostEditAndParseModal(PostEditModal):
     
     async def on_submit(self, interaction: discord.Interaction[commands.Bot]):
         from functions import ParserErrorItem
-        from parser import message_parse
+        from parser import message_parse, set_contributor_username_lookup, reset_contributor_username_lookup
+        from iwannasleep import build_username_lookup_from_messages
         await super().on_submit(interaction)
 
         data = await get_post_data(self.message.thread, self.message.channel.parent, self.bot)
+        username_lookup = await build_username_lookup_from_messages(data["messages"])
+        lookup_token = set_contributor_username_lookup(username_lookup)
 
         try:
             parse_result = message_parse("\n".join(data["messages"]).split("\n"))
@@ -322,6 +325,8 @@ class PostEditAndParseModal(PostEditModal):
             new_view.add_item(new_item)
             await self.parse_response_message.channel.send(view=new_view)
             return
+        finally:
+            reset_contributor_username_lookup(lookup_token)
         
         new_item = discord.ui.TextDisplay(f"{self.message.jump_url}: Parse successful.")
         new_view = discord.ui.LayoutView()

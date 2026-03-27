@@ -1,5 +1,6 @@
 from init import *
-from parser import message_parse
+from parser import message_parse, set_contributor_username_lookup, reset_contributor_username_lookup
+from iwannasleep import build_username_lookup_from_messages
 import re
 
 # Create tags selector
@@ -649,6 +650,8 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
     async for thread in thread_iter:
         total += 1
         data = await get_post_data(thread, thread.parent, bot)
+        username_lookup = await build_username_lookup_from_messages(data["messages"])
+        lookup_token = set_contributor_username_lookup(username_lookup)
 
         try:
             parse_result = message_parse("\n".join(data["messages"]).split("\n"))
@@ -660,6 +663,8 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
                 exceptions_view = discord.ui.LayoutView(timeout=None)
             errors += 1
             continue
+        finally:
+            reset_contributor_username_lookup(lookup_token)
 
         tags_serializable = []
         for tag in thread.applied_tags:
