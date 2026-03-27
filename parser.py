@@ -749,11 +749,16 @@ message_parse_schema = dict_postprocess_parse(
 )
 
 
-def message_parse(data: section) -> list[Message]:
-    # Filter crossposts
+def message_parse(data: section) -> Message:
     if data and any(line.strip().endswith("Original Post") for line in data[:2]):
-        return []
-    return [rest for _, rest in message_parse_schema(data).items()]
+        raise ValueError("Crosspost")
+
+    parsed = message_parse_schema(data)
+
+    if len(parsed) != 1:
+        raise ValueError("Multiple variants in post")
+
+    return next(iter(parsed.values()))
 
 
 if __name__ == "__main__":
@@ -834,9 +839,6 @@ if __name__ == "__main__":
 
             if not parsed:
                 raise ValueError("No parsable content")
-
-            if len(parsed) > 1:
-                raise ValueError("Multiple variants in post")
 
             # Merge parsed message content
             result.update(parsed[0])

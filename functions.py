@@ -1,4 +1,5 @@
 from init import *
+from parser import message_parse
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -411,7 +412,7 @@ async def on_message(message: discord.Message):
             await logs.send(embed=embed)
     # Reply to pings
     if bot.user in message.mentions:
-        random_message = random.choice(RANDOM_REPLIES)
+        random_message = "Tektonic is so cool" if random.randint(1,1000) == 483 else random.choice(RANDOM_REPLIES)
         await message.reply(content=random_message, mention_author=False)
     await bot.process_commands(message)
     # Catch images sent by no chat users
@@ -636,6 +637,46 @@ async def iter_all_threads(channel: discord.ForumChannel):
 
     async for thread in channel.archived_threads(limit=None):
         yield thread
+
+# Parse given threads to json and write to file
+async def parse_threads(threads: list[discord.Thread], interaction: discord.Interaction, reply_to_channel=True):
+    exceptions_view = discord.ui.LayoutView(timeout=None)
+    errors = total = 0
+
+    (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
+
+    for thread in threads:
+        data = await get_post_data(thread, thread.parent, bot)
+        total += 1
+        try:
+            parse_result = message_parse("\n".join(data["messages"]).split("\n"))
+        except Exception as e:
+            error_view = await ParserErrorItem.create(bot, thread, e, 1)
+            exceptions_view.add_item(error_view)
+            if reply_to_channel:
+                await interaction.channel.send(view=exceptions_view)
+                exceptions_view = discord.ui.LayoutView(timeout=None)
+            errors += 1
+            continue
+
+        del data["messages"]
+
+        data.update({
+            "parsed_at": datetime.utcnow().isoformat(),
+            "channel_id": thread.parent_id,
+            "thread_id": thread.id,
+            "slug": thread.name.replace(" ", "-").lower(),
+            "title": thread.name,
+            "tags": thread.applied_tags,
+            "post_data": parse_result
+        })
+
+        file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
+        json_string = json.dumps(data, indent=4)
+        async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
+            await f.write(json_string)
+
+    return errors, total
 
 # Reply view
 class ReplyButton(discord.ui.View):
