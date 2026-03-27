@@ -295,7 +295,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
             # man i sure do love python
             loop = asyncio.get_event_loop()
             future = asyncio.run_coroutine_threadsafe(get_username_from_id(int(result["id"])), loop)
-            name = future.result(timeout=5)  # blocks sync code until result
+            name = future.result(timeout=60.0)  # blocks sync code until result
 
             if name:
                 result["name"] = name
