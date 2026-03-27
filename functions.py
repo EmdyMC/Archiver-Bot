@@ -660,8 +660,6 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             errors += 1
             continue
 
-        del data["messages"]
-
         tags_serializable = []
         for tag in thread.applied_tags:
             tag_dict = {
@@ -670,7 +668,7 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             }
             tags_serializable.append(tag_dict)
 
-        data.update({
+        json_data = {
             "parsed_at": datetime.utcnow().isoformat(),
             "channel_id": thread.parent_id,
             "thread_id": thread.id,
@@ -678,10 +676,10 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             "title": thread.name,
             "tags": tags_serializable,
             "post_data": parse_result
-        })
+        }
 
         file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
-        json_string = json.dumps(data, indent=4)
+        json_string = json.dumps(json_data, indent=4)
         async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
             await f.write(json_string)
 
