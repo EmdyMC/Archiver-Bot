@@ -7,7 +7,6 @@ from functools import wraps
 from typing import Callable
 from typing import get_origin
 from dataclasses import dataclass
-from functions import get_username_from_id
 
 from MessageDict import Message
 
@@ -276,6 +275,8 @@ def version_parse() -> parser[dict[str, str]]:
 
 
 def contributors_parse() -> parser[list[dict[str, str | int]]]:
+    from functions import get_username_from_id
+    
     DISCORD_ID_RE = re.compile(r"<@(\d+)>")
     MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
@@ -291,7 +292,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         if id_match:
             result["id"] = id_match.group(1)
             
-            name = get_username_from_id(result["id"])
+            name = get_username_from_id(int(result["id"]))
             if name:
                 result["name"] = name
 
