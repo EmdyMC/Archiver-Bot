@@ -699,6 +699,13 @@ def slugify(text: str):
     text = text.strip('-')
     return text
 
+# Discord id helper
+async def get_username_from_id(user_id: int) -> str:
+    """Finds the name and ID of a user using their user ID"""
+    if not (owner:= bot.get_user(user_id)):
+        owner = await bot.fetch_user(user_id)
+    return owner.name
+
 # Reply view
 class ReplyButton(discord.ui.View):
     def __init__(self, DM: discord.Message):
