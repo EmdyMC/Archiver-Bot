@@ -252,8 +252,13 @@ async def parse_post(interaction: discord.Interaction, thread: discord.Thread):
         await interaction.response.send_message("That is not an archive thread, it cannot be parsed.", ephemeral=True)
         return
 
-    errors, total = await parse_threads([thread], interaction, reply_to_channel=False)
+    # Wrap the single thread in an async generator
+    async def single_thread_gen():
+        yield thread
+
+    errors, total = await parse_threads_stream(single_thread_gen(), interaction, reply_to_channel=False)
     await interaction.response.send_message(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
+
 
 # Parse channel
 @bot.tree.command(name="parse_channel", description="Parse the posts in a selected channel and check for errors")
@@ -265,9 +270,9 @@ async def parse_channel(interaction: discord.Interaction, channel: discord.Forum
         return
 
     await interaction.response.send_message("Beginning parsing. . .")
-    threads = [thread async for thread in iter_all_threads(channel)]
-    errors, total = await parse_threads(threads, interaction)
+    errors, total = await parse_threads_stream(iter_all_threads(channel), interaction)
     await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
+
 
 # Parse archive
 @bot.tree.command(name="parse_archive", description="Parse the posts in the archive and check for errors")
@@ -297,8 +302,7 @@ async def parse_archive(interaction: discord.Interaction):
         await update_message_obj.edit(embed=embed)
         current_channel_index += 1
 
-        threads = [thread async for thread in iter_all_threads(channel)]
-        channel_errors, channel_total = await parse_threads(threads, interaction)
+        channel_errors, channel_total = await parse_threads_stream(iter_all_threads(channel), interaction)
         errors += channel_errors
         total += channel_total
 
