@@ -7,6 +7,7 @@ from functools import wraps
 from typing import Callable
 from typing import get_origin
 from dataclasses import dataclass
+from functions import get_username_from_id
 
 from MessageDict import Message
 
@@ -289,6 +290,11 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         id_match = DISCORD_ID_RE.search(text)
         if id_match:
             result["id"] = id_match.group(1)
+            
+            name = get_username_from_id(result["id"])
+            if name:
+                result["name"] = name
+
             text = DISCORD_ID_RE.sub("", text)
 
             # Remove empty parentheses
