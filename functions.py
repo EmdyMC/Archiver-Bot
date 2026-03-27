@@ -1,5 +1,6 @@
 from init import *
 from parser import message_parse
+import re
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -672,7 +673,7 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             "parsed_at": datetime.utcnow().isoformat(),
             "channel_id": thread.parent_id,
             "thread_id": thread.id,
-            "slug": thread.name.replace(" ", "-").lower(),
+            "slug": slugify(thread.name),
             "title": thread.name,
             "tags": tags_serializable,
             "post_data": parse_result
@@ -684,6 +685,19 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             await f.write(json_string)
 
     return errors, total
+
+def slugify(text: str):
+    # Lowercase
+    text = text.lower()
+    # Replace spaces and underscores with hyphens
+    text = re.sub(r'[\s_]+', '-', text)
+    # Remove all non-alphanumeric characters except hyphens
+    text = re.sub(r'[^a-z0-9-]', '', text)
+    # Remove consecutive hyphens
+    text = re.sub(r'-{2,}', '-', text)
+    # Remove leading/trailing hyphens
+    text = text.strip('-')
+    return text
 
 # Reply view
 class ReplyButton(discord.ui.View):
