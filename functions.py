@@ -639,15 +639,15 @@ async def iter_all_threads(channel: discord.ForumChannel):
         yield thread
 
 # Parse given threads to json and write to file
-async def parse_threads(threads: list[discord.Thread], interaction: discord.Interaction, reply_to_channel=True):
+async def parse_threads_stream(thread_iter, interaction: discord.Interaction, reply_to_channel=True):
     exceptions_view = discord.ui.LayoutView(timeout=None)
     errors = total = 0
 
     (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
 
-    for thread in threads:
-        data = await get_post_data(thread, thread.parent, bot)
+    async for thread in thread_iter:
         total += 1
+        data = await get_post_data(thread, thread.parent, bot)
         try:
             parse_result = message_parse("\n".join(data["messages"]).split("\n"))
         except Exception as e:
@@ -660,7 +660,7 @@ async def parse_threads(threads: list[discord.Thread], interaction: discord.Inte
             continue
 
         del data["messages"]
-
+        
         data.update({
             "parsed_at": datetime.utcnow().isoformat(),
             "channel_id": thread.parent_id,
