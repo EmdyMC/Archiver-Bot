@@ -660,7 +660,17 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             continue
 
         del data["messages"]
-        data["variants"] = parse_result
+        
+        data.update({
+            "parsed_at": datetime.utcnow().isoformat(),
+            "channel_id": thread.parent_id,
+            "thread_id": thread.id,
+            "slug": thread.name.replace(" ", "-").lower(),
+            "title": thread.name,
+            "tags": thread.applied_tags,
+            "post_data": parse_result
+        })
+
         file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
         json_string = json.dumps(data, indent=4)
         async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
