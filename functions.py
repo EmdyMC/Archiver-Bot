@@ -648,6 +648,7 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
     async for thread in thread_iter:
         total += 1
         data = await get_post_data(thread, thread.parent, bot)
+
         try:
             parse_result = message_parse("\n".join(data["messages"]).split("\n"))
         except Exception as e:
@@ -660,14 +661,22 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
             continue
 
         del data["messages"]
-        
+
+        tags_serializable = []
+        for tag in thread.applied_tags:
+            tag_dict = {
+                "id": tag.id,
+                "name": tag.name,
+            }
+            tags_serializable.append(tag_dict)
+
         data.update({
             "parsed_at": datetime.utcnow().isoformat(),
             "channel_id": thread.parent_id,
             "thread_id": thread.id,
             "slug": thread.name.replace(" ", "-").lower(),
             "title": thread.name,
-            "tags": thread.applied_tags,
+            "tags": tags_serializable,
             "post_data": parse_result
         })
 
