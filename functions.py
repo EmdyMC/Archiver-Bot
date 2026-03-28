@@ -676,8 +676,8 @@ async def parse_threads_stream(thread_iter, interaction: discord.Interaction, re
 
         json_data = {
             "parsed_at": datetime.utcnow().isoformat(),
-            "channel_id": thread.parent_id,
-            "thread_id": thread.id,
+            "channel_id": str(thread.parent_id),
+            "thread_id": str(thread.id),
             "slug": slugify(thread.name),
             "title": thread.name,
             "tags": tags_serializable,

@@ -16,6 +16,9 @@ type dict_section = dict[str, section]
 type parser[U] = Callable[[section], U]
 
 
+SCHEMA_DEFAULT_UNSET = object()
+
+
 CONTRIBUTOR_USERNAME_LOOKUP: ContextVar[dict[int, str] | None] = ContextVar(
     "contributor_username_lookup", default=None
 )
@@ -35,7 +38,7 @@ class SchemaItem[T]:
     name: str
     parser: parser[T]
     required: bool = True
-    default: T | None = None
+    default: T | None | object = SCHEMA_DEFAULT_UNSET
 
 
 @dataclass
@@ -221,7 +224,7 @@ def schema_dict_parse[T](
                     )
                 else:
                     # Even more sensible empty defaults
-                    if field.default is not None:
+                    if field.default is not SCHEMA_DEFAULT_UNSET:
                         result[field.name] = field.default
                     else:
                         return_type = field.parser.__annotations__.get("return", None)
@@ -733,12 +736,19 @@ message_parse_schema = dict_postprocess_parse(
                 default=[],
             ),
             SchemaItem(["Versions"], "versions", version_parse()),
-            SchemaItem(["Rates"], "rates", rates_section_parser(), required=False),
+            SchemaItem(
+                ["Rates"],
+                "rates",
+                rates_section_parser(),
+                required=False,
+                default={"drops": [], "consumption": [], "notes": []},
+            ),
             SchemaItem(
                 ["Lag Info"],
                 "lag_info",
                 parse_lag_section,  # Pass the section directly
                 required=False,
+                default=None,
             ),
             SchemaItem(
                 ["Video Links", "Video Link"],
