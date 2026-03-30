@@ -63,6 +63,19 @@ def identity[T](x: T) -> T:
     return x
 
 
+def normalize_cdn_url(url: str) -> str:
+    prefixes = (
+        "https://media.discordapp.net/",
+        "http://media.discordapp.net/",
+        "https://cdn.discordapp.com/",
+        "http://cdn.discordapp.com/",
+    )
+    for prefix in prefixes:
+        if url.startswith(prefix):
+            return "https://cdn.tmcc.dev/" + url[len(prefix) :].lstrip("/")
+    return url
+
+
 def single_line_parser[T](function: Callable[[str], T]) -> parser[T]:
     @wraps(function)
     def wrapper(data: section) -> T:
@@ -329,7 +342,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         link_match = MD_LINK_RE.search(text)
         if link_match:
             result["name"] = link_match.group(1).strip()
-            result["channel_link"] = link_match.group(2).strip("<>")
+            result["channel_link"] = normalize_cdn_url(link_match.group(2).strip("<>"))
         else:
             if text:
                 result["name"] = text
@@ -348,7 +361,9 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         link_match = MD_LINK_RE.search(text)
         if link_match:
             result["contribution"] = link_match.group(1).strip()
-            result["contribution_link"] = link_match.group(2).strip("<>")
+            result["contribution_link"] = normalize_cdn_url(
+                link_match.group(2).strip("<>")
+            )
         else:
             result["contribution"] = text.strip()
 
@@ -651,7 +666,7 @@ def videos_parse() -> parser[list[dict[str, str]]]:
             result.append(
                 {
                     "name": m.group(1),
-                    "url": m.group(2),
+                    "url": normalize_cdn_url(m.group(2)),
                 }
             )
 
@@ -673,11 +688,12 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
                 note = node.text[: node.text.find(urls[0])].strip(": ")
 
             for url in urls:
+                normalized_url = normalize_cdn_url(url)
                 result.append(
                     {
                         "type": "file",
-                        "name": url.split("/")[-1],
-                        "url": url,
+                        "name": normalized_url.split("/")[-1],
+                        "url": normalized_url,
                         "note": note if len(urls) == 1 else "",
                     }
                 )
@@ -704,10 +720,11 @@ def figures_parse() -> parser[list[dict]]:
 
             urls = re.findall(r"(https?://\S+)", stripped)
             for url in urls:
+                normalized_url = normalize_cdn_url(url)
                 figures.append(
                     {
-                        "url": url,
-                        "name": url.split("/")[-1],
+                        "url": normalized_url,
+                        "name": normalized_url.split("/")[-1],
                     }
                 )
 
