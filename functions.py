@@ -297,6 +297,17 @@ async def open_all_archived(run_channel: discord.TextChannel):
             except discord.Forbidden:
                 await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{faq_channel.id}>")
                 return
+    for forum in FORUMS:
+        channel = bot.get_channel(forum)
+        async for thread in channel.archived_threads(limit=None):
+            if thread.archived and any(tag.id in PENDING_TAGS for tag in thread.applied_tags):
+                try:
+                    await thread.edit(archived=False)
+                    opened_posts += 1
+                except discord.Forbidden:
+                    await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
+                    return
+
     if opened_posts > 0:
         report = f"**Successfully opened {opened_posts} forum post(s)**"
         await run_channel.send(content=report)
