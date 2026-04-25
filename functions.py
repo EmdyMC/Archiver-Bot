@@ -301,7 +301,7 @@ async def open_all_archived(run_channel: discord.TextChannel):
                 return
     '''
     Avoid hitting open post limit
-    
+
     for forum in FORUMS:
         channel = bot.get_channel(forum)
         async for thread in channel.archived_threads(limit=None):
@@ -353,6 +353,27 @@ async def close_all_resolved(run_channel: discord.TextChannel):
         await run_channel.send(report)
     else:
         await run_channel.send("No open forum posts found that were marked as solved/archived/rejected")
+
+async def mark_inactive(run_channel: discord.TextChannel):
+    help_forum = bot.get_channel(HELP_FORUM)
+    now = datetime.now(UTC)
+    inactive_tag = thread.parent.get_tag(INACTIVE_TAG)
+    new_tags = []
+    new_tags.append(inactive_tag)
+    count = 0
+    for thread in help_forum.threads:
+        if not any(tag.id == UNSOLVED_TAG for tag in thread.applied_tags):
+            continue
+        else:
+            if thread.last_message_id:
+                last_activity = snowflake_time(thread.last_message_id)
+            else:
+                last_activity = thread.created_at
+            elapsed_time = now - last_activity
+            if elapsed_time > timedelta(weeks=2):
+                await thread.edit(archived=True, applied_tags=new_tags)
+                count += 1
+    await run_channel.send(content=f"Marked and close **{count}** help threads")
 
 # Fetch thread ID given name
 async def get_thread_by_name(channel, name):
@@ -658,6 +679,7 @@ async def archive_management():
     await bot.wait_until_ready()
     logs = bot.get_channel(LOG_CHANNEL)
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
+    await mark_inactive(run_channel=logs)
     await open_all_archived(run_channel=logs)
     await close_all_resolved(run_channel=logs)
 
