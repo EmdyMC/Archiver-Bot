@@ -299,8 +299,6 @@ async def open_all_archived(run_channel: discord.TextChannel):
             except discord.Forbidden:
                 await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{faq_channel.id}>")
                 return
-    '''
-    Avoid hitting open post limit
 
     for forum in FORUMS:
         channel = bot.get_channel(forum)
@@ -313,7 +311,7 @@ async def open_all_archived(run_channel: discord.TextChannel):
                 except discord.Forbidden:
                     await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
                     return
-    '''
+
     if opened_posts > 0:
         report = f"**Successfully opened {opened_posts} forum post(s)**"
         await run_channel.send(content=report)
