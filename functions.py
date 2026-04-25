@@ -324,7 +324,7 @@ async def close_all_resolved(run_channel: discord.TextChannel):
     guild = run_channel.guild
     closed_posts = 0
     post_list = []
-    tags = {'solved', 'rejected', 'archived'}
+    tags = {'solved', 'rejected', 'archived', 'inactive', 'off-topic'}
 
     for channel in guild.channels:
         if isinstance(channel, discord.ForumChannel):
