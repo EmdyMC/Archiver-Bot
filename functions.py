@@ -303,6 +303,38 @@ async def open_all_archived(run_channel: discord.TextChannel):
     else:
         await run_channel.send("No closed forum posts found in the archives")
 
+async def close_all_resolved(run_channel: discord.TextChannel):
+    guild = run_channel.guild
+    closed_posts = 0
+    post_list = []
+    tags = {'solved', 'rejected', 'archived'}
+
+    for channel in guild.channels:
+        if isinstance(channel, discord.ForumChannel):
+            for thread in channel.threads:
+                if thread.archived:
+                    continue
+                if thread.locked:
+                    thread.edit(locked=False)
+                    thread.edit(archived=True, locked=True)
+                if any(tag.name.lower() in tags for tag in thread.applied_tags):
+                    try:
+                        await thread.edit(archived=True)
+                        closed_posts += 1
+                        post_list.append(f"*<#{thread.id}>* in <#{channel.id}>")
+                    except discord.Forbidden:
+                        await run_channel.send(f"Error: Bot does not have manage threads permission in <#{channel.id}>")
+                        break
+        
+    if closed_posts > 0:
+        report = f"### Successfully closed {closed_posts} forum post(s):\n"
+        report += "\n".join(post_list)
+        if len(report) > 1000:
+            report = report[:1000] + " . . ."
+        await run_channel.send(report)
+    else:
+        await run_channel.send("No open forum posts found that were marked as solved/archived/rejected")
+
 # Fetch thread ID given name
 async def get_thread_by_name(channel, name):
     for thread in channel.threads:
@@ -608,6 +640,7 @@ async def archive_management():
     logs = bot.get_channel(LOG_CHANNEL)
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
     await open_all_archived(run_channel=logs)
+    await close_all_resolved(run_channel=logs)
 
 def get_post_metadata(thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
     #Returns a dict of metadata to add on top of the post message

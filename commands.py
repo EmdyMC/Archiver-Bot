@@ -7,39 +7,8 @@ from functions import ParserErrorItem
 @bot.tree.command(name="close_resolved", description="Closes all solved, rejected and archived posts")
 @app_commands.checks.has_any_role(*HIGHER_ROLES)
 async def close_resolved(interaction: discord.Interaction):
-
-    await interaction.response.defer()
-
-    guild = interaction.guild
-    closed_posts = 0
-    post_list = []
-    tags = {'solved', 'rejected', 'archived'}
-
-    for channel in guild.channels:
-        if isinstance(channel, discord.ForumChannel):
-            for thread in channel.threads:
-                if thread.archived:
-                    continue
-                if thread.locked:
-                    thread.edit(locked=False)
-                    thread.edit(archived=True, locked=True)
-                if any(tag.name.lower() in tags for tag in thread.applied_tags):
-                    try:
-                        await thread.edit(archived=True)
-                        closed_posts += 1
-                        post_list.append(f"*<#{thread.id}>* in <#{channel.id}>")
-                    except discord.Forbidden:
-                        await interaction.followup.send(f"Error: Bot does not have manage threads permission in <#{channel.id}>")
-                        break
-        
-    if closed_posts > 0:
-        report = f"### Successfully closed {closed_posts} forum post(s):\n"
-        report += "\n".join(post_list)
-        if len(report) > 1000:
-            report = report[:1000] + " . . ."
-        await interaction.followup.send(report)
-    else:
-        await interaction.followup.send("No open forum posts found that were marked as solved/archived/rejected")
+    await interaction.response.send_message(content="Checking posts. . .", ephemeral=True)
+    await close_all_resolved(run_channel=interaction.channel)
 
 # Open archived posts command
 @bot.tree.command(name="open_archived", description="Opens all posts in the archive")
