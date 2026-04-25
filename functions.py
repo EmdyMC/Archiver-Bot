@@ -357,7 +357,7 @@ async def close_all_resolved(run_channel: discord.TextChannel):
 async def mark_inactive(run_channel: discord.TextChannel):
     help_forum = bot.get_channel(HELP_FORUM)
     now = datetime.now(UTC)
-    inactive_tag = thread.parent.get_tag(INACTIVE_TAG)
+    inactive_tag = help_forum.get_tag(INACTIVE_TAG)
     new_tags = []
     new_tags.append(inactive_tag)
     count = 0
