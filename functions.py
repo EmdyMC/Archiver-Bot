@@ -332,8 +332,8 @@ async def close_all_resolved(run_channel: discord.TextChannel):
                 if thread.archived:
                     continue
                 if thread.locked:
-                    thread.edit(locked=False)
-                    thread.edit(archived=True, locked=True)
+                    await thread.edit(locked=False)
+                    await thread.edit(archived=True, locked=True)
                     await asyncio.sleep(1)
                 if any(tag.name.lower() in tags for tag in thread.applied_tags):
                     try:
