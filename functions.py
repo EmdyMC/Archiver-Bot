@@ -282,7 +282,7 @@ async def open_all_archived(run_channel: discord.TextChannel):
     for channel in guild.channels:
         if isinstance(channel, discord.ForumChannel) and (channel.category_id not in NON_ARCHIVE_CATEGORIES):
             async for thread in channel.archived_threads(limit=None):
-                if thread.archived:
+                if thread.archived and not thread.flags.pinned:
                     try:
                         await thread.edit(archived=False)
                         opened_posts += 1
@@ -292,7 +292,7 @@ async def open_all_archived(run_channel: discord.TextChannel):
                         return
     faq_channel = bot.get_channel(FAQ_CHANNEL)
     async for thread in faq_channel.archived_threads(limit=None):
-        if thread.archived:
+        if thread.archived and not thread.flags.pinned:
             try:
                 await thread.edit(archived=False)
                 opened_posts += 1
@@ -304,7 +304,7 @@ async def open_all_archived(run_channel: discord.TextChannel):
     for forum in FORUMS:
         channel = bot.get_channel(forum)
         async for thread in channel.archived_threads(limit=None):
-            if thread.archived and any(tag.id in PENDING_TAGS for tag in thread.applied_tags):
+            if thread.archived and any(tag.id in PENDING_TAGS for tag in thread.applied_tags) and not thread.flags.pinned:
                 try:
                     await thread.edit(archived=False)
                     opened_posts += 1
@@ -392,7 +392,7 @@ async def lock_submissions(run_channel: discord.TextChannel):
     await run_channel.send("Running lock submissions loop")
     submissions = bot.get_channel(SUBMISSIONS_CHANNEL)
     count = 0
-    async for thread in submissions.archived_threads(limit=None):
+    for thread in submissions.threads:
         if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags) and not thread.locked:
             if thread.last_message_id:
                 last_activity = snowflake_time(thread.last_message_id)
