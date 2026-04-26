@@ -327,7 +327,7 @@ async def close_all_resolved(run_channel: discord.TextChannel):
     for channel in guild.channels:
         if isinstance(channel, discord.ForumChannel):
             for thread in channel.threads:
-                if thread.archived:
+                if thread.archived or thread.flags.pinned:
                     continue
                 if thread.locked:
                     await thread.edit(locked=False)
@@ -362,15 +362,27 @@ async def mark_inactive(run_channel: discord.TextChannel):
     for thread in help_forum.threads:
         if not any(tag.id == UNSOLVED_TAG for tag in thread.applied_tags):
             continue
+        if thread.last_message_id:
+            last_activity = snowflake_time(thread.last_message_id)
         else:
-            if thread.last_message_id:
-                last_activity = snowflake_time(thread.last_message_id)
-            else:
-                last_activity = thread.created_at
-            elapsed_time = now - last_activity
-            if elapsed_time > timedelta(weeks=2):
-                await thread.edit(archived=True, applied_tags=new_tags)
-                count += 1
+            last_activity = thread.created_at
+        elapsed_time = now - last_activity
+        if elapsed_time > timedelta(weeks=1):
+            await thread.edit(archived=True, applied_tags=new_tags)
+            count += 1
+            continue
+        '''    
+        if elapsed_time > timedelta(days=3):
+            last_msg = thread.last_message
+            if last_msg is None and thread.last_message_id is not None:
+                try:
+                    last_msg = await thread.fetch_message(thread.last_message_id)
+                except discord.NotFound:
+                    pass
+
+            if last_msg and last_msg.author != bot.user:
+                await thread.send(content=f"{thread.owner.mention} was this help request solved?\nIf so please make sure to mark it as solved using `/tag_selector`")
+        '''
     await run_channel.send(content=f"Marked and close **{count}** help threads")
 
 # Fetch thread ID given name
