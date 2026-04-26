@@ -331,7 +331,7 @@ async def close_all_resolved(run_channel: discord.TextChannel):
             for thread in channel.threads:
                 if thread.archived or thread.flags.pinned:
                     continue
-                if thread.locked:
+                if thread.locked and not thread.archived:
                     await thread.edit(locked=False)
                     await thread.edit(archived=True, locked=True)
                     await asyncio.sleep(1)
@@ -392,7 +392,7 @@ async def lock_submissions(run_channel: discord.TextChannel):
     await run_channel.send("Running lock submissions loop")
     submissions = bot.get_channel(SUBMISSIONS_CHANNEL)
     count = 0
-    for thread in submissions.threads:
+    for thread in submissions.archived_threads(limit=None):
         if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags):
             if thread.last_message_id:
                 last_activity = snowflake_time(thread.last_message_id)
@@ -709,9 +709,9 @@ async def archive_management():
     logs = bot.get_channel(LOG_CHANNEL)
     await logs.send(embed=discord.Embed(title="Maintenence", description="Running periodic archive post open and resolved thread close commands", color=discord.Color.green()))
     await mark_inactive(run_channel=logs)
+    await lock_submissions(run_channel=logs)
     await open_all_archived(run_channel=logs)
     await close_all_resolved(run_channel=logs)
-    await lock_submissions(run_channel=logs)
 
 def get_post_metadata(thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
     #Returns a dict of metadata to add on top of the post message
