@@ -393,14 +393,15 @@ async def lock_submissions(run_channel: discord.TextChannel):
     submissions = bot.get_channel(SUBMISSIONS_CHANNEL)
     count = 0
     async for thread in submissions.archived_threads(limit=None):
-        if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags):
+        if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags) and not thread.locked:
             if thread.last_message_id:
                 last_activity = snowflake_time(thread.last_message_id)
             else:
                 last_activity = thread.created_at
             elapsed_time = discord.utils.utcnow() - last_activity
             if elapsed_time > timedelta(days=1):
-                await thread.edit(locked=True)
+                await thread.edit(archived=False, locked=True)
+                await thread.edit(archived=True)
                 count += 1
     await run_channel.send(content=f"Locked {count} Rejected/Archived submissions posts")
 
