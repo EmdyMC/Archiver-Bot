@@ -276,6 +276,7 @@ async def timeout_user(seconds: int, user: discord.Member):
 
 # Open all archive threads
 async def open_all_archived(run_channel: discord.TextChannel):
+    await run_channel.send("Running open archived loop")
     opened_posts = 0
     guild = run_channel.guild
     for channel in guild.channels:
@@ -319,6 +320,7 @@ async def open_all_archived(run_channel: discord.TextChannel):
         await run_channel.send("No closed forum posts found in the archives")
 
 async def close_all_resolved(run_channel: discord.TextChannel):
+    await run_channel.send("Running close resolved loop")
     guild = run_channel.guild
     closed_posts = 0
     post_list = []
@@ -353,8 +355,9 @@ async def close_all_resolved(run_channel: discord.TextChannel):
         await run_channel.send("No open forum posts found that were marked as solved/archived/rejected")
 
 async def mark_inactive(run_channel: discord.TextChannel):
+    await run_channel.send("Running mark inactive loop")
     help_forum = bot.get_channel(HELP_FORUM)
-    now = datetime.now(UTC)
+    now = discord.utils.utcnow()
     inactive_tag = help_forum.get_tag(INACTIVE_TAG)
     new_tags = []
     new_tags.append(inactive_tag)
@@ -383,7 +386,23 @@ async def mark_inactive(run_channel: discord.TextChannel):
             if last_msg and last_msg.author != bot.user:
                 await thread.send(content=f"{thread.owner.mention} was this help request solved?\nIf so please make sure to mark it as solved using `/tag_selector`")
         '''
-    await run_channel.send(content=f"Marked and close **{count}** help threads")
+    await run_channel.send(content=f"Marked **{count}** help threads as inactive")
+
+async def lock_submissions(run_channel: discord.TextChannel):
+    await run_channel.send("Running lock submissions loop")
+    submissions = bot.get_channel(SUBMISSIONS_CHANNEL)
+    count = 0
+    for thread in submissions.threads:
+        if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags):
+            if thread.last_message_id:
+                last_activity = snowflake_time(thread.last_message_id)
+            else:
+                last_activity = thread.created_at
+            elapsed_time = discord.utils.utcnow() - last_activity
+            if elapsed_time > timedelta(days=1):
+                await thread.edit(locked=True)
+                count += 1
+    await run_channel.send(content=f"Locked {count} Rejected/Archived submissions posts")
 
 # Fetch thread ID given name
 async def get_thread_by_name(channel, name):
@@ -692,6 +711,7 @@ async def archive_management():
     await mark_inactive(run_channel=logs)
     await open_all_archived(run_channel=logs)
     await close_all_resolved(run_channel=logs)
+    await lock_submissions(run_channel=logs)
 
 def get_post_metadata(thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
     #Returns a dict of metadata to add on top of the post message
