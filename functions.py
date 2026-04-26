@@ -392,7 +392,7 @@ async def lock_submissions(run_channel: discord.TextChannel):
     await run_channel.send("Running lock submissions loop")
     submissions = bot.get_channel(SUBMISSIONS_CHANNEL)
     count = 0
-    for thread in submissions.archived_threads(limit=None):
+    async for thread in submissions.archived_threads(limit=None):
         if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags):
             if thread.last_message_id:
                 last_activity = snowflake_time(thread.last_message_id)
