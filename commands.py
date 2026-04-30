@@ -95,14 +95,14 @@ async def delete(interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message("You can only delete bot messages with this command", ephemeral=True)
     else:
         role_ids = [role.id for role in interaction.user.roles]
+        archiver_chat = bot.get_channel(ARCHIVER_CHAT)
+        embed=discord.Embed(title="Message deletion request", description=f"{interaction.user.mention} wishes to delete {message.jump_url}")
+        view = DeleteMessageApprovalView(target_message_id=message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
+        approval_message = await archiver_chat.send(embed=embed, view=view)
+        view.approval_message = approval_message
         if MODERATOR_ID in role_ids:
-            await interaction.response.send_message("You know you don't need to use the bot to delete stuff right?", ephemeral=True)
+            await interaction.response.send_message(content="Message deletion request sent. . . you know you don't need to use the bot to delete stuff right?", ephemeral=True)
         else:
-            archiver_chat = bot.get_channel(ARCHIVER_CHAT)
-            embed=discord.Embed(title="Message deletion request", description=f"{interaction.user.mention} wishes to delete {message.jump_url}")
-            view = DeleteMessageApprovalView(target_message_id=message.id, target_channel_id=interaction.channel_id, requester=interaction.user)
-            approval_message = await archiver_chat.send(embed=embed, view=view)
-            view.approval_message = approval_message
             await interaction.response.send_message(content="Message deletion request sent", ephemeral=True)
 
 # Publish post
