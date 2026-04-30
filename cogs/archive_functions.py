@@ -424,6 +424,21 @@ class DeleteThreadApprovalView(discord.ui.View):
 class ArchiveFunctions(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.edit_ctx = app_commands.ContextMenu(name="Edit", callback=self.edit)
+        self.delete_ctx = app_commands.ContextMenu(name="Delete", callback=self.delete)
+        self.publish_ctx = app_commands.ContextMenu(name="Publish post", callback=self.publish)
+        self.append_ctx = app_commands.ContextMenu(name="Append post", callback=self.append)
+
+        self.bot.tree.add_command(self.edit_ctx)
+        self.bot.tree.add_command(self.delete_ctx)
+        self.bot.tree.add_command(self.publish_ctx)
+        self.bot.tree.add_command(self.append_ctx)
+    
+    async def cog_unload(self):
+        self.bot.tree.remove_command(self.edit_ctx.name, type=self.edit_ctx.type)
+        self.bot.tree.remove_command(self.delete_ctx.name, type=self.delete_ctx.type)
+        self.bot.tree.remove_command(self.publish_ctx.name, type=self.publish_ctx.type)
+        self.bot.tree.remove_command(self.append_ctx.name, type=self.append_ctx.type)
 
     # Messsage send
     @app_commands.command(name="send", description="Send a message via the bot to the current channel")
@@ -435,7 +450,6 @@ class ArchiveFunctions(commands.Cog):
         await interaction.response.send_modal(send_modal)
 
     # Message edit
-    @app_commands.context_menu(name="Edit")
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def edit(self, interaction: discord.Interaction, message: discord.Message):
         if message.author==interaction.client.user:
@@ -447,7 +461,6 @@ class ArchiveFunctions(commands.Cog):
             await interaction.response.send_message(content="The given message is not one made by Archiver Bot, editing is not possible", ephemeral=True)
 
     # Message delete
-    @app_commands.context_menu(name="Delete")
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def delete(self, interaction: discord.Interaction, message: discord.Message):
         if message.author!=interaction.client.user:
@@ -465,14 +478,12 @@ class ArchiveFunctions(commands.Cog):
                 await interaction.response.send_message(content="Message deletion request sent", ephemeral=True)
 
     # Publish post
-    @app_commands.context_menu(name="Publish post")
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def publish(self, interaction: discord.Interaction, message: discord.Message):
         publish_modal = PublishBox(draft=message)
         await interaction.response.send_modal(publish_modal)
 
     # Append post
-    @app_commands.context_menu(name="Append post")
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def append(self, interaction: discord.Interaction, message: discord.Message):
         last_thread = getattr(interaction.client, "last_archive_thread", None)

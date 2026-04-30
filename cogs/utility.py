@@ -79,7 +79,7 @@ class Utility(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print(f"Rewritten bot online as {self.bot.user}")
-        await self.log(title="Archiver Bot Rewrite Online", message="", colour=discord.Color.green())
+        await self.log(title="Archiver Bot Online", message="", colour=discord.Color.green())
 
     # Send chunked messages
     async def send_chunked_messages(self, channel: discord.TextChannel, header: str, items, id_list):

@@ -12,8 +12,11 @@ class Management(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.archive_management.start()
+        self.pin_ctx = app_commands.ContextMenu(name="Pin", callback=self.pin_message)
+        self.bot.tree.add_command(self.pin_ctx)
 
     def cog_unload(self):
+        self.bot.tree.remove_command(self.pin_ctx.name, type=self.pin_ctx.type)
         self.archive_management.cancel()
     
     # Open all archive threads
@@ -194,7 +197,6 @@ class Management(commands.Cog):
         await interaction.response.send_message(content="Select the tags:", view=view, ephemeral=True)
     
     # Pin context command
-    @app_commands.context_menu(name="Pin")
     async def pin_message(self, interaction: discord.Interaction, message: discord.Message):
         if not isinstance(message.channel, discord.Thread) or message.channel.parent.id not in ALLOWED_FORUMS:
             await interaction.response.send_message(content="This command can only be run in a submission or development thread", ephemeral=True)
