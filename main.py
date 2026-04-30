@@ -21,8 +21,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 
 async def setup_hook():
-    #print("Syncing slash commands...")
-    #await bot.tree.sync()
+    print("Syncing slash commands...")
+    await bot.tree.sync()
     print("Commands synced!")
 
 bot.setup_hook = setup_hook
