@@ -1,4 +1,5 @@
 import discord
+import re
 
 # Constants
 
@@ -10,7 +11,7 @@ SUBMITTER = 1172971622240620594
 HIGHER_ROLES = {MODERATOR_ID, ARCHIVER_ID}
 STAFF_ROLES = {MODERATOR_ID, ARCHIVER_ID,HELPER_ID}
 NO_CHAT = 1390906563505684591
-LOG_CHANNEL = 1343664979831820368 # Bot-logs
+LOG_CHANNEL = 931511791064866819 #1343664979831820368 # Bot-logs
 ARCHIVER_CHAT = 1163451952827478056
 BOT_DM_THREAD = 1473708689461477641
 NON_ARCHIVE_CATEGORIES = {1355756508394160229, 1184256131141484724, 1163087048173965402, 1378966923152195655, 1182932696662560798, 1374225342948053032, 1161803873317568583} # Archived, Voice, Public, Help, Staff, Decisions and Votes, Important
@@ -31,7 +32,7 @@ INACTIVE_TAG = 1430378085332815872
 UNSOLVED_TAG = 1378041211150929990
 RESOLVED_TAGS = {REJECTED_TAG, ACCEPTED_TAG}
 CLOSING_TAGS = {REJECTED_TAG, ARCHIVED_TAG}
-PENDING_TAGS = {1257162647040819250, 1284913422487654612, 1378041211150929990} # Pending submissions, Pending corrections, Unsolved help
+PENDING_TAGS = {1257162647040819250, 1284913422487654612, 1378041211150929990, ACCEPTED_TAG} # Pending submissions, Pending corrections, Unsolved help
 FORUMS = {SUBMISSIONS_CHANNEL, ARCHIVE_CORRECTIONS, HELP_FORUM}
 TAG_COLOUR = {
     "Accepted": discord.Colour.green(),
@@ -46,10 +47,24 @@ ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
 BLACKLIST = "blacklist.json"
 DISCORD_CHAR_LIMIT = 1800
+TIMEOUT_MESSAGE = """Your message on TMCC has been blocked as you failed to select the right onboarding option when joining the server (see below) and your account is suspected to be compromised.
+    If you wish to partake in the server fully, make sure to select the correct option in the "Channels and Roles" section and follow the rules of the server."""
+NO_CHAT_IMAGE = "https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png"
+SUBMISSION_PROMPT = """
+- 📌 The submitter of the post can pin messages in the thread using the application command shown below. 
+- ❌ This thread is for archival-related discussion only. No development or help questions are allowed.
+- ⌚ Please be patient, as the archival team has a lot of posts to process. We will review this post as soon as possible."""
+HOW_TO_PIN = "https://cdn.discordapp.com/attachments/1331670749471047700/1428615699378733108/how_to_pin.png"
+HELP_FORUM_PROMPT = """
+- ✅ The submitter of this question can mark posts as solved by using `/tag_selector` and selecting `✅ Solved`.
+- 📖 Refer to the [guide](https://discord.com/channels/1161803566265143306/1378040485133680772) to get faster and better answers to your questions. Add any relevant information to your post.
+- ⌚ Please be patient and polite. Remember that all helpers are volunteers."""
+MENTION_RE = re.compile(r"<@!?(\d+)>")
 
 # Embed text
 
 OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
+<:std2:1469724306446614650> [**Storage Catalog**](https://discord.gg/hztJMTsx2m) Development-oriented storage tech
 <:slime:1399677082472153098> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK) Flying machines and movable contraptions
 <:mtdr:1399677041946923061> [**Minecraft Tech Discord Recollector**](https://discord.gg/UT8ns46As9) Index of TMC SMP and archive servers
 <:tnt:1399677165104009226> [**TNT Archive**](https://discord.gg/vPyUBcdmZV) TNT cannon tech and projectile physics
@@ -59,10 +74,9 @@ OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discor
 <:wither:1399677185870008330> [**Wither Archive**](https://discord.gg/Ea28MyKB3J) Wither tech archive and development 
 <:sos:1399677094169940139> [**Saints of Suppression**](https://discord.gg/xa7QWAeAng) Light and update suppression and skipping
 <:aca:1399676962464600155> [**Autocrafting Archive**](https://discord.gg/guZdbQ9KQe) Crafters and modded autocrafting table tech
-<:comp:1399677007406698516> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7) TMC-oriented computational redstone logic
+<:comp:1399677007406698516> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7) TMC-oriented computational redstone
 <:tmcra:1399677154702135328> [**TMC Resources Archive**](https://discord.gg/E4q8WDUc7k) Compilation of TMC tricks, links, and resources
 <:luke:1399677029707808768> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBili) tech recollector
-
 <:ore:1399677056584781946> [**Open Redstone**](https://discord.gg/zjWRarN) (DiscOREd) Computational redstone community
 <:squid:1399677105033183232> [**Piston Door Catalogue**](https://discord.gg/Khj8MyA) (Redstone Squid's Records Catalogue) Piston door index
 <:ssf:1399677117884534875> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH) (SSf Archive) Structureless superflat tech
@@ -107,5 +121,11 @@ RANDOM_REPLIES = [
     "I'm not your AI girlfriend, why are you talking to me?",
     "Yeah, no",
     "The audacity to ping me",
-    "Sup?"
+    "Sup?",
+    "Tektonic is so cool",
+    "<@1244389624751849577> website when?",
+    "Emdy is the best, go sub to him",
+    "Sam is ok I guess",
+    "Watchu doin",
+    "​      is        "
 ]
