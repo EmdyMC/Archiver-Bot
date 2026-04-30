@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from pathlib import Path
 from constants import HIGHER_ROLES, ARCHIVER_CHAT, MODERATOR_ID, ILLEGAL_COMPONENTS, ARCHIVE_UPDATES, SUBMISSIONS_CHANNEL, ARCHIVED_TAG, NON_ARCHIVE_CATEGORIES, ARCHIVED_DESIGNER, SUBMITTER
-from utility import TagSelectView
+from cogs.utility import TagSelectView
 
 class SendBox(discord.ui.Modal, title="Send Message"):
     def __init__(self, has_embed: bool):

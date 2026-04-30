@@ -6,7 +6,7 @@ from discord.utils import snowflake_time
 from discord.ext import commands
 from discord import app_commands
 from constants import HIGHER_ROLES, HELP_FORUM, STAFF_ROLES, ALLOWED_FORUMS, NON_ARCHIVE_CATEGORIES, FORUMS, FAQ_CHANNEL, PENDING_TAGS, INACTIVE_TAG, UNSOLVED_TAG, SUBMISSIONS_CHANNEL, CLOSING_TAGS, LOG_CHANNEL
-from utility import TagSelectView
+from cogs.utility import TagSelectView
 
 class Management(commands.Cog):
     def __init__(self, bot: commands.Bot):
