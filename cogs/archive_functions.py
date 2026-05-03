@@ -35,6 +35,7 @@ class SendBox(discord.ui.Modal, title="Send Message"):
             self.add_item(self.embed_text)
             self.add_item(self.embed_colour)
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer()
         utility_cog = interaction.client.get_cog("Utility")
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
@@ -43,7 +44,7 @@ class SendBox(discord.ui.Modal, title="Send Message"):
         else:
             await self.target_channel.send(content=self.message_text.value)
             await utility_cog.log(title="Message sent via bot", description=f"**Message content:**\n{self.message_text.value}\n\n**By:** {interaction.user.mention}\n\n**In:** {self.target_channel.jump_url}")
-        await interaction.response.send_message(content="Message successfully sent!", ephemeral=True)
+        await interaction.followup.send(content="Message successfully sent!", ephemeral=True)
 
 # Edit box
 class EditBox(discord.ui.Modal, title="Edit Message"):
