@@ -35,7 +35,7 @@ class SendBox(discord.ui.Modal, title="Send Message"):
             self.add_item(self.embed_text)
             self.add_item(self.embed_colour)
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
         utility_cog = interaction.client.get_cog("Utility")
         if hasattr(self,'embed_title'):
             new_embed = discord.Embed(title=self.embed_title.value, description=self.embed_text.value, colour=discord.Colour.from_str(self.embed_colour.value))
