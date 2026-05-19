@@ -179,7 +179,7 @@ class Management(commands.Cog):
 
     # Tag selector command
     @app_commands.command(name="tag_selector", description="Edit the tags of a forum post")
-    @app_commands.describe(tag="The tag to apply to the channel (overrides existing tags)")
+    @app_commands.describe(given_tag="The tag to apply to the channel (overrides existing tags)")
     async def selector(self, interaction: discord.Interaction, given_tag: str=""):
         if not isinstance(interaction.channel, discord.Thread):
             await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum post"), ephemeral = True)
