@@ -127,5 +127,6 @@ RANDOM_REPLIES = [
     "Emdy is the best, go sub to him",
     "Sam is ok I guess",
     "Watchu doin",
-    "​      is        "
+    "​      is        ",
+    "I love you too <3"
 ]

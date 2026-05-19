@@ -179,7 +179,8 @@ class Management(commands.Cog):
 
     # Tag selector command
     @app_commands.command(name="tag_selector", description="Edit the tags of a forum post")
-    async def selector(self, interaction: discord.Interaction):
+    @app_commands.describe(tag="The tag to apply to the channel (overrides existing tags)")
+    async def selector(self, interaction: discord.Interaction, given_tag: str=""):
         if not isinstance(interaction.channel, discord.Thread):
             await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum post"), ephemeral = True)
             return
@@ -193,8 +194,18 @@ class Management(commands.Cog):
             return
         thread = interaction.channel
         available_tags = thread.parent.available_tags
-        view = TagSelectView(tags=available_tags, thread=thread)
-        await interaction.response.send_message(content="Select the tags:", view=view, ephemeral=True)
+        if given_tag=="":
+            view = TagSelectView(tags=available_tags, thread=thread)
+            await interaction.response.send_message(content="Select the tags:", view=view, ephemeral=True)
+        elif given_tag !="" and any(given_tag.strip().lower() == tag.name.lower() for tag in available_tags):
+            for tag in available_tags:
+                if tag.name.lower() == given_tag.strip().lower():
+                    applied_tag = tag
+                    break
+            await thread.edit(applied_tags=[applied_tag])
+            await interaction.response.send_message(content=f"Set the thread tag to: {applied_tag.name}", ephemeral=True)
+        else:
+            await interaction.response.send_message(content="Invalid tag name entered", ephemeral=True)
     
     # Pin context command
     async def pin_message(self, interaction: discord.Interaction, message: discord.Message):
