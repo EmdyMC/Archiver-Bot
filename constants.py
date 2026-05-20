@@ -47,8 +47,8 @@ ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
 BLACKLIST = "blacklist.json"
 DISCORD_CHAR_LIMIT = 1800
-TIMEOUT_MESSAGE = """Your message on TMCC has been blocked as you failed to select the right onboarding option when joining the server (see below) and your account is suspected to be compromised.
-    If you wish to partake in the server fully, make sure to select the correct option in the "Channels and Roles" section and follow the rules of the server."""
+TIMEOUT_MESSAGE = """Your message on TMCC has been blocked as you didn't select the right onboarding option when joining the server (see below) and your account is suspected to be a bot.
+\nIf you wish to partake in the server fully, make sure to select the correct option in the "Channels and Roles" section and follow the rules of the server."""
 NO_CHAT_IMAGE = "https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png"
 SUBMISSION_PROMPT = """
 - 📌 The submitter of the post can pin messages in the thread using the application command shown below. 

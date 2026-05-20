@@ -105,15 +105,15 @@ class MessageActions(commands.Cog):
             await utility_cog.timeout_user(seconds=20, user=author)
             warn_embed=discord.Embed(
                 title="Message blocked", 
-                description=f"{message.author.mention}{TIMEOUT_MESSAGE}"
+                description=f"{TIMEOUT_MESSAGE}"
             )
             warn_embed.set_image(url=NO_CHAT_IMAGE)
             try:
-                await message.author.send(embed=warn_embed)
-                await message.channel.send(embed=warn_embed, delete_after=20)
+                await message.author.send(content=f"{author.mention}", embed=warn_embed)
+                await message.channel.send(content=f"{author.mention}", embed=warn_embed, delete_after=20)
                 dm_status = "Notified via DM and in channel"
             except discord.Forbidden:
-                await message.channel.send(embed=warn_embed, delete_after=20)
+                await message.channel.send(content=f"{author.mention}", embed=warn_embed, delete_after=20)
                 dm_status = "DMs closed, notified in-channel"
             log_embed = discord.Embed(title="No chat user caught", 
             description=f"User {author.mention} tried to send a message in {jump_url} but has the no chat role. {dm_status}.\nContent: {message_content}", colour=discord.Color.red())
