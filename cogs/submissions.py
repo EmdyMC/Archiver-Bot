@@ -70,7 +70,7 @@ class Submissions(commands.Cog):
         discussion_thread = await tracker_channel.create_thread(name=thread.name, type=discord.ChannelType.public_thread)
         await discussion_thread.send(f"For discussion and debate regarding the archival status of {thread.jump_url}")
         ping_message = await discussion_thread.send("ping")
-        await ping_message.edit(content="<@&1162049503503863808> <@&1378983578251300934> 🏓 chat away!")
+        await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
         await ping_message.pin()
         notif = await tracker_channel.send(f"## [{thread.name}]({thread.jump_url})\n{discussion_thread.jump_url}")
         await asyncio.gather(
