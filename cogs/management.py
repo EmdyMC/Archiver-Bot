@@ -121,7 +121,6 @@ class Management(commands.Cog):
                 await thread.edit(archived=True, applied_tags=new_tags)
                 count += 1
                 continue
-            '''    
             if elapsed_time > timedelta(days=3):
                 last_msg = thread.last_message
                 if last_msg is None and thread.last_message_id is not None:
@@ -129,10 +128,8 @@ class Management(commands.Cog):
                         last_msg = await thread.fetch_message(thread.last_message_id)
                     except discord.NotFound:
                         pass
-
-                if last_msg and last_msg.author != bot.user:
+                if last_msg and last_msg.author != self.bot.user:
                     await thread.send(content=f"{thread.owner.mention} was this help request solved?\nIf so please make sure to mark it as solved using `/tag_selector`")
-            '''
         await run_channel.send(content=f"Marked **{count}** help threads as inactive")
 
     async def lock_submissions(self, run_channel: discord.TextChannel):
