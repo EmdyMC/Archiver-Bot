@@ -68,6 +68,8 @@ class Submissions(commands.Cog):
         # Send to tracker
         tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
         discussion_thread = await tracker_channel.create_thread(name=thread.name, type=discord.ChannelType.public_thread)
+        system_message = tracker_channel.get_partial_message(discussion_thread.id)
+        await system_message.delete()
         await discussion_thread.send(f"For discussion and debate regarding the archival status of {thread.jump_url}")
         ping_message = await discussion_thread.send("ping")
         await ping_message.edit(content="<@&1162049503503863808> 🏓 chat away!")
