@@ -30,7 +30,8 @@ class Submissions(commands.Cog):
                         continue
             
             async for tracking_message in tracker_channel.history(limit=None):
-                if tracking_message in tracker_channel.pins():
+                pins = await tracker_channel.pins()
+                if tracking_message in pins:
                     continue
                 reactions = tracking_message.reactions
                 if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
