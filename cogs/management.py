@@ -178,6 +178,7 @@ class Management(commands.Cog):
     @app_commands.command(name="tag_selector", description="Edit the tags of a forum post")
     @app_commands.describe(given_tag="The tag to apply to the channel (overrides existing tags)")
     async def selector(self, interaction: discord.Interaction, given_tag: str=""):
+        utility_cog = self.bot.get_cog("Utility")
         if not isinstance(interaction.channel, discord.Thread):
             await interaction.response.send_message(embed = discord.Embed(title = "This is not a forum post"), ephemeral = True)
             return
@@ -201,6 +202,7 @@ class Management(commands.Cog):
                     break
             await thread.edit(applied_tags=[applied_tag])
             await interaction.response.send_message(content=f"Set the thread tag to: {applied_tag.name}", ephemeral=True)
+            await utility_cog.log(title=f"Tag {applied_tag.emoji} {applied_tag.name} added", message=f"To post: **{thread.jump_url}**\nBy: {interaction.user.mention}")
         else:
             await interaction.response.send_message(content="Invalid tag name entered", ephemeral=True)
     

@@ -130,6 +130,46 @@ class Utility(commands.Cog):
 
         return "\n".join(ansi_lines)
     
+    # Guild list command
+    @app_commands.command(name="guild_list", description="Lists the first 10 servers the bot is a member of")
+    @app_commands.checks.has_role(MODERATOR_ID)
+    async def guild_list(self, interaction: discord.Interaction):
+        list = []
+        count = 0
+        for guild in self.bot.guilds:
+            if count >= 10:
+                break
+            list.append(f"- **{guild.name}** (ID: `{guild.id}`) - *{guild.member_count} members*")
+            count += 1
+    
+        servers_string = "\n".join(list)
+        
+        embed = discord.Embed(
+            title=f"Installed Servers ({len(self.bot.guilds)})",
+            description=servers_string if servers_string else "The bot is not in any servers.",
+            color=discord.Color.blue()
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @app_commands.command(name="leave", description="Leave the server with the given ID")
+    @app_commands.describe(server_id="The ID of the server to leave")
+    @app_commands.checks.has_role(MODERATOR_ID)
+    async def leave(self, interaction: discord.Interaction, server_id: str):
+        try:
+            server = await self.bot.fetch_guild(int(server_id))
+            if server is None:
+                await interaction.response.send_message(content="Server not found. Make sure the ID is correct.", ephemeral=True)
+                return
+        
+            guild_name = server.name
+            await server.leave()
+            
+            await interaction.response.send_message(content=f"Successfully left **{guild_name}** (`{server_id}`).", ephemeral=True)
+            await self.log(title="Bot Forcefully Left a Server", message=f"**Server:** {guild_name}\n**ID:** `{server_id}`\n**Actioned by:** {interaction.user.mention}")
+            
+        except Exception as e:
+            await interaction.response.send_message(content=f"Error trying to leave server: {e}", ephemeral=True)
+
     # Restart command
     @app_commands.command(name="restart", description="Restarts and updates the bot")
     @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
