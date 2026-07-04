@@ -32,7 +32,7 @@ class Management(commands.Cog):
                         try:
                             await thread.edit(archived=False)
                             opened_posts += 1
-                            await asyncio.sleep(1)
+                            await asyncio.sleep(0.5)
                         except discord.Forbidden:
                             await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
                             return
@@ -43,7 +43,7 @@ class Management(commands.Cog):
                 try:
                     await thread.edit(archived=False)
                     opened_posts += 1
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(0.5)
                 except discord.Forbidden:
                     await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{faq_channel.id}>")
                     return
@@ -55,7 +55,7 @@ class Management(commands.Cog):
                     try:
                         await thread.edit(archived=False)
                         opened_posts += 1
-                        await asyncio.sleep(1)
+                        await asyncio.sleep(0.5)
                     except discord.Forbidden:
                         await run_channel.send(f"Error: Bot does not have manage threads permission to edit <#{thread.id}> in <#{channel.id}>")
                         return
@@ -81,13 +81,13 @@ class Management(commands.Cog):
                     if thread.locked and not thread.archived:
                         await thread.edit(locked=False)
                         await thread.edit(archived=True, locked=True)
-                        await asyncio.sleep(1)
+                        await asyncio.sleep(0.5)
                     if any(tag.name.lower() in tags for tag in thread.applied_tags):
                         try:
                             await thread.edit(archived=True)
                             closed_posts += 1
                             post_list.append(f"*<#{thread.id}>* in <#{channel.id}>")
-                            await asyncio.sleep(1)
+                            await asyncio.sleep(0.5)
                         except discord.Forbidden:
                             await run_channel.send(f"Error: Bot does not have manage threads permission in <#{channel.id}>")
                             break

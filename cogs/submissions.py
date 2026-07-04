@@ -159,6 +159,7 @@ class Submissions(commands.Cog):
 
                     # Submission accepted
                     if tag_added.id == ACCEPTED_TAG and before.parent.id == SUBMISSIONS_CHANNEL:
+                        utility_cog = self.bot.get_cog("Utility")
                         try:
                             submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
                             accepted_posts = []
@@ -197,7 +198,7 @@ class Submissions(commands.Cog):
                                 await self.update_tracker_list()
                                 break
 
-                await after.send(embed = discord.Embed(title = f"Marked as {",  ".join(tag_list)}", color = embed_colour))
+                await after.send(embed = discord.Embed(title = f"Marked as {',  '.join(tag_list)}", color = embed_colour))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Submissions(bot))
