@@ -29,8 +29,8 @@ class Submissions(commands.Cog):
                     except discord.NotFound:
                         continue
             
+            pins = await tracker_channel.pins()
             async for tracking_message in tracker_channel.history(limit=None):
-                pins = await tracker_channel.pins()
                 if tracking_message in pins:
                     continue
                 reactions = tracking_message.reactions
@@ -41,13 +41,13 @@ class Submissions(commands.Cog):
                         continue
                     pending_messages.append("- **"+tracking_message.content[3:].replace("\n", " ")+" **")
 
-            for thread in submissions_forum.threads:
-                for tag in thread.applied_tags:
-                    if tag.id == ACCEPTED_TAG:
-                        accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
+            async with aiofiles.open("accepted.json", mode='r') as list:
+                content = await list.read()
+                accepted_posts = json.loads(content) if content else []
+
         except Exception as e:
             await utility_cog.log(title="Could not fetch messages in tracker channel", description=f"{e}")
-        
+
         tracker_list_messages = []
 
         if pending_messages or awaiting_testing or accepted_posts:
@@ -154,10 +154,24 @@ class Submissions(commands.Cog):
                     tag_list.append(f"{tag_emote} {tag_name}".strip())
                     
                     # Resend tracker list when a design is archived
-                    if tag_added.id == ARCHIVED_TAG and before.parent.id == SUBMISSIONS_CHANNEL:
+                    if (tag_added.id == ARCHIVED_TAG or tag_added.id == ACCEPTED_TAG) and before.parent.id == SUBMISSIONS_CHANNEL:
                         await self.update_tracker_list()
 
-                    # Submission accepted or rejected
+                    # Submission accepted
+                    if tag_added.id == ACCEPTED_TAG and before.parent.id == SUBMISSIONS_CHANNEL:
+                        try:
+                            submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
+                            accepted_posts = []
+                            async with aiofiles.open("accepted.json", mode='w') as list:
+                                for thread in submissions_forum.threads:
+                                    if any(tag.id == ACCEPTED_TAG for tag in thread.applied_tags):
+                                        accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
+                                await list.write(json.dumps(accepted_posts))
+                                await utility_cog.log(title="Updated accepted post list", description=f"Count: {len(accepted_posts)} posts")
+                        except Exception as e:
+                            await utility_cog.log(title="Error saving accepted post list", description=f"{e}")
+
+                    # Submission archived or rejected
                     if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
                         # Find tracker message
                         tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)

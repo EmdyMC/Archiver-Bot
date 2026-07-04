@@ -5,7 +5,7 @@ from datetime import timedelta
 from discord.utils import snowflake_time
 from discord.ext import commands
 from discord import app_commands
-from constants import HIGHER_ROLES, HELP_FORUM, STAFF_ROLES, ALLOWED_FORUMS, NON_ARCHIVE_CATEGORIES, FORUMS, FAQ_CHANNEL, PENDING_TAGS, INACTIVE_TAG, UNSOLVED_TAG, SUBMISSIONS_CHANNEL, CLOSING_TAGS, LOG_CHANNEL
+from constants import HIGHER_ROLES, HELP_FORUM, STAFF_ROLES, ALLOWED_FORUMS, NON_ARCHIVE_CATEGORIES, FORUMS, FAQ_CHANNEL, PENDING_TAGS, INACTIVE_TAG, UNSOLVED_TAG, SUBMISSIONS_CHANNEL, RESOLVED_TAGS, LOG_CHANNEL
 from cogs.utility import TagSelectView
 
 class Management(commands.Cog):
@@ -137,7 +137,7 @@ class Management(commands.Cog):
         submissions = self.bot.get_channel(SUBMISSIONS_CHANNEL)
         count = 0
         for thread in submissions.threads:
-            if any(tag.id in CLOSING_TAGS for tag in thread.applied_tags) and not thread.locked:
+            if any(tag.id in RESOLVED_TAGS for tag in thread.applied_tags) and not thread.locked:
                 if thread.last_message_id:
                     last_activity = snowflake_time(thread.last_message_id)
                 else:

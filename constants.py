@@ -31,7 +31,6 @@ ARCHIVED_TAG = 1197302327065972776
 INACTIVE_TAG = 1430378085332815872
 UNSOLVED_TAG = 1378041211150929990
 RESOLVED_TAGS = {REJECTED_TAG, ACCEPTED_TAG}
-CLOSING_TAGS = {REJECTED_TAG, ARCHIVED_TAG}
 PENDING_TAGS = {1257162647040819250, 1284913422487654612, 1378041211150929990, ACCEPTED_TAG} # Pending submissions, Pending corrections, Unsolved help
 FORUMS = {SUBMISSIONS_CHANNEL, ARCHIVE_CORRECTIONS, HELP_FORUM}
 TAG_COLOUR = {
@@ -46,7 +45,7 @@ CROSS_EMOJI = "❌"
 ILLEGAL_COMPONENTS = {"@everyone", "@here"}
 MESSAGES_LIST = "messages.json"
 BLACKLIST = "blacklist.json"
-DISCORD_CHAR_LIMIT = 1800
+DISCORD_CHAR_LIMIT = 2000
 TIMEOUT_MESSAGE = """Your message on TMCC has been blocked as you didn't select the right onboarding option when joining the server (see below) and your account is suspected to be a bot.
 \nIf you wish to partake in the server fully, make sure to select the correct option in the "Channels and Roles" section and follow the rules of the server."""
 NO_CHAT_IMAGE = "https://cdn.discordapp.com/attachments/1315522702492172300/1466707151472033954/image.png"
