@@ -10,6 +10,18 @@ class Submissions(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    async def refresh_accepted_posts(self):
+        accepted_posts = []
+        submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
+        for thread in submissions_forum.threads:
+            tag_ids = {tag.id for tag in thread.applied_tags}
+            has_other_resolved_tag = any(tag_id in RESOLVED_TAGS and tag_id != ACCEPTED_TAG for tag_id in tag_ids)
+            if ACCEPTED_TAG in tag_ids and ARCHIVED_TAG not in tag_ids and not has_other_resolved_tag:
+                accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
+        async with aiofiles.open("accepted.json", mode='w') as list:
+            await list.write(json.dumps(accepted_posts))
+        return accepted_posts
+
     # Update tracker list
     async def update_tracker_list(self):
         pending_messages = []
@@ -32,6 +44,8 @@ class Submissions(commands.Cog):
             pins = await tracker_channel.pins()
             async for tracking_message in tracker_channel.history(limit=None):
                 if tracking_message in pins:
+                    continue
+                if not tracking_message.content.startswith("## ["):
                     continue
                 reactions = tracking_message.reactions
                 if any(TESTING_EMOJI == reaction.emoji for reaction in reactions):
@@ -122,7 +136,7 @@ class Submissions(commands.Cog):
             await utility_cog.log(title="Submission post title changed", message=f"Before: {before.name}\nAfter: {after.name}")
             tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
             async for message in tracker_channel.history(limit=100, oldest_first=True):
-                if before.name in message.content:
+                if message.content.startswith("## [") and str(before.id) in message.content:
                     await utility_cog.log(title="Found tracker post", message="Attempting edit")
                     try:
                         discussion_thread = await utility_cog.get_thread_by_name(tracker_channel, before.name)
@@ -153,50 +167,43 @@ class Submissions(commands.Cog):
                         embed_colour = discord.Colour.light_gray()
                     tag_list.append(f"{tag_emote} {tag_name}".strip())
                     
-                    # Resend tracker list when a design is archived
-                    if (tag_added.id == ARCHIVED_TAG or tag_added.id == ACCEPTED_TAG) and before.parent.id == SUBMISSIONS_CHANNEL:
-                        await self.update_tracker_list()
-
-                    # Submission accepted
-                    if tag_added.id == ACCEPTED_TAG and before.parent.id == SUBMISSIONS_CHANNEL:
+                    if before.parent.id == SUBMISSIONS_CHANNEL:
                         utility_cog = self.bot.get_cog("Utility")
                         try:
-                            submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
-                            accepted_posts = []
-                            async with aiofiles.open("accepted.json", mode='w') as list:
-                                for thread in submissions_forum.threads:
-                                    if any(tag.id == ACCEPTED_TAG for tag in thread.applied_tags):
-                                        accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
-                                await list.write(json.dumps(accepted_posts))
-                                await utility_cog.log(title="Updated accepted post list", description=f"Count: {len(accepted_posts)} posts")
-                        except Exception as e:
-                            await utility_cog.log(title="Error saving accepted post list", description=f"{e}")
+                            # Keep the cached accepted list current before regenerating the tracker list.
+                            if tag_added.id == ACCEPTED_TAG or tag_added.id == ARCHIVED_TAG or tag_added.id in RESOLVED_TAGS:
+                                accepted_posts = await self.refresh_accepted_posts()
+                                await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
 
-                    # Submission archived or rejected
-                    if tag_added.id in RESOLVED_TAGS and before.parent.id == SUBMISSIONS_CHANNEL:
-                        # Find tracker message
-                        tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-                        async for message in tracker_channel.history(limit=100, oldest_first=True):
-                            if str(before.id) in message.content:
-                                utility_cog = self.bot.get_cog("Utility")
-                                # Send vote results in thread
-                                tracker_thread = await utility_cog.get_thread_by_name(tracker_channel, before.name)
-                                vote_results = "**Votes as of submission resolution:**\n"
-                                for reaction in message.reactions:
-                                    vote_results += f"{reaction.emoji} - "
-                                    users = [user.mention async for user in reaction.users() if user.id != self.bot.user.id]
-                                    vote_results += ", ".join(users)
-                                    vote_results += "\n"
-                                await tracker_thread.send(content=vote_results, allowed_mentions=discord.AllowedMentions.none())
-                                # Delete tracker message
-                                try:
-                                    await message.delete()
-                                    await utility_cog.log(title=f"Tracker post removed", message=f"**{before.name}**")
-                                except Exception as e:
-                                    await utility_cog.log(title=f"An error occurred", message=f"{e}")
-                                # Update tracker list
+                            # Submission archived or rejected
+                            if tag_added.id in RESOLVED_TAGS:
+                                # Find tracker message
+                                tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+                                async for message in tracker_channel.history(limit=100, oldest_first=True):
+                                    if str(before.id) in message.content:
+                                        # Send vote results in thread
+                                        tracker_thread = await utility_cog.get_thread_by_name(tracker_channel, before.name)
+                                        if tracker_thread:
+                                            vote_results = "**Votes as of submission resolution:**\n"
+                                            for reaction in message.reactions:
+                                                vote_results += f"{reaction.emoji} - "
+                                                users = [user.mention async for user in reaction.users() if user.id != self.bot.user.id]
+                                                vote_results += ", ".join(users)
+                                                vote_results += "\n"
+                                            await tracker_thread.send(content=vote_results, allowed_mentions=discord.AllowedMentions.none())
+                                        # Delete tracker message
+                                        try:
+                                            await message.delete()
+                                            await utility_cog.log(title=f"Tracker post removed", message=f"**{before.name}**")
+                                        except Exception as e:
+                                            await utility_cog.log(title=f"An error occurred", message=f"{e}")
+                                        break
+
+                            # Resend tracker list when accepted/archived/resolved state changes.
+                            if tag_added.id == ACCEPTED_TAG or tag_added.id == ARCHIVED_TAG or tag_added.id in RESOLVED_TAGS:
                                 await self.update_tracker_list()
-                                break
+                        except Exception as e:
+                            await utility_cog.log(title="Error updating submission tracker", message=f"{e}")
 
                 await after.send(embed = discord.Embed(title = f"Marked as {',  '.join(tag_list)}", color = embed_colour))
 
