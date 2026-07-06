@@ -43,9 +43,11 @@ class Utility(commands.Cog):
         self.bot = bot
 
     # Log function
-    async def log(self, title: str, message: str, colour: discord.Color = discord.Color.default()):
+    async def log(self, title: str, message: str = "", colour: discord.Color = discord.Color.default(), description: str | None = None):
         log_channel = self.bot.get_channel(LOG_CHANNEL)
         if log_channel:
+            if description is not None:
+                message = description
             embed = discord.Embed(title=title, description=message, color=colour)
             sent_message = await log_channel.send(embed=embed)
             return sent_message
