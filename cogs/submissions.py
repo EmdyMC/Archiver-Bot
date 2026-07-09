@@ -43,8 +43,8 @@ class Submissions(commands.Cog):
                         continue
                     pending_messages.append("- **"+tracking_message.content[3:].replace("\n", " ")+" **")
 
-            async with aiofiles.open("accepted.json", mode='r') as list:
-                content = await list.read()
+            async with aiofiles.open("accepted.json", mode='r') as accepted_list:
+                content = await accepted_list.read()
                 accepted_posts = json.loads(content) if content else []
 
         except Exception as e:
@@ -59,8 +59,8 @@ class Submissions(commands.Cog):
             await utility_cog.send_chunked_messages(tracker_channel, f"## 🧪 Awaiting Testing ({len(awaiting_testing)})", awaiting_testing, tracker_list_messages)
             await utility_cog.send_chunked_messages(tracker_channel, f"## ✅ Pending Archival ({len(accepted_posts)})", accepted_posts, tracker_list_messages)
             try:
-                async with aiofiles.open("messages.json", mode='w') as list:
-                    await list.write(json.dumps(tracker_list_messages))
+                async with aiofiles.open("messages.json", mode='w') as tracker_list:
+                    await tracker_list.write(json.dumps(tracker_list_messages))
             except Exception as e:
                 await utility_cog.log(title="Error saving message IDs", description=f"Error: {e}")
         else:
@@ -166,8 +166,8 @@ class Submissions(commands.Cog):
                                     tag_ids = {tag.id for tag in thread.applied_tags}
                                     if ACCEPTED_TAG in tag_ids:
                                         accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
-                                async with aiofiles.open("accepted.json", mode='w') as list:
-                                    await list.write(json.dumps(accepted_posts))
+                                async with aiofiles.open("accepted.json", mode='w') as accepted_list:
+                                    await accepted_list.write(json.dumps(accepted_posts))
                                 await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
 
                             # Submission archived or rejected
