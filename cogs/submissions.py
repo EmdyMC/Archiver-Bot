@@ -10,18 +10,6 @@ class Submissions(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def refresh_accepted_posts(self):
-        accepted_posts = []
-        submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
-        for thread in submissions_forum.threads:
-            tag_ids = {tag.id for tag in thread.applied_tags}
-            has_other_resolved_tag = any(tag_id in RESOLVED_TAGS and tag_id != ACCEPTED_TAG for tag_id in tag_ids)
-            if ACCEPTED_TAG in tag_ids and ARCHIVED_TAG not in tag_ids and not has_other_resolved_tag:
-                accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
-        async with aiofiles.open("accepted.json", mode='w') as list:
-            await list.write(json.dumps(accepted_posts))
-        return accepted_posts
-
     # Update tracker list
     async def update_tracker_list(self):
         pending_messages = []
@@ -170,9 +158,16 @@ class Submissions(commands.Cog):
                     if before.parent.id == SUBMISSIONS_CHANNEL:
                         utility_cog = self.bot.get_cog("Utility")
                         try:
-                            # Keep the cached accepted list current before regenerating the tracker list.
-                            if tag_added.id == ACCEPTED_TAG or tag_added.id == ARCHIVED_TAG or tag_added.id in RESOLVED_TAGS:
-                                accepted_posts = await self.refresh_accepted_posts()
+                            # Refresh the accepted post list
+                            if tag_added.id == ACCEPTED_TAG:
+                                accepted_posts = []
+                                submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
+                                for thread in submissions_forum.threads:
+                                    tag_ids = {tag.id for tag in thread.applied_tags}
+                                    if ACCEPTED_TAG in tag_ids:
+                                        accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
+                                async with aiofiles.open("accepted.json", mode='w') as list:
+                                    await list.write(json.dumps(accepted_posts))
                                 await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
 
                             # Submission archived or rejected
@@ -200,7 +195,7 @@ class Submissions(commands.Cog):
                                         break
 
                             # Resend tracker list when accepted/archived/resolved state changes.
-                            if tag_added.id == ACCEPTED_TAG or tag_added.id == ARCHIVED_TAG or tag_added.id in RESOLVED_TAGS:
+                            if tag_added.id == ARCHIVED_TAG or tag_added.id in RESOLVED_TAGS:
                                 await self.update_tracker_list()
                         except Exception as e:
                             await utility_cog.log(title="Error updating submission tracker", message=f"{e}")
