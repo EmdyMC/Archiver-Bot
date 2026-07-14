@@ -179,8 +179,10 @@ class Submissions(commands.Cog):
                                         # Send vote results in thread
                                         tracker_thread = await utility_cog.get_thread_by_name(tracker_channel, before.name)
                                         if tracker_thread:
-                                            vote_results = "**Votes as of submission resolution:**\n"
+                                            vote_results = f"## {tag_added.emoji}{tag_added.name}\n**Votes as of submission resolution:**\n"
                                             for reaction in message.reactions:
+                                                if reaction.emoji == TESTING_EMOJI:
+                                                    continue
                                                 vote_results += f"{reaction.emoji} - "
                                                 users = [user.mention async for user in reaction.users() if user.id != self.bot.user.id]
                                                 vote_results += ", ".join(users)
