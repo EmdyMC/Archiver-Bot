@@ -103,6 +103,25 @@ class Submissions(commands.Cog):
         await self.update_tracker_list()
         await interaction.delete_original_response()
 
+    # Refresh accepted list command
+    @app_commands.command(name="refresh_accepted", description="Refresh the accepted post list")
+    @app_commands.checks.has_any_role(*HIGHER_ROLES)
+    async def refresh_accepted(self):
+        utility_cog = self.bot.get_cog("Utility")
+        accepted_posts = []
+        submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
+        for thread in submissions_forum.threads:
+            tag_ids = {tag.id for tag in thread.applied_tags}
+            if ACCEPTED_TAG in tag_ids:
+                emojis = []
+                for tag in thread.applied_tags:
+                    if tag.id != ACCEPTED_TAG:
+                        emojis.append(tag.emoji)
+                accepted_posts.append(f"- **[{thread.name}]({thread.jump_url}){emojis}**")
+        async with aiofiles.open("accepted.json", mode='w') as accepted_list:
+            await accepted_list.write(json.dumps(accepted_posts))
+        await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
+
     # Track post
     @app_commands.command(name="track", description="Add post to submission tracker")
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
@@ -160,16 +179,7 @@ class Submissions(commands.Cog):
                         try:
                             # Refresh the accepted post list
                             if tag_added.id == ACCEPTED_TAG:
-                                accepted_posts = []
-                                submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
-                                for thread in submissions_forum.threads:
-                                    tag_ids = {tag.id for tag in thread.applied_tags}
-                                    if ACCEPTED_TAG in tag_ids:
-                                        accepted_posts.append(f"- **[{thread.name}]({thread.jump_url})**")
-                                async with aiofiles.open("accepted.json", mode='w') as accepted_list:
-                                    await accepted_list.write(json.dumps(accepted_posts))
-                                await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
-
+                                await self.refresh_accepted()
                             # Submission archived or rejected
                             if tag_added.id in RESOLVED_TAGS:
                                 # Find tracker message
