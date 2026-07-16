@@ -110,10 +110,10 @@ class Submissions(commands.Cog):
         for thread in submissions_forum.threads:
             tag_ids = {tag.id for tag in thread.applied_tags}
             if ACCEPTED_TAG in tag_ids:
-                emojis = []
+                emojis = ''
                 for tag in thread.applied_tags:
                     if tag.id != ACCEPTED_TAG:
-                        emojis.append(tag.emoji.name)
+                        emojis += tag.emoji.name
                 accepted_posts.append(f"- **{emojis} [{thread.name}]({thread.jump_url})**")
         async with aiofiles.open("accepted.json", mode='w') as accepted_list:
             await accepted_list.write(json.dumps(accepted_posts))
