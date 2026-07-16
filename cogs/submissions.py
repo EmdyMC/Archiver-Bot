@@ -103,9 +103,6 @@ class Submissions(commands.Cog):
         await self.update_tracker_list()
         await interaction.delete_original_response()
 
-    # Refresh accepted list command
-    @app_commands.command(name="refresh_accepted", description="Refresh the accepted post list")
-    @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def refresh_accepted(self):
         utility_cog = self.bot.get_cog("Utility")
         accepted_posts = []
@@ -121,6 +118,12 @@ class Submissions(commands.Cog):
         async with aiofiles.open("accepted.json", mode='w') as accepted_list:
             await accepted_list.write(json.dumps(accepted_posts))
         await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
+
+    # Refresh accepted list command
+    @app_commands.command(name="refresh_accepted", description="Refresh the accepted post list")
+    @app_commands.checks.has_any_role(*HIGHER_ROLES)
+    async def refresh_accepted_command(self, interaction: discord.Interaction):
+        await self.refresh_accepted()
 
     # Track post
     @app_commands.command(name="track", description="Add post to submission tracker")
