@@ -114,7 +114,7 @@ class Submissions(commands.Cog):
                 for tag in thread.applied_tags:
                     if tag.id != ACCEPTED_TAG:
                         emojis.append(tag.emoji.name)
-                accepted_posts.append(f"- **[{thread.name}]({thread.jump_url}){emojis}**")
+                accepted_posts.append(f"- **{emojis} [{thread.name}]({thread.jump_url})**")
         async with aiofiles.open("accepted.json", mode='w') as accepted_list:
             await accepted_list.write(json.dumps(accepted_posts))
         await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
