@@ -43,15 +43,16 @@ class UploadModal(discord.ui.Modal, title="Upload Files"):
         super().__init__()
         self.bot = bot
 
-    file_upload = discord.ui.FileUpload(
-        min_values=1,
-        max_values=10,
-        required=True
-    )
-    file_upload_label = discord.ui.Label(
-        text="Upload files here:",
-        component=file_upload
-    )
+        self.file_upload = discord.ui.FileUpload(
+            min_values=1,
+            max_values=10,
+            required=True
+        )
+        self.file_upload_label = discord.ui.Label(
+            text="Upload files here:",
+            component=self.file_upload
+        )
+        self.add_item(self.file_upload_label)
 
     async def on_submit(self, interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -60,11 +61,11 @@ class UploadModal(discord.ui.Modal, title="Upload Files"):
         if not file_thread:
             await self.bot.fetch_channel(FILE_LINK_DUMP_THREAD)
 
-        uploaded_files = [await attachment.to_file() for attachment in self.file_input.values]
+        uploaded_files = [await attachment.to_file() for attachment in self.file_upload.values]
         files_message = await file_thread.send(files=uploaded_files)
         links = [attachment.url.split("?")[0] for attachment in files_message.attachments]
 
-        await interaction.response.send_message(content=f"**The links for the given files:**\n{"\n".join(links)}", ephemeral=True)
+        await interaction.followup.send_message(content=f"**The links for the given files:**\n{"\n".join(links)}", ephemeral=True)
 
 class Utility(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -108,7 +109,7 @@ class Utility(commands.Cog):
     # Online notif
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"Rewritten bot online as {self.bot.user}")
+        print(f"Archiver Bot online as {self.bot.user}")
         await self.log(title="Archiver Bot Online", message="", colour=discord.Color.green())
 
     # Send chunked messages
