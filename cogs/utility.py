@@ -63,7 +63,7 @@ class UploadModal(discord.ui.Modal, title="Upload Files"):
 
         uploaded_files = [await attachment.to_file() for attachment in self.file_upload.values]
         files_message = await file_thread.send(files=uploaded_files)
-        links = [attachment.url.split("?")[0] for attachment in files_message.attachments]
+        links = [f"<{attachment.url.split("?")[0]}>" for attachment in files_message.attachments]
 
         await interaction.followup.send(content=f"**The links for the given files:**\n{"\n".join(links)}", ephemeral=True)
 
@@ -240,28 +240,6 @@ class Utility(commands.Cog):
     @app_commands.checks.has_any_role(*HIGHER_ROLES, HELPER_ID)
     async def help(self, interaction: discord.Interaction):
         await interaction.response.send_message(embed=discord.Embed(description=COMMANDS_LIST), ephemeral=True)
-
-    # Fetch links command
-    @app_commands.command(name="fetch_links", description="Return a list of links to the attachments of a message")
-    @app_commands.describe(message_id="The message with the attachments")
-    @app_commands.checks.has_any_role(*HIGHER_ROLES)
-    async def fetch_links(self, interaction: discord.Interaction, message_id: str):
-        try: 
-            message = await interaction.channel.fetch_message(int(message_id))
-            if message.attachments:
-                links = []
-                for attachment in message.attachments:
-                    url = attachment.url
-                    index = url.find('?')
-                    if index != -1:
-                        url = url[:index]
-                    links.append(f"- <{url}>")
-                links_message = "\n".join(links)              
-                await interaction.response.send_message(content=f"The links to the message attachments:\n{links_message}", ephemeral=True)
-            else:
-                await interaction.response.send_message(content="The selected message has no attachments", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"Error while running the command: {e}", ephemeral=True)
 
     # File upload and link fetching
     @app_commands.command(name="upload", description="Upload files to the 'file link dump' thread and return the links")
