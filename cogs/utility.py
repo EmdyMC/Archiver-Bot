@@ -65,7 +65,7 @@ class UploadModal(discord.ui.Modal, title="Upload Files"):
         files_message = await file_thread.send(files=uploaded_files)
         links = [attachment.url.split("?")[0] for attachment in files_message.attachments]
 
-        await interaction.followup.send_message(content=f"**The links for the given files:**\n{"\n".join(links)}", ephemeral=True)
+        await interaction.followup.send(content=f"**The links for the given files:**\n{"\n".join(links)}", ephemeral=True)
 
 class Utility(commands.Cog):
     def __init__(self, bot: commands.Bot):
