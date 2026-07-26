@@ -43,10 +43,14 @@ class UploadModal(discord.ui.Modal, title="Upload Files"):
         super().__init__()
         self.bot = bot
 
-    file_input = discord.ui.FileUpload(
+    file_upload = discord.ui.FileUpload(
         min_values=1,
         max_values=10,
         required=True
+    )
+    file_upload_label = discord.ui.Label(
+        text="Upload files here:",
+        component=file_upload
     )
 
     async def on_submit(self, interaction: discord.Interaction):
