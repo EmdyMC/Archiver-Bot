@@ -5,7 +5,7 @@ import difflib
 from datetime import timedelta
 from discord.ext import commands
 from discord import app_commands
-from constants import LOG_CHANNEL, MODERATOR_ID, OTHER_ARCHIVES, HIGHER_ROLES, HELPER_ID, COMMANDS_LIST, DISCORD_CHAR_LIMIT
+from constants import LOG_CHANNEL, MODERATOR_ID, OTHER_ARCHIVES, HIGHER_ROLES, HELPER_ID, COMMANDS_LIST, DISCORD_CHAR_LIMIT, STAFF_ROLES, FILE_LINK_DUMP_THREAD
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -37,6 +37,31 @@ class TagSelectView(discord.ui.View):
             await utility_cog.log(title=f"Tags {",  ".join(log_message)} added", message=f"To post: **{self.thread.jump_url}**\nBy: {interaction.user.mention}")
         await self.thread.edit(applied_tags=tags_to_apply)
         await interaction.edit_original_response(content="Tags set!", view=None)
+
+class UploadModal(discord.ui.Modal, title="Upload Files"):
+    def __init__(self, bot: commands.Bot):
+        super().__init__()
+        self.bot = bot
+
+    file_input = discord.ui.FileUpload(
+        label="Upload files",
+        min_values=1,
+        max_values=10,
+        required=True
+    )
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+
+        file_thread = self.bot.get_channel(FILE_LINK_DUMP_THREAD)
+        if not file_thread:
+            await self.bot.fetch_channel(FILE_LINK_DUMP_THREAD)
+
+        uploaded_files = [await attachment.to_file() for attachment in self.file_input.values]
+        files_message = await file_thread.send(files=uploaded_files)
+        links = [attachment.url.split("?")[0] for attachment in files_message.attachments]
+
+        await interaction.response.send_message(content=f"**The links for the given files:**\n{"\n".join(links)}", ephemeral=True)
 
 class Utility(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -233,6 +258,12 @@ class Utility(commands.Cog):
                 await interaction.response.send_message(content="The selected message has no attachments", ephemeral=True)
         except Exception as e:
             await interaction.response.send_message(f"Error while running the command: {e}", ephemeral=True)
+
+    # File upload and link fetching
+    @app_commands.command(name="upload", description="Upload files to the 'file link dump' thread and return the links")
+    @app_commands.checks.has_any_role(*STAFF_ROLES)
+    async def upload(self, interaction: discord.Interaction):
+        await interaction.response.send_modal(UploadModal(self.bot))
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Utility(bot))
