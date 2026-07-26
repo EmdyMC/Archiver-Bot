@@ -44,7 +44,6 @@ class UploadModal(discord.ui.Modal, title="Upload Files"):
         self.bot = bot
 
     file_input = discord.ui.FileUpload(
-        label="Upload files",
         min_values=1,
         max_values=10,
         required=True
