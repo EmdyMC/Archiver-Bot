@@ -202,6 +202,7 @@ class Parser(commands.Cog):
 
             json_data = {
                 "parsed_at": datetime.utcnow().isoformat(),
+                "category_name": thread.parent.category.name,
                 "channel_id": str(thread.parent_id),
                 "thread_id": str(thread.id),
                 "slug": self.slugify(thread.name),
