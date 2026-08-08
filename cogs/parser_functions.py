@@ -195,7 +195,7 @@ class Parser(commands.Cog):
             tags_serializable = []
             for tag in thread.applied_tags:
                 tag_dict = {
-                    "id": tag.id,
+                    "id": str(tag.id),
                     "name": tag.name,
                 }
                 tags_serializable.append(tag_dict)
