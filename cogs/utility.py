@@ -5,7 +5,7 @@ import difflib
 from datetime import timedelta
 from discord.ext import commands
 from discord import app_commands
-from constants import LOG_CHANNEL, MODERATOR_ID, OTHER_ARCHIVES, HIGHER_ROLES, HELPER_ID, COMMANDS_LIST, DISCORD_CHAR_LIMIT, STAFF_ROLES, FILE_LINK_DUMP_THREAD
+from constants import LOG_CHANNEL, MODERATOR_ID, OTHER_ARCHIVES1, OTHER_ARCHIVES2, BUILDING_SERVERS, HIGHER_ROLES, HELPER_ID, COMMANDS_LIST, DISCORD_CHAR_LIMIT, STAFF_ROLES, FILE_LINK_DUMP_THREAD
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -231,8 +231,9 @@ class Utility(commands.Cog):
     @app_commands.command(name="servers", description="Sends the list of other archive servers in a neat embed")
     @app_commands.checks.has_role(MODERATOR_ID)
     async def archives_embed(self, interaction: discord.Interaction):
-        archives_embed = discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed(), description=OTHER_ARCHIVES)
-        await interaction.channel.send(embed=archives_embed)
+        await interaction.channel.send(embed=discord.Embed(title="Other Archive Servers", color=discord.Color.light_embed(), description=OTHER_ARCHIVES1))
+        await interaction.channel.send(embed=discord.Embed(color=discord.Color.light_embed(), description=OTHER_ARCHIVES2))
+        await interaction.channel.send(embed=discord.Embed(title="Building Servers", color=discord.Color.light_embed(), description=BUILDING_SERVERS))
         await interaction.response.send_message("Embed sent!", ephemeral=True)
 
     # Help command

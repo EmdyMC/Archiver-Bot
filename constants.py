@@ -63,8 +63,8 @@ MENTION_RE = re.compile(r"<@!?(\d+)>")
 
 # Embed text
 
-OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
-<:std2:1469724306446614650> [**Storage Catalog**](https://discord.gg/hztJMTsx2m) Development-oriented storage tech
+OTHER_ARCHIVES1 = '''<:std:1399677131004580051> [**Storage Tech**](https://discord.gg/JufJ6uf) Item sorting and storage
+<:storagecatalog:1538546775886135408> [**Storage Catalog**](https://discord.gg/hztJMTsx2m) Development-oriented storage tech
 <:slime:1399677082472153098> [**Slimestone Tech Archive**](https://discord.gg/QQX5RBaHzK) Flying machines and movable contraptions
 <:mtdr:1399677041946923061> [**Minecraft Tech Discord Recollector**](https://discord.gg/UT8ns46As9) Index of TMC SMP and archive servers
 <:tnt:1399677165104009226> [**TNT Archive**](https://discord.gg/vPyUBcdmZV) TNT cannon tech and projectile physics
@@ -76,12 +76,20 @@ OTHER_ARCHIVES = '''<:std:1399677131004580051> [**Storage Tech**](https://discor
 <:aca:1399676962464600155> [**Autocrafting Archive**](https://discord.gg/guZdbQ9KQe) Crafters and modded autocrafting table tech
 <:comp:1399677007406698516> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7) TMC-oriented computational redstone
 <:tmcra:1399677154702135328> [**TMC Resources Archive**](https://discord.gg/E4q8WDUc7k) Compilation of TMC tricks, links, and resources
-<:luke:1399677029707808768> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBili) tech recollector
-<:ore:1399677056584781946> [**Open Redstone**](https://discord.gg/zjWRarN) (DiscOREd) Computational redstone community
+<:bilibilivideoarchive:1538546755052773477> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBili) tech recollector'''
+
+OTHER_ARCHIVES2 = '''<:ore:1399677056584781946> [**Open Redstone**](https://discord.gg/zjWRarN) (DiscOREd) Computational redstone community
 <:squid:1399677105033183232> [**Piston Door Catalogue**](https://discord.gg/Khj8MyA) (Redstone Squid's Records Catalogue) Piston door index
 <:ssf:1399677117884534875> [**Structureless Superflat Archive**](https://discord.gg/96Qm6e2AVH) (SSf Archive) Structureless superflat tech
 <:rta:1399677071919288342> [**Russian Technical Minecraft Catalogue**](https://discord.com/invite/bMZYHnXnCA) (RTMC Каталог) Russian TMC archive
 <:tba:1399677142660546620> [**Technical Bedrock Archive**](https://discord.com/invite/technical-bedrock-archive-715182000440475648) Bedrock TMC archive'''
+
+BUILDING_SERVERS = '''<:decorators:1422937102936703026> [**TMC Decorators**](https://discord.gg/ewEk6H2kSF) Technical Minecraft oriented decoration
+<:builder_hub:1422936857947144262> [**Builder's Hub**](https://discord.gg/x7HKWueXCs) Java and Bedrock build showcase and competitions
+<:bakery:1422936846928711690> [**The Bakery**](https://discord.gg/bakerybuilders) Minecraft artist community with competitions
+<:builder_refuge:1422936870672662549> [**Builder's Refuge**](https://discord.gg/63pqzXS) Multilingual community with giveaways and competitions
+<:ghost_whale:1422936825517047902> [**Ghost Whale Studio**](https://discord.gg/QY24s8DVx3) Chinese building server
+'''
 
 COMMANDS_LIST = '''
 ## Helper commands:
