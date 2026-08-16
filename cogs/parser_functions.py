@@ -195,13 +195,14 @@ class Parser(commands.Cog):
             tags_serializable = []
             for tag in thread.applied_tags:
                 tag_dict = {
-                    "id": tag.id,
+                    "id": str(tag.id),
                     "name": tag.name,
                 }
                 tags_serializable.append(tag_dict)
 
             json_data = {
                 "parsed_at": datetime.utcnow().isoformat(),
+                "category_name": thread.parent.category.name,
                 "channel_id": str(thread.parent_id),
                 "thread_id": str(thread.id),
                 "slug": self.slugify(thread.name),
