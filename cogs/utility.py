@@ -96,7 +96,7 @@ class Utility(commands.Cog):
             await self.log(title="Timeout failed", message=f"Could not timeout user {user.mention}, no permission.", colour=discord.Color.orange())
 
     # Fetch thread ID given name
-    async def get_thread_by_name(self, channel, name):
+    async def get_thread_by_name(self, channel: discord.TextChannel, name: str):
         for thread in channel.threads:
             if thread.name == name:
                 return thread

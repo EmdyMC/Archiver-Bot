@@ -114,9 +114,12 @@ class Submissions(commands.Cog):
                 for tag in thread.applied_tags:
                     if tag.id != ACCEPTED_TAG:
                         emojis += tag.emoji.name
-                    tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
-                    tracker_thread = await utility_cog.get_thread_by_name(tracker_channel, thread.name)
-                accepted_posts.append(f"- **{emojis} [{thread.name}]({thread.jump_url}) {tracker_thread.jump_url}**")
+                tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+                tracker_thread = await utility_cog.get_thread_by_name(tracker_channel, thread.name)
+                if tracker_thread is not None:
+                    accepted_posts.append(f"- **{emojis} [{thread.name}]({thread.jump_url})** {tracker_thread.jump_url}")
+                else:
+                    accepted_posts.append(f"- **{emojis} [{thread.name}]({thread.jump_url})**")
         async with aiofiles.open("accepted.json", mode='w') as accepted_list:
             await accepted_list.write(json.dumps(accepted_posts))
         await utility_cog.log(title="Updated accepted post list", message=f"Count: {len(accepted_posts)} posts")
