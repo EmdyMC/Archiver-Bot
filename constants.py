@@ -76,7 +76,7 @@ OTHER_ARCHIVES1 = '''<:std:1399677131004580051> [**Storage Tech**](https://disco
 <:aca:1399676962464600155> [**Autocrafting Archive**](https://discord.gg/guZdbQ9KQe) Crafters and modded autocrafting table tech
 <:comp:1399677007406698516> [**Computational Minecraft Archive**](https://discord.gg/jSe4jR5Kx7) TMC-oriented computational redstone
 <:tmcra:1399677154702135328> [**TMC Resources Archive**](https://discord.gg/E4q8WDUc7k) Compilation of TMC tricks, links, and resources
-<:bilibilivideoarchive:1538546755052773477> [**Luke's Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBili) tech recollector'''
+<:bilibilivideoarchive:1538546755052773477> [**Bilibili Video Archive**](https://discord.gg/KTDacw6JYk) Chinese (BiliBili) tech recollector'''
 
 OTHER_ARCHIVES2 = '''<:ore:1399677056584781946> [**Open Redstone**](https://discord.gg/zjWRarN) (DiscOREd) Computational redstone community
 <:squid:1399677105033183232> [**Piston Door Catalogue**](https://discord.gg/Khj8MyA) (Redstone Squid's Records Catalogue) Piston door index
