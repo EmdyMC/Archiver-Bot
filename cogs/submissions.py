@@ -151,13 +151,14 @@ class Submissions(commands.Cog):
             utility_cog = self.bot.get_cog("Utility")
             await utility_cog.log(title="Submission post title changed", message=f"Before: {before.name}\nAfter: {after.name}")
             tracker_channel = self.bot.get_channel(SUBMISSIONS_TRACKER_CHANNEL)
+            discussion_thread = await utility_cog.get_thread_by_name(tracker_channel, before.name)
+            await discussion_thread.edit(name=f"{after.name}")
+            await utility_cog.log(title=f"Tracker thread title updated", description=f"From: **{before.name}**\nTo: **{after.name}**")
             async for message in tracker_channel.history(limit=100, oldest_first=True):
                 if message.content.startswith("## [") and str(before.id) in message.content:
                     await utility_cog.log(title="Found tracker post", message="Attempting edit")
                     try:
-                        discussion_thread = await utility_cog.get_thread_by_name(tracker_channel, before.name)
                         await message.edit(content=f"## [{after.name}]({after.jump_url})\n{discussion_thread.jump_url}")
-                        await discussion_thread.edit(name=f"{after.name}")
                         await utility_cog.log(title=f"Tracker post title updated", description=f"From: **{before.name}**\nTo: **{after.name}**")
                         break
                     except Exception as e:
