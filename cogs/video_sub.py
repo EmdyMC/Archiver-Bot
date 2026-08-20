@@ -54,7 +54,8 @@ class ApproveOrDeny(discord.ui.View):
                 await mess.delete()
         # Send and publish new video link
         video_channel = self.bot.get_channel(VIDEO_CHANNEL)
-        await video_channel.send(self.link)
+        new_video = await video_channel.send(self.link)
+        await new_video.publish()
         # Send new submission prompt
         await video_channel.send(content=line, view=submit_prompt)
         # Remove review message
