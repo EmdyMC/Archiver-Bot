@@ -62,6 +62,7 @@ HELP_FORUM_PROMPT = """
 - 📖 Refer to the [guide](https://discord.com/channels/1161803566265143306/1378040485133680772) to get faster and better answers to your questions. Add any relevant information to your post.
 - ⌚ Please be patient and polite. Remember that all helpers are volunteers."""
 MENTION_RE = re.compile(r"<@!?(\d+)>")
+ACCEPTABLE_SITES = {"youtube.com", "youtu.be", "b23.tv", "bilibili.com"}
 
 # Embed text
 

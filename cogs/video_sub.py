@@ -1,13 +1,13 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-from constants import VIDEO_CHANNEL, REVIEW_CHANNEL, HIGHER_ROLES
+from constants import VIDEO_CHANNEL, REVIEW_CHANNEL, HIGHER_ROLES, ACCEPTABLE_SITES
 
 class Submit(discord.ui.Modal, title="Submit a video link"):
     def __init__(self, bot: commands.Bot):
         super().__init__()
         self.link = discord.ui.TextInput(
-            label="Youtube video link",
+            label="Video link",
             style=discord.TextStyle.short,
             required=True
         )
@@ -15,7 +15,7 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
         self.bot = bot
     async def on_submit(self, interaction: discord.Interaction):
         clean_link = self.link.value.split("&")[0]
-        if "youtube" in clean_link or "youtu.be" in clean_link:
+        if any(site in clean_link for site in ACCEPTABLE_SITES):
             review_channel = self.bot.get_channel(REVIEW_CHANNEL)
             approve_or_deny = ApproveOrDeny(link=clean_link, bot=self.bot)
             await review_channel.send(content=clean_link, view=approve_or_deny)
@@ -53,16 +53,14 @@ class ApproveOrDeny(discord.ui.View):
         await interaction.response.defer()
         # Remove old submission prompt
         video_channel = self.bot.get_channel(VIDEO_CHANNEL)
-        line = "Have a good video you want to share?"
         submit_prompt = SubmitPrompt(self.bot)
         async for mess in video_channel.history(limit=1):
-            if mess.content == line:
-                await mess.delete()
+            await mess.delete()
         # Send and publish new video link
         new_video = await video_channel.send(self.link)
         await new_video.publish()
         # Send new submission prompt
-        await video_channel.send(content=line, view=submit_prompt)
+        await video_channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community. Click the button below to submit a video for review. All submissions must be TMC-related.", color=discord.Color.yellow), view=submit_prompt)
         # Remove review message
         await interaction.message.delete()
     async def deny(self, interaction: discord.Interaction):
@@ -82,7 +80,7 @@ class VideoSub(commands.Cog):
         # Reply to user to satisfy interaction
         await interaction.response.send_message("Done", ephemeral=True)
         # Send prompt in channel seperately
-        await interaction.channel.send(content="Have a good video you want to share?", view=submit_prompt)
+        await interaction.channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community. Click the button below to submit a video for review. All submissions must be TMC-related.",  color=discord.Color.yellow), view=submit_prompt)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(VideoSub(bot))
