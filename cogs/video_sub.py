@@ -47,13 +47,13 @@ class ApproveOrDeny(discord.ui.View):
     async def approve(self, interaction: discord.Interaction):
         await interaction.response.defer()
         # Remove old submission prompt
+        video_channel = self.bot.get_channel(VIDEO_CHANNEL)
         line = "Have a good video you want to share?"
         submit_prompt = SubmitPrompt(self.bot)
         async for mess in video_channel.history(limit=1):
             if mess.content == line:
                 await mess.delete()
         # Send and publish new video link
-        video_channel = self.bot.get_channel(VIDEO_CHANNEL)
         new_video = await video_channel.send(self.link)
         await new_video.publish()
         # Send new submission prompt
@@ -75,7 +75,7 @@ class VideoSub(commands.Cog):
     async def send_submit_prompt(self, interaction: discord.Interaction):
         submit_prompt = SubmitPrompt(self.bot)
         await interaction.response.send_message("Done", ephemeral=True)
-        await interaction.channel.send(view=submit_prompt)
+        await interaction.channel.send(content="Have a good video you want to share?", view=submit_prompt)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(VideoSub(bot))
