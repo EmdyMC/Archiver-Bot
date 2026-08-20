@@ -36,7 +36,10 @@ async def global_app_command_error(interaction: discord.Interaction, error: app_
     if isinstance(error, app_commands.MissingRole) or isinstance(error, app_commands.MissingAnyRole):
         await interaction.response.send_message(content="Sorry, you don't have the required role to use this command", ephemeral=True)
     else:
-        await interaction.response.send_message(content=f"An error occured: {error}", ephemeral=True)
+        try:
+            await interaction.response.send_message(content=f"An error occured: {error}", ephemeral=True)
+        except:
+            await interaction.followup.send(content=f"An error occured: {error}", ephemeral=True)
         utility_cog = interaction.client.get_cog("Utility")
         if utility_cog:
             await utility_cog.log(title="An error occured", message=f"for command {interaction.command.name} run by {interaction.user.mention}: {error}", colour=discord.Color.red())
