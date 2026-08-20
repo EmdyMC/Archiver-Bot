@@ -28,6 +28,7 @@ class SubmitPrompt(discord.ui.View):
         super().__init__(timeout=86400)
         self.submit_button = discord.ui.Button(label="Submit a video", style=discord.ButtonStyle.green, custom_id="submit")
         self.submit_button.callback = self.prompt
+
         self.add_item(self.submit_button)
         self.bot = bot
     async def prompt(self, interaction: discord.Interaction):
@@ -36,12 +37,16 @@ class SubmitPrompt(discord.ui.View):
 class ApproveOrDeny(discord.ui.View):
     def __init__(self, link: str, bot: commands.Bot):
         super().__init__(timeout=86400)
+
         self.approve_button = discord.ui.Button(label="Approve", style=discord.ButtonStyle.green)
         self.deny_button = discord.ui.Button(label="Deny", style=discord.ButtonStyle.red)
+
         self.approve_button.callback = self.approve
         self.deny_button.callback = self.deny
+
         self.add_item(self.approve_button)
         self.add_item(self.deny_button)
+
         self.link = link
         self.bot = bot
     async def approve(self, interaction: discord.Interaction):
@@ -74,7 +79,9 @@ class VideoSub(commands.Cog):
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def send_submit_prompt(self, interaction: discord.Interaction):
         submit_prompt = SubmitPrompt(self.bot)
+        # Reply to user to satisfy interaction
         await interaction.response.send_message("Done", ephemeral=True)
+        # Send prompt in channel seperately
         await interaction.channel.send(content="Have a good video you want to share?", view=submit_prompt)
 
 async def setup(bot: commands.Bot):
