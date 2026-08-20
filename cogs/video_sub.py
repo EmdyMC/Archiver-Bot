@@ -14,10 +14,14 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
         self.add_item(self.link)
         self.bot = bot
     async def on_submit(self, interaction: discord.Interaction):
-        review_channel = self.bot.get_channel(REVIEW_CHANNEL)
-        approve_or_deny = ApproveOrDeny(link=self.link.value, bot=self.bot)
-        await review_channel.send(view=approve_or_deny)
-        await interaction.response.send_message(content="Video submitted!", ephemeral=True)
+        clean_link = self.link.value.split("&")[0]
+        if "youtube" in clean_link or "youtu.be" in clean_link:
+            review_channel = self.bot.get_channel(REVIEW_CHANNEL)
+            approve_or_deny = ApproveOrDeny(link=clean_link, bot=self.bot)
+            await review_channel.send(content=clean_link, view=approve_or_deny)
+            await interaction.response.send_message(content="Video submitted!", ephemeral=True)
+        else:
+            await interaction.response.send_message(content="Invalid link entered, please send a youtube video link", ephemeral=True)
 
 class SubmitPrompt(discord.ui.View):
     def __init__(self, bot: commands.Bot):
@@ -42,13 +46,22 @@ class ApproveOrDeny(discord.ui.View):
         self.bot = bot
     async def approve(self, interaction: discord.Interaction):
         await interaction.response.defer()
-        review_channel = self.bot.get_channel(VIDEO_CHANNEL)
-        await review_channel.send(self.link)
+        # Remove old submission prompt
+        line = "Have a good video you want to share?"
         submit_prompt = SubmitPrompt(self.bot)
-        await review_channel.send(view=submit_prompt)
+        async for mess in video_channel.history(limit=1):
+            if mess.content == line:
+                await mess.delete()
+        # Send and publish new video link
+        video_channel = self.bot.get_channel(VIDEO_CHANNEL)
+        await video_channel.send(self.link)
+        # Send new submission prompt
+        await video_channel.send(content=line, view=submit_prompt)
+        # Remove review message
         await interaction.message.delete()
     async def deny(self, interaction: discord.Interaction):
         await interaction.response.defer()
+        # Remove review message
         await interaction.message.delete()
 
 
@@ -60,8 +73,8 @@ class VideoSub(commands.Cog):
     @app_commands.checks.has_any_role(*HIGHER_ROLES)
     async def send_submit_prompt(self, interaction: discord.Interaction):
         submit_prompt = SubmitPrompt(self.bot)
-        await interaction.response.send_message(view=submit_prompt)
-
+        await interaction.response.send_message("Done", ephemeral=True)
+        await interaction.channel.send(view=submit_prompt)
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(VideoSub(bot))
