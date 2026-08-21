@@ -14,7 +14,7 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
         self.add_item(self.link)
         self.bot = bot
     async def on_submit(self, interaction: discord.Interaction):
-        if "?v" in self.link.value:
+        if "?v=" in self.link.value:
             clean_link = self.link.value.split("&")[0]
         else:
             clean_link = self.link.value.split("?")[0]
