@@ -14,7 +14,10 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
         self.add_item(self.link)
         self.bot = bot
     async def on_submit(self, interaction: discord.Interaction):
-        clean_link = self.link.value.split("&")[0]
+        if "?v" in self.link.value:
+            clean_link = self.link.value.split("&")[0]
+        else:
+            clean_link = self.link.value.split("?")[0]
         if any(site in clean_link for site in ACCEPTABLE_SITES):
             review_channel = self.bot.get_channel(REVIEW_CHANNEL)
             approve_or_deny = ApproveOrDeny(link=clean_link, bot=self.bot)
