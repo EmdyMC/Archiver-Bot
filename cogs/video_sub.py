@@ -28,7 +28,7 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
 
 class SubmitPrompt(discord.ui.View):
     def __init__(self, bot: commands.Bot):
-        super().__init__(timeout=86400)
+        super().__init__(timeout=None)
         self.submit_button = discord.ui.Button(label="Submit a video", style=discord.ButtonStyle.green, custom_id="submit")
         self.submit_button.callback = self.prompt
 
@@ -39,7 +39,7 @@ class SubmitPrompt(discord.ui.View):
 
 class ApproveOrDeny(discord.ui.View):
     def __init__(self, link: str, bot: commands.Bot):
-        super().__init__(timeout=86400)
+        super().__init__(timeout=None)
 
         self.approve_button = discord.ui.Button(label="Approve", style=discord.ButtonStyle.green)
         self.deny_button = discord.ui.Button(label="Deny", style=discord.ButtonStyle.red)
