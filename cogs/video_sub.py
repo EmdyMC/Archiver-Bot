@@ -28,9 +28,9 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
             # Change bilibili embeds
             if "www.bilibili.com" in clean_link:
                 parts = clean_link.split("www.")
-                clean_link = parts[0]+"vx"+parts[1]
+                clean_link = parts[0]+"www.vx"+parts[1]
                 parts = clean_link.split(".com/")
-                clean_link = parts[0]+"en/"+parts[1]
+                clean_link = parts[0]+".com/en/"+parts[1]
             # Send to review
             review_channel = self.bot.get_channel(REVIEW_CHANNEL)
             approve_or_deny = ApproveOrDeny(bot=self.bot)
