@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
-from .cogs.video_sub import SubmitPrompt, ApproveOrDeny
 import os 
 import asyncio
 
