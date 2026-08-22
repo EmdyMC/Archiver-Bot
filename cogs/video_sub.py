@@ -11,7 +11,13 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
             style=discord.TextStyle.short,
             required=True
         )
+        self.desc = discord.ui.TextInput(
+            label="Description",
+            style=discord.TextStyle.short,
+            required=False
+        )
         self.add_item(self.link)
+        self.add_item(self.desc)
         self.bot = bot
     async def on_submit(self, interaction: discord.Interaction):
         if "?v=" in self.link.value:
@@ -21,7 +27,8 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
         if any(site in clean_link for site in ACCEPTABLE_SITES):
             review_channel = self.bot.get_channel(REVIEW_CHANNEL)
             approve_or_deny = ApproveOrDeny(link=clean_link, bot=self.bot)
-            await review_channel.send(content=clean_link, view=approve_or_deny)
+            message = f"{interaction.user.mention} submitted: {clean_link}\nDescription: {self.desc.value if self.desc else "None"}"
+            await review_channel.send(content=message, view=approve_or_deny)
             utility_cog = self.bot.get_cog("Utility")
             await utility_cog.log(title=f"Video submitted", message=f"{interaction.user.mention} submitted the video link {clean_link}", colour=discord.Color.yellow())
             await interaction.response.send_message(content="Video submitted!", ephemeral=True)
