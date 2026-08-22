@@ -23,7 +23,7 @@ class ReplyBox(discord.ui.Modal, title="Reply to DM"):
 
 class ReplyButton(discord.ui.View):
     def __init__(self, DM: discord.Message):
-        super().__init__(timeout=86400)
+        super().__init__(timeout=None)
         self.DM = DM
         self.reply_button = discord.ui.Button(label="Reply", style=discord.ButtonStyle.blurple, custom_id="reply")
         self.reply_button.callback = self.reply
