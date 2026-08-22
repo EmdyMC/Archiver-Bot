@@ -22,6 +22,8 @@ class Submit(discord.ui.Modal, title="Submit a video link"):
             review_channel = self.bot.get_channel(REVIEW_CHANNEL)
             approve_or_deny = ApproveOrDeny(link=clean_link, bot=self.bot)
             await review_channel.send(content=clean_link, view=approve_or_deny)
+            utility_cog = self.bot.get_cog("Utility")
+            await utility_cog.log(title=f"Video submitted", message=f"{interaction.user.mention} submitted the video link {clean_link}", colour=discord.Color.yellow())
             await interaction.response.send_message(content="Video submitted!", ephemeral=True)
         else:
             await interaction.response.send_message(content="Invalid link entered, please send a youtube video link", ephemeral=True)
@@ -62,12 +64,16 @@ class ApproveOrDeny(discord.ui.View):
         # Send and publish new video link
         new_video = await video_channel.send(self.link)
         await new_video.publish()
+        utility_cog = self.bot.get_cog("Utility")
+        await utility_cog.log(title=f"Video approved", message=f"{interaction.user.mention} approved the video link {new_video.jump_url}", colour=discord.Color.green())
         # Send new submission prompt
         await video_channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.", color=discord.Color.yellow()), view=submit_prompt)
         # Remove review message
         await interaction.message.delete()
     async def deny(self, interaction: discord.Interaction):
         await interaction.response.defer()
+        utility_cog = self.bot.get_cog("Utility")
+        await utility_cog.log(title=f"Video denied", message=f"{interaction.user.mention} denied the video link {self.link}", colour=discord.Color.red())
         # Remove review message
         await interaction.message.delete()
 
