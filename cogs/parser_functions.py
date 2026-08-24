@@ -3,7 +3,6 @@ import difflib
 import re
 import aiofiles
 import json 
-import datetime
 from pathlib import Path
 from discord.ext import commands
 from discord import app_commands
@@ -201,7 +200,7 @@ class Parser(commands.Cog):
                 tags_serializable.append(tag_dict)
 
             json_data = {
-                "parsed_at": datetime.utcnow().isoformat(),
+                "parsed_at": discord.utils.utcnow().isoformat(),
                 "category_name": thread.parent.category.name,
                 "channel_id": str(thread.parent_id),
                 "thread_id": str(thread.id),
