@@ -84,6 +84,7 @@ class ApproveOrDeny(discord.ui.View):
         # Send and publish new video link
         new_video = await video_channel.send(link)
         await new_video.publish()
+        await new_video.create_thread(name=new_video.embeds[0].title, auto_archive_duration=60)
         utility_cog = self.bot.get_cog("Utility")
         await utility_cog.log(title=f"Video approved", message=f"{interaction.user.mention} approved the video link {new_video.jump_url}", colour=discord.Color.green())
         # Send new submission prompt
