@@ -1,6 +1,5 @@
 import discord
 import re
-import os
 
 # Constants
 
