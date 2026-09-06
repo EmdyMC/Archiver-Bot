@@ -2,13 +2,17 @@ import discord
 import difflib
 import re
 import aiofiles
-import json 
+import json
+import os
+import asyncio
+from pymongo import MongoClient
 from pathlib import Path
 from discord.ext import commands
 from discord import app_commands
 from typing import Type
 from parser import set_contributor_username_lookup, message_parse, reset_contributor_username_lookup
-from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES
+from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES, DATABASE_NAME, COLLECTION_NAME
+MONGO_URI = os.getenv("MONGO_URI")
 
 # Parse error views
 class ParserErrorItem(discord.ui.Container):
@@ -229,6 +233,38 @@ class Parser(commands.Cog):
         # Remove leading/trailing hyphens
         text = text.strip('-')
         return text
+
+    def _upload_to_designs(self):
+        client = MongoClient(MONGO_URI)
+        try:
+            DIRECTORY_PATH = Path.cwd() / "parsed"
+            db = client[DATABASE_NAME]
+            collection = db[COLLECTION_NAME]
+
+            files = [f for f in os.listdir(DIRECTORY_PATH) if f.endswith('.json')]
+
+            docs_to_insert = []
+            for filename in files:
+                file_path = os.path.join(DIRECTORY_PATH, filename)
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    try:
+                        data = json.load(f)
+                        if isinstance(data, dict):
+                            data['file_origin'] = filename
+                            docs_to_insert.append(data)
+                        elif isinstance(data, list):
+                            docs_to_insert.extend(data)
+                    except json.JSONDecodeError:
+                        continue
+
+            if docs_to_insert:
+                # Wipe existing files
+                collection.delete_many({})
+                # Push new files
+                collection.insert_many(docs_to_insert)
+
+        finally:
+            client.close()
     
     #Parse post
     @app_commands.command(name="parse_post", description="Parse the selected post and check for errors")
@@ -293,6 +329,11 @@ class Parser(commands.Cog):
             total += channel_total
 
         await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
+
+        # Push parsed files to DB
+        await interaction.channel.send("Uploading parsed results to the database. . .")
+        await asyncio.to_thread(self._upload_to_designs)
+        await interaction.channel.send("Database updated")
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Parser(bot))

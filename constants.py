@@ -1,5 +1,6 @@
 import discord
 import re
+import os
 
 # Constants
 
@@ -63,6 +64,8 @@ HELP_FORUM_PROMPT = """
 - ⌚ Please be patient and polite. Remember that all helpers are volunteers."""
 MENTION_RE = re.compile(r"<@!?(\d+)>")
 ACCEPTABLE_SITES = {"youtube.com", "youtu.be", "b23.tv", "bilibili.com"}
+DATABASE_NAME = "designs"
+COLLECTION_NAME = "designs"
 
 # Embed text
 
