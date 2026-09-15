@@ -88,7 +88,7 @@ class ApproveOrDeny(discord.ui.View):
         utility_cog = self.bot.get_cog("Utility")
         await utility_cog.log(title=f"Video approved", message=f"{interaction.user.mention} approved the video link {new_video.jump_url}", colour=discord.Color.green())
         # Send new submission prompt
-        await video_channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.", color=discord.Color.yellow()), view=submit_prompt)
+        await video_channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.", color=discord.Color.green()), view=submit_prompt)
         # Remove review message
         await interaction.message.delete()
     async def deny(self, interaction: discord.Interaction):
@@ -111,7 +111,7 @@ class VideoSub(commands.Cog):
         # Reply to user to satisfy interaction
         await interaction.response.send_message("Done", ephemeral=True)
         # Send prompt in channel seperately
-        await interaction.channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.",  color=discord.Color.yellow()), view=submit_prompt)
+        await interaction.channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.",  color=discord.Color.green()), view=submit_prompt)
 
 async def setup(bot: commands.Bot):
     bot.add_view(SubmitPrompt(bot))
