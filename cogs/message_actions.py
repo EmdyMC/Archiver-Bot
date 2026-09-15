@@ -161,6 +161,8 @@ class MessageActions(commands.Cog):
             await self.forwardDM(message)
         # Pin snapshot updates
         if message.flags.is_crossposted and message.channel.id == SNAPSHOT_CHANNEL:
+            if message.reference and message.reference.channel_id == 666349583227682819:
+                return
             await self.pin_snapshot_messages(message)
         # Reply to pings
         if self.bot.user in message.mentions:
