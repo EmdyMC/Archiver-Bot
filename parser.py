@@ -718,6 +718,7 @@ def figures_parse() -> parser[list[dict]]:
             if not stripped.startswith("- "):
                 continue
 
+            figure_number = re.search(r"\*Figure (\d+)\.\*", stripped)
             urls = re.findall(r"(https?://\S+)", stripped)
             for url in urls:
                 normalized_url = normalize_cdn_url(url)
@@ -725,9 +726,9 @@ def figures_parse() -> parser[list[dict]]:
                     {
                         "url": normalized_url,
                         "name": normalized_url.split("/")[-1],
+                        "figure_number": int(figure_number.group(1))
                     }
                 )
-
         return figures
 
     return parse

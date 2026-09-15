@@ -81,6 +81,7 @@ class Instructions(TypedDict):
 class Figure(TypedDict):
     url: str
     name: str
+    figure_number: int
 
 class Message(TypedDict):
     designers: list[Contributor]
