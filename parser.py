@@ -728,8 +728,14 @@ def figures_parse() -> parser[list[dict]]:
             if not stripped.startswith("- "):
                 continue
 
-            figure_number = re.search(r"\*Figure (\d+)\.\*", stripped)
+            figure_number = re.search(
+                r"\*Figure\s+(\d+)\.\*", stripped, flags=re.IGNORECASE
+            )
             urls = re.findall(r"(https?://\S+)", stripped)
+            if urls and figure_number is None:
+                raise ValueError(
+                    f"Invalid figure label in {stripped!r}; expected '*Figure <number>.*'."
+                )
             for url in urls:
                 normalized_url = normalize_cdn_url(url)
                 name = urlsplit(normalized_url).path.rsplit("/", 1)[-1]
