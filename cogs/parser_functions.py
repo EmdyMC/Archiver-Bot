@@ -5,6 +5,7 @@ import aiofiles
 import json
 import os
 import asyncio
+from dataclasses import dataclass, field
 from pymongo import MongoClient
 from pathlib import Path
 from discord.ext import commands
@@ -14,13 +15,10 @@ from parser import set_contributor_username_lookup, message_parse, reset_contrib
 from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES, DATABASE_NAME, COLLECTION_NAME
 MONGO_URI = os.getenv("MONGO_URI")
 
-# A forum-post link is either /channels/<guild>/<thread> or
-# /channels/<guild>/<thread>/<message>.  The thread ID is the identifier used
-# for parsed-file names and is therefore stable regardless of which message in
-# the original post was linked.
-CROSSPOST_ORIGINAL_POST_RE = re.compile(
-    r"https?://(?:ptb\.|canary\.)?discord(?:app)?\.com/channels/\d+/(\d+)(?:/\d+)?(?:[?#][^\s]*)?"
-)
+@dataclass
+class CrosspostReference:
+    channel_ids: list[str] = field(default_factory=list)
+    source_threads: list[discord.Thread] = field(default_factory=list)
 
 # Parse error views
 class ParserErrorItem(discord.ui.Container):
@@ -174,7 +172,13 @@ class Parser(commands.Cog):
         if not re.match(r"^\s*##\s+Original Post\s*(?:\n|$)", content):
             return None
 
-        match = CROSSPOST_ORIGINAL_POST_RE.search(content)
+        # A forum-post link is either /channels/<guild>/<thread> or
+        # /channels/<guild>/<thread>/<message>. The thread ID identifies the
+        # parsed record regardless of which message was linked.
+        match = re.search(
+            r"https?://(?:ptb\.|canary\.)?discord(?:app)?\.com/channels/\d+/(\d+)(?:/\d+)?(?:[?#][^\s]*)?",
+            content,
+        )
         return match.group(1) if match else None
 
     async def iter_all_threads(self, channel: discord.ForumChannel):
@@ -186,7 +190,7 @@ class Parser(commands.Cog):
             yield thread
 
     # Parse given threads to json and write to file
-    async def parse_threads_stream(self, thread_iter, interaction: discord.Interaction, reply_to_channel=True, crossposts: dict[str, list[str]] | None = None):
+    async def parse_threads_stream(self, thread_iter, interaction: discord.Interaction, reply_to_channel=True, crossposts: dict[str, CrosspostReference] | None = None):
         exceptions_view = discord.ui.LayoutView(timeout=None)
         errors = total = 0
 
@@ -200,10 +204,14 @@ class Parser(commands.Cog):
             if crosspost_target_id is not None and crossposts is not None:
                 # Preserve archive traversal order and do not add the same
                 # forum twice when Discord happens to return a duplicate thread.
-                target_channels = crossposts.setdefault(crosspost_target_id, [])
+                reference = crossposts.setdefault(
+                    crosspost_target_id, CrosspostReference()
+                )
                 channel_id = str(thread.parent_id)
-                if channel_id not in target_channels:
-                    target_channels.append(channel_id)
+                if channel_id not in reference.channel_ids:
+                    reference.channel_ids.append(channel_id)
+                if all(source.id != thread.id for source in reference.source_threads):
+                    reference.source_threads.append(thread)
                 continue
 
             username_lookup = await self.build_username_lookup_from_messages(data["messages"])
@@ -248,16 +256,22 @@ class Parser(commands.Cog):
 
         return errors, total
 
-    def merge_crosspost_channels(self, crossposts: dict[str, list[str]]) -> list[str]:
+    def merge_crosspost_channels(self, crossposts: dict[str, CrosspostReference]) -> list[tuple[discord.Thread, Exception]]:
         parsed_path = Path.cwd() / "parsed"
-        errors: list[str] = []
+        errors: list[tuple[discord.Thread, Exception]] = []
 
-        for target_thread_id, crosspost_channel_ids in crossposts.items():
+        for target_thread_id, reference in crossposts.items():
             file_path = parsed_path / f"{target_thread_id}.json"
             if not file_path.exists():
-                errors.append(
-                    f"Crosspost points to {target_thread_id}, but its original post was not parsed."
-                )
+                for source_thread in reference.source_threads:
+                    errors.append(
+                        (
+                            source_thread,
+                            ValueError(
+                                f"Crosspost points to {target_thread_id}, but its original post was not parsed."
+                            ),
+                        )
+                    )
                 continue
 
             try:
@@ -273,7 +287,7 @@ class Parser(commands.Cog):
                 if not isinstance(channel_ids, list) or any(channel_id is None for channel_id in channel_ids):
                     raise ValueError("parsed output has no channel IDs")
 
-                for channel_id in crosspost_channel_ids:
+                for channel_id in reference.channel_ids:
                     if channel_id not in channel_ids:
                         channel_ids.append(channel_id)
 
@@ -282,7 +296,15 @@ class Parser(commands.Cog):
                 with open(file_path, "w", encoding="utf-8") as file:
                     json.dump(data, file, indent=4)
             except (OSError, json.JSONDecodeError, ValueError) as error:
-                errors.append(f"Could not merge crosspost for {target_thread_id}: {error}")
+                for source_thread in reference.source_threads:
+                    errors.append(
+                        (
+                            source_thread,
+                            ValueError(
+                                f"Could not merge crosspost for {target_thread_id}: {error}"
+                            ),
+                        )
+                    )
 
         return errors
 
@@ -379,7 +401,7 @@ class Parser(commands.Cog):
                 await interaction.channel.send(f"Failed to delete {file}: {e}")
 
         errors = total = 0
-        crossposts: dict[str, list[str]] = {}
+        crossposts: dict[str, CrosspostReference] = {}
         total_channels = len(parse_channel_list)
         current_channel_index = 1
         embed = discord.Embed(title="Parsing Status", colour=discord.Colour.green())
@@ -398,8 +420,11 @@ class Parser(commands.Cog):
 
         crosspost_errors = self.merge_crosspost_channels(crossposts)
         errors += len(crosspost_errors)
-        for error in crosspost_errors:
-            await interaction.channel.send(error)
+        for thread, error in crosspost_errors:
+            error_item = await ParserErrorItem.create(self.bot, thread, error, 1)
+            error_view = discord.ui.LayoutView(timeout=None)
+            error_view.add_item(error_item)
+            await interaction.channel.send(view=error_view)
 
         await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
