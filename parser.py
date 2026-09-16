@@ -1,6 +1,7 @@
 import json
 import re
 from contextvars import ContextVar, Token
+from urllib.parse import urlsplit
 
 # import traceback
 from collections import Counter, defaultdict
@@ -710,6 +711,15 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
 
 
 def figures_parse() -> parser[list[dict]]:
+    file_types = {
+        "mov": "video",
+        "mp4": "video",
+        "webm": "video",
+        "jpg": "image",
+        "png": "image",
+        "gif": "video",
+    }
+
     def parse(data: section) -> list[dict]:
         figures: list[dict] = []
 
@@ -722,11 +732,21 @@ def figures_parse() -> parser[list[dict]]:
             urls = re.findall(r"(https?://\S+)", stripped)
             for url in urls:
                 normalized_url = normalize_cdn_url(url)
+                name = urlsplit(normalized_url).path.rsplit("/", 1)[-1]
+                extension = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+                try:
+                    file_type = file_types[extension]
+                except KeyError:
+                    raise ValueError(
+                        f"Unsupported figure file extension {extension or '(none)'!r} "
+                        f"for {normalized_url}"
+                    ) from None
                 figures.append(
                     {
                         "url": normalized_url,
-                        "name": normalized_url.split("/")[-1],
-                        "figure_number": int(figure_number.group(1))
+                        "name": name,
+                        "figure_number": int(figure_number.group(1)),
+                        "file_type": file_type,
                     }
                 )
         return figures

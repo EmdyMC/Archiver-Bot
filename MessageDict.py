@@ -82,6 +82,7 @@ class Figure(TypedDict):
     url: str
     name: str
     figure_number: int
+    file_type: Literal["video", "image"]
 
 class Message(TypedDict):
     designers: list[Contributor]
