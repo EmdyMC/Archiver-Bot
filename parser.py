@@ -857,6 +857,7 @@ message_parse_schema = dict_postprocess_parse(
                     ],
                 ),
                 required=False,
+                default=[],
             ),
             SchemaItem(
                 ["Figures"], "figures", figures_parse(), required=False, default=[]
