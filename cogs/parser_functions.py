@@ -169,7 +169,7 @@ class Parser(commands.Cog):
                 metadata["messages"].append(message.content)
         return metadata
 
-    def get_crosspost_target_thread_id(messages: list[str]) -> str | None:
+    def get_crosspost_target_thread_id(self, messages: list[str]) -> str | None:
         content = "\n".join(messages)
         if not re.match(r"^\s*##\s+Original Post\s*(?:\n|$)", content):
             return None
