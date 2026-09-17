@@ -11,7 +11,7 @@ from discord.ext import commands
 # https://cdn.discordapp.com/attachments/<channel_id>/<message_id>/<filename>
 ATTACHMENT_PATH_RE = re.compile(r"^/attachments/(\d+)/(\d+)/(.+)$")
 
-IMAGE_SIZE_EXTENSIONS = {"jpg", "jpeg", "png", "gif", "webp"}
+VIDEO_SIZE_EXTENSIONS = {"mp4", "mov", "webm", "mkv"}
 
 MEDIA_EXTENSIONS = {
     "jpg",
@@ -53,6 +53,22 @@ def _jpeg_size(data: bytes) -> tuple[int, int] | None:
     return None
 
 
+def _mp4_size(data: bytes) -> tuple[int, int] | None:
+    pos = 0
+    while True:
+        i = data.find(b"tkhd", pos)
+        if i == -1 or len(data) < i + 8:
+            return None
+        version = data[i + 4]
+        off = i + 4 + (88 if version == 1 else 76)
+        if len(data) >= off + 8:
+            width = int.from_bytes(data[off : off + 4], "big") >> 16
+            height = int.from_bytes(data[off + 4 : off + 8], "big") >> 16
+            if width and height:
+                return width, height
+        pos = i + 4
+
+
 def image_size(data: bytes) -> tuple[int, int] | None:
     if data[:8] == b"\x89PNG\r\n\x1a\n":
         return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
@@ -92,28 +108,38 @@ class DimensionResolver:
         self._fallbacks: dict[str, tuple[int, int] | None] = {}
         self._session: aiohttp.ClientSession | None = None
 
-    async def _image_size_fallback(self, url: str) -> tuple[int, int] | None:
-        # Message metadata unavailable (deleted/inaccessible), read the
-        # dimensions from the header bytes of the mirrored file instead
-        name = urlsplit(url).path.rsplit("/", 1)[-1]
-        extension = name.rsplit(".", 1)[-1].lower() if "." in name else ""
-        if extension not in IMAGE_SIZE_EXTENSIONS:
-            return None
-        if url in self._fallbacks:
-            return self._fallbacks[url]
-
+    async def _fetch(self, url: str, headers: dict[str, str], limit: int) -> bytes | None:
         if self._session is None:
             self._session = aiohttp.ClientSession()
         try:
-            async with self._session.get(
-                url, headers={"Range": "bytes=0-65535"}
-            ) as response:
+            async with self._session.get(url, headers=headers) as response:
                 if response.status in (200, 206):
-                    size = image_size(await response.content.read(65536))
-                else:
-                    size = None
+                    return await response.content.read(limit)
         except aiohttp.ClientError:
-            size = None
+            pass
+        return None
+
+    async def _size_fallback(self, url: str) -> tuple[int, int] | None:
+        # Message metadata unavailable (deleted/inaccessible): read the
+        # dimensions from the bytes of the mirrored file instead
+        if url in self._fallbacks:
+            return self._fallbacks[url]
+
+        name = urlsplit(url).path.rsplit("/", 1)[-1]
+        extension = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+
+        head = await self._fetch(url, {"Range": "bytes=0-65535"}, 65536)
+        if head is None:
+            self._fallbacks[url] = None
+            return None
+        size = image_size(head)
+
+        if size is None and extension in VIDEO_SIZE_EXTENSIONS | {"gif"}:
+            size = _mp4_size(head)
+            if size is None:
+                tail = await self._fetch(url, {"Range": "bytes=-262143"}, 262144)
+                if tail is not None:
+                    size = _mp4_size(tail)
 
         self._fallbacks[url] = size
         return size
@@ -131,7 +157,7 @@ class DimensionResolver:
         if info is not None:
             return info
 
-        size = await self._image_size_fallback(url)
+        size = await self._size_fallback(url)
         if size is None:
             return None
         return MediaInfo(size[0], size[1], url)
