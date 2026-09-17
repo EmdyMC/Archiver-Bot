@@ -74,6 +74,14 @@ def image_size(data: bytes) -> tuple[int, int] | None:
             return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
     if data[:2] == b"\xff\xd8":
         return _jpeg_size(data)
+    if data[4:8] == b"ftyp":
+        # AVIF and other ISO base media files: dimensions in the ispe box
+        i = data.find(b"ispe")
+        if i != -1 and len(data) >= i + 16:
+            return (
+                int.from_bytes(data[i + 8 : i + 12], "big"),
+                int.from_bytes(data[i + 12 : i + 16], "big"),
+            )
     return None
 
 
