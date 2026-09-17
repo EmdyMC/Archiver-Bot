@@ -1,5 +1,5 @@
 from typing import TypedDict
-from typing import Literal
+from typing import Literal, NotRequired
 
 class TextNode(TypedDict):
     list_type: Literal["dashed", "numbered"]
@@ -54,12 +54,18 @@ class LagInfo(TypedDict):
 class VideoLink(TypedDict):
     name: str
     url: str
+    width: int | None
+    height: int | None
+    thumbnail_url: NotRequired[str]
 
 class FileNode(TypedDict):
     type: Literal["file"]
     name: str
     url: str
     note: str
+    width: NotRequired[int | None]
+    height: NotRequired[int | None]
+    thumbnail_url: NotRequired[str]
 
 class FolderNode(TypedDict):
     type: Literal["folder"]
@@ -83,6 +89,9 @@ class Figure(TypedDict):
     name: str
     figure_number: int
     file_type: Literal["video", "image"]
+    width: int | None
+    height: int | None
+    thumbnail_url: NotRequired[str]
 
 class Message(TypedDict):
     designers: list[Contributor]

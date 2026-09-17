@@ -12,6 +12,8 @@ from discord.ext import commands
 from discord import app_commands
 from typing import Type
 from parser import set_contributor_username_lookup, message_parse, reset_contributor_username_lookup
+from dimensions import DimensionResolver, apply_dimensions
+from thumbnails import apply_thumbnails
 from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES, DATABASE_NAME, COLLECTION_NAME
 MONGO_URI = os.getenv("MONGO_URI")
 
@@ -99,7 +101,10 @@ class PostEditAndParseModal(PostEditModal):
             return
         finally:
             reset_contributor_username_lookup(lookup_token)
-        
+
+        await apply_dimensions(parser_cog.dimension_resolver, parse_result)
+        apply_thumbnails(parse_result)
+
         new_item = discord.ui.TextDisplay(f"{self.message.jump_url}: Parse successful.")
         new_view = discord.ui.LayoutView()
         new_view.add_item(new_item)
@@ -115,6 +120,7 @@ class PostEditAndParseModal(PostEditModal):
 class Parser(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.dimension_resolver = DimensionResolver(bot)
 
     def get_post_metadata(self, thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
         #Returns a dict of metadata to add on top of the post message
@@ -229,6 +235,9 @@ class Parser(commands.Cog):
                 continue
             finally:
                 reset_contributor_username_lookup(lookup_token)
+
+            await apply_dimensions(self.dimension_resolver, parse_result)
+            apply_thumbnails(parse_result)
 
             tags_serializable = []
             for tag in thread.applied_tags:
