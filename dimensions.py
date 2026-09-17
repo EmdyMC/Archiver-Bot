@@ -113,11 +113,16 @@ class DimensionResolver:
             self._session = aiohttp.ClientSession()
         try:
             async with self._session.get(url, headers=headers) as response:
-                if response.status in (200, 206):
-                    return await response.content.read(limit)
+                if response.status not in (200, 206):
+                    return None
+                data = b""
+                async for chunk in response.content.iter_chunked(65536):
+                    data += chunk
+                    if len(data) >= limit:
+                        break
+                return data[:limit]
         except aiohttp.ClientError:
-            pass
-        return None
+            return None
 
     async def _size_fallback(self, url: str) -> tuple[int, int] | None:
         # Message metadata unavailable (deleted/inaccessible): read the
