@@ -14,7 +14,7 @@ from typing import Type
 from parser import set_contributor_username_lookup, message_parse, reset_contributor_username_lookup
 from dimensions import DimensionResolver, apply_dimensions
 from thumbnails import apply_thumbnails
-from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES, DATABASE_NAME, COLLECTION_NAME
+from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, PARSE_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES, DATABASE_NAME, COLLECTION_NAME
 MONGO_URI = os.getenv("MONGO_URI")
 
 @dataclass
@@ -365,7 +365,7 @@ class Parser(commands.Cog):
     #Parse post
     @app_commands.command(name="parse_post", description="Parse the selected post and check for errors")
     @app_commands.describe(thread="The post to be parsed")
-    @app_commands.checks.has_any_role(*HIGHER_ROLES)
+    @app_commands.checks.has_any_role(*PARSE_ROLES)
     async def parse_post(self, interaction: discord.Interaction, thread: discord.Thread):
         if thread.parent.category_id in NON_ARCHIVE_CATEGORIES:
             await interaction.response.send_message("That is not an archive thread, it cannot be parsed.", ephemeral=True)
@@ -381,7 +381,7 @@ class Parser(commands.Cog):
     # Parse channel
     @app_commands.command(name="parse_channel", description="Parse the posts in a selected channel and check for errors")
     @app_commands.describe(channel="The channel to be parsed")
-    @app_commands.checks.has_any_role(*HIGHER_ROLES)
+    @app_commands.checks.has_any_role(*PARSE_ROLES)
     async def parse_channel(self, interaction: discord.Interaction, channel: discord.ForumChannel):
         if channel.category_id in NON_ARCHIVE_CATEGORIES:
             await interaction.response.send_message("That is not an archive channel, it cannot be parsed.", ephemeral=True)
@@ -394,7 +394,7 @@ class Parser(commands.Cog):
 
     # Parse archive
     @app_commands.command(name="parse_archive", description="Parse the posts in the archive and check for errors")
-    @app_commands.checks.has_any_role(*HIGHER_ROLES)
+    @app_commands.checks.has_any_role(*PARSE_ROLES)
     async def parse_archive(self, interaction: discord.Interaction):
         await interaction.response.send_message("Beginning parsing. . .")
         parse_channel_list = [
