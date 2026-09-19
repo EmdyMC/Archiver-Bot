@@ -5,7 +5,7 @@ import difflib
 from datetime import timedelta
 from discord.ext import commands
 from discord import app_commands
-from constants import LOG_CHANNEL, MODERATOR_ID, OTHER_ARCHIVES1, OTHER_ARCHIVES2, BUILDING_SERVERS, HIGHER_ROLES, HELPER_ID, COMMANDS_LIST, DISCORD_CHAR_LIMIT, STAFF_ROLES, FILE_LINK_DUMP_THREAD
+from constants import LOG_CHANNEL, MODERATOR_ID, OTHER_ARCHIVES1, OTHER_ARCHIVES2, BUILDING_SERVERS, HIGHER_ROLES, HELPER_ID, COMMANDS_LIST, DISCORD_CHAR_LIMIT, STAFF_ROLES, FILE_LINK_DUMP_THREAD, DEVELOPER_ID
 
 # Create tags selector
 class TagSelectView(discord.ui.View):
@@ -204,7 +204,7 @@ class Utility(commands.Cog):
     # Restart command
     @app_commands.command(name="restart", description="Restarts and updates the bot")
     @app_commands.describe(do_update="If it should restart without updating (True = update, False = no update)")
-    @app_commands.checks.has_role(MODERATOR_ID)
+    @app_commands.checks.has_any_role(MODERATOR_ID, DEVELOPER_ID)
     async def restart(self, interaction: discord.Interaction, do_update:bool=True):
         await interaction.response.defer()
         if do_update:
