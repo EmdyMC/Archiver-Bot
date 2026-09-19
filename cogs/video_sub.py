@@ -59,17 +59,26 @@ class ApproveOrDeny(discord.ui.View):
         self.bot = bot
 
         self.approve_button = discord.ui.Button(label="Approve", style=discord.ButtonStyle.green, custom_id="approve_video")
+        self.approve_with_desc_button = discord.ui.Button(label="Approve with description", style=discord.ButtonStyle.green, custom_id="approve_with_desc")
         self.deny_button = discord.ui.Button(label="Deny", style=discord.ButtonStyle.red, custom_id="deny_video")
 
         self.approve_button.callback = self.approve
+        self.approve_with_desc_button.callback = self.approve_with_desc
         self.deny_button.callback = self.deny
 
         self.add_item(self.approve_button)
+        self.add_item(self.approve_with_desc_button)
         self.add_item(self.deny_button)
 
     def _get_link_from_message(self, message_content: str):
         try:
             return message_content.split("submitted: ")[1].split("\n")[0]
+        except IndexError:
+            return ""
+
+    def _get_desc_from_message(self, message_content: str):
+        try:
+            return message_content.split("Description: ")[1]
         except IndexError:
             return ""
 
@@ -91,6 +100,27 @@ class ApproveOrDeny(discord.ui.View):
         await video_channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.", color=discord.Color.green()), view=submit_prompt)
         # Remove review message
         await interaction.message.delete()
+
+    async def approve_with_desc(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        # Remove old submission prompt
+        link = self._get_link_from_message(interaction.message.content)
+        desc = self._get_desc_from_message(interaction.message.content)
+        video_channel = self.bot.get_channel(VIDEO_CHANNEL)
+        submit_prompt = SubmitPrompt(self.bot)
+        async for mess in video_channel.history(limit=1):
+            await mess.delete()
+        # Send and publish new video link
+        new_video = await video_channel.send(f"{link}\n{desc}")
+        await new_video.publish()
+        await new_video.create_thread(name=new_video.embeds[0].title, auto_archive_duration=60)
+        utility_cog = self.bot.get_cog("Utility")
+        await utility_cog.log(title=f"Video approved", message=f"{interaction.user.mention} approved the video link {new_video.jump_url}", colour=discord.Color.green())
+        # Send new submission prompt
+        await video_channel.send(embed=discord.Embed(title="Welcome to Video Showcase!", description="This is a channel for sharing technical Minecraft videos with the community.\nClick the button below to submit a video for review.\nAll submissions must be TMC-related.", color=discord.Color.green()), view=submit_prompt)
+        # Remove review message
+        await interaction.message.delete()
+        
     async def deny(self, interaction: discord.Interaction):
         await interaction.response.defer()
         link = self._get_link_from_message(interaction.message.content)
