@@ -110,7 +110,7 @@ class Submissions(commands.Cog):
         all_threads = [*submissions_forum.threads, *[t async for t in submissions_forum.archived_threads(limit=None)]]
         for thread in all_threads:
             tag_ids = {tag.id for tag in thread.applied_tags}
-            if ACCEPTED_TAG in tag_ids and ARCHIVED_TAG not in tag_ids:
+            if ACCEPTED_TAG in tag_ids:
                 emojis = ''
                 for tag in thread.applied_tags:
                     if tag.id != ACCEPTED_TAG:
