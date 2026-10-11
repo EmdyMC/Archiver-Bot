@@ -109,7 +109,7 @@ class Submissions(commands.Cog):
         submissions_forum = self.bot.get_channel(SUBMISSIONS_CHANNEL)
         for thread in submissions_forum.threads:
             tag_ids = {tag.id for tag in thread.applied_tags}
-            if ACCEPTED_TAG in tag_ids:
+            if ACCEPTED_TAG in tag_ids and ARCHIVED_TAG not in tag_ids:
                 emojis = ''
                 for tag in thread.applied_tags:
                     if tag.id != ACCEPTED_TAG:
@@ -187,8 +187,8 @@ class Submissions(commands.Cog):
                     if before.parent.id == SUBMISSIONS_CHANNEL:
                         utility_cog = self.bot.get_cog("Utility")
                         try:
-                            # Refresh the accepted post list
-                            if tag_added.id == ACCEPTED_TAG:
+                            # Refresh the accepted post list when accepted OR archive
+                            if tag_added.id in (ACCEPTED_TAG, ARCHIVED_TAG):
                                 await self.refresh_accepted()
                             # Submission archived or rejected
                             if tag_added.id in RESOLVED_TAGS:
