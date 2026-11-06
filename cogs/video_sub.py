@@ -15,7 +15,7 @@ def clean_video_link(raw_link: str) -> str|None:
     """Return a normalised link."""
 
     raw_link = raw_link.strip()
-    url = urlparse(raw)
+    url = urlparse(raw_link)
     host = (url.hostname or "").lower()
     query = parse_qs(url.query)
     segments = [s for s in url.path.split("/") if s]
