@@ -2,20 +2,139 @@ import discord
 import difflib
 import re
 import aiofiles
+import aiohttp
 import json
 import os
 import asyncio
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from pymongo import MongoClient
 from pathlib import Path
 from discord.ext import commands
 from discord import app_commands
-from typing import Type
+from typing import Any, Type
 from parser import set_contributor_username_lookup, message_parse, reset_contributor_username_lookup
 from dimensions import DimensionResolver, apply_dimensions
 from thumbnails import apply_thumbnails
+from links import DiscordTarget, discord_target, iter_discord_links, new_discord_link
+from MessageDict import DiscordLink
 from constants import ARCHIVER_ID, LOG_CHANNEL, MENTION_RE, HIGHER_ROLES, PARSE_ROLES, NON_ARCHIVE_CATEGORIES, MAIN_ARCHIVE_CATEGORIES, DATABASE_NAME, COLLECTION_NAME
 MONGO_URI = os.getenv("MONGO_URI")
+
+class DiscordLinkResolver:
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        self._targets: dict[DiscordTarget, asyncio.Task] = {}
+        self._lookups: dict[tuple, asyncio.Task] = {}
+        self._semaphore = asyncio.Semaphore(4)
+
+    async def _lookup(self, key: tuple, fetch: Callable[[], Awaitable[Any]]) -> Any:
+        async def load():
+            async with self._semaphore:
+                try:
+                    async with asyncio.timeout(10):
+                        return await fetch()
+                except (discord.HTTPException, discord.InvalidData,
+                        aiohttp.ClientError, TimeoutError):
+                    # Missing access, deleted messages, expired invites, or an outage.
+                    return None
+
+        if key not in self._lookups:
+            self._lookups[key] = asyncio.create_task(load())
+        return await self._lookups[key]
+
+    async def _channel(self, channel_id: int):
+        channel = self.bot.get_channel(channel_id)
+        if channel is not None:
+            return channel
+        return await self._lookup(
+            ("channel", channel_id), lambda: self.bot.fetch_channel(channel_id)
+        )
+
+    async def _message(self, channel, message_id: int):
+        for message in self.bot.cached_messages:
+            if message.id == message_id and message.channel.id == channel.id:
+                return message
+        if not hasattr(channel, "fetch_message"):
+            return None
+        return await self._lookup(
+            ("message", channel.id, message_id),
+            lambda: channel.fetch_message(message_id),
+        )
+
+    @staticmethod
+    def _guild_fields(data: dict, guild) -> None:
+        data["server"] = guild.name
+        data["server_icon_url"] = str(guild.icon) if guild.icon else None
+
+    async def _resolve(self, target: DiscordTarget) -> dict:
+        data = dict(new_discord_link(""))
+        del data["url"]
+        if target.kind == "invite":
+            invite = await self._lookup(
+                ("invite", target.invite_code),
+                lambda: self.bot.fetch_invite(target.invite_code, with_counts=False),
+            )
+            if invite is not None and invite.guild is not None:
+                self._guild_fields(data, invite.guild)
+                if invite.channel is not None:
+                    data["channel"] = getattr(invite.channel, "name", None)
+            return data
+
+        guild = self.bot.get_guild(target.server_id)
+        if guild is not None:
+            self._guild_fields(data, guild)
+        channel = await self._channel(target.channel_id)
+        if channel is None:
+            return data
+        # Ignore forged server/channel pairs and never preview direct messages.
+        guild = getattr(channel, "guild", None)
+        if guild is None or guild.id != target.server_id:
+            return data
+        self._guild_fields(data, guild)
+
+        message_channel = channel
+        message_id = target.message_id
+        if isinstance(channel, discord.Thread):
+            data["title"] = channel.name
+            parent = channel.parent
+            if parent is None and channel.parent_id is not None:
+                parent = await self._channel(channel.parent_id)
+            data["channel"] = parent.name if parent is not None else None
+            if message_id is None:
+                message_id = channel.id
+                # Forum starters live inside the thread; ordinary thread starters
+                # are messages in the parent text/announcement channel.
+                if parent is None:
+                    return data
+                if not isinstance(parent, discord.ForumChannel):
+                    message_channel = parent
+        else:
+            data["channel"] = channel.name
+
+        if message_id is not None:
+            message = await self._message(message_channel, message_id)
+            if message is not None:
+                data["content"] = message.content or None
+        return data
+
+    async def resolve(self, url: str) -> DiscordLink:
+        link = new_discord_link(url)
+        target = discord_target(url)
+        if target is None:
+            return link
+        if target not in self._targets:
+            self._targets[target] = asyncio.create_task(self._resolve(target))
+        link.update(await self._targets[target])
+        return link
+
+
+async def apply_discord_links(resolver: DiscordLinkResolver, post_data: dict) -> None:
+    links = list(iter_discord_links(post_data))
+    resolved = await asyncio.gather(*(resolver.resolve(link["url"]) for link in links))
+    for link, metadata in zip(links, resolved):
+        link.update(metadata)
+
 
 @dataclass
 class CrosspostReference:
@@ -87,14 +206,16 @@ class PostEditAndParseModal(PostEditModal):
     async def on_submit(self, interaction: discord.Interaction[commands.Bot]):
         await super().on_submit(interaction)
         parser_cog = interaction.client.get_cog("Parser")
-        data = await parser_cog.get_post_data(self.message.thread, self.message.channel.parent, self.bot)
+        thread = self.message.channel
+        assert isinstance(thread, discord.Thread)
+        data = await parser_cog.get_post_data(thread, thread.parent, self.bot)
         username_lookup = await parser_cog.build_username_lookup_from_messages(data["messages"])
         lookup_token = set_contributor_username_lookup(username_lookup)
 
         try:
             parse_result = message_parse("\n".join(data["messages"]).split("\n"))
         except Exception as e:
-            new_item = await ParserErrorItem.create(self.bot, self.message.thread, e, self.i)
+            new_item = await ParserErrorItem.create(self.bot, thread, e, self.i)
             new_view = discord.ui.LayoutView()
             new_view.add_item(new_item)
             await self.parse_response_message.channel.send(view=new_view)
@@ -102,25 +223,39 @@ class PostEditAndParseModal(PostEditModal):
         finally:
             reset_contributor_username_lookup(lookup_token)
 
-        await apply_dimensions(parser_cog.dimension_resolver, parse_result)
-        apply_thumbnails(parse_result)
+        await parser_cog.enrich_post(parse_result, DiscordLinkResolver(self.bot))
+        await parser_cog.write_parsed_post(thread, parse_result)
 
         new_item = discord.ui.TextDisplay(f"{self.message.jump_url}: Parse successful.")
         new_view = discord.ui.LayoutView()
         new_view.add_item(new_item)
         await self.parse_response_message.channel.send(view=new_view)
         
-        del data["messages"]
-        data["variants"] = parse_result
-        parsed_path = Path.cwd() / "parsed" / f"{self.message.thread.id}.json"
-        
-        with open(parsed_path, "w") as f:
-            json.dump(data, f, indent=4)
-
 class Parser(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.dimension_resolver = DimensionResolver(bot)
+
+    async def enrich_post(self, post_data: dict, link_resolver: DiscordLinkResolver):
+        await apply_dimensions(self.dimension_resolver, post_data)
+        apply_thumbnails(post_data)
+        await apply_discord_links(link_resolver, post_data)
+
+    async def write_parsed_post(self, thread: discord.Thread, post_data: dict):
+        json_data = {
+            "parsed_at": discord.utils.utcnow().isoformat(),
+            "category_name": thread.parent.category.name,
+            "channel_ids": [str(thread.parent_id)],
+            "thread_id": str(thread.id),
+            "slug": self.slugify(thread.name),
+            "title": thread.name,
+            "tags": [{"id": str(tag.id), "name": tag.name} for tag in thread.applied_tags],
+            "post_data": post_data,
+        }
+        parsed_path = Path.cwd() / "parsed"
+        parsed_path.mkdir(parents=True, exist_ok=True)
+        async with aiofiles.open(parsed_path / f"{thread.id}.json", mode="w", encoding="utf-8") as file:
+            await file.write(json.dumps(json_data, indent=4))
 
     def get_post_metadata(self, thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
         #Returns a dict of metadata to add on top of the post message
@@ -196,9 +331,10 @@ class Parser(commands.Cog):
             yield thread
 
     # Parse given threads to json and write to file
-    async def parse_threads_stream(self, thread_iter, interaction: discord.Interaction, reply_to_channel=True, crossposts: dict[str, CrosspostReference] | None = None):
+    async def parse_threads_stream(self, thread_iter, interaction: discord.Interaction, reply_to_channel=True, crossposts: dict[str, CrosspostReference] | None = None, link_resolver: DiscordLinkResolver | None = None):
         exceptions_view = discord.ui.LayoutView(timeout=None)
         errors = total = 0
+        link_resolver = link_resolver or DiscordLinkResolver(self.bot)
 
         (Path.cwd() / "parsed").mkdir(parents=True, exist_ok=True)
 
@@ -236,32 +372,8 @@ class Parser(commands.Cog):
             finally:
                 reset_contributor_username_lookup(lookup_token)
 
-            await apply_dimensions(self.dimension_resolver, parse_result)
-            apply_thumbnails(parse_result)
-
-            tags_serializable = []
-            for tag in thread.applied_tags:
-                tag_dict = {
-                    "id": str(tag.id),
-                    "name": tag.name,
-                }
-                tags_serializable.append(tag_dict)
-
-            json_data = {
-                "parsed_at": discord.utils.utcnow().isoformat(),
-                "category_name": thread.parent.category.name,
-                "channel_ids": [str(thread.parent_id)],
-                "thread_id": str(thread.id),
-                "slug": self.slugify(thread.name),
-                "title": thread.name,
-                "tags": tags_serializable,
-                "post_data": parse_result
-            }
-
-            file_path = Path.cwd() / "parsed" / f"{thread.id}.json"
-            json_string = json.dumps(json_data, indent=4)
-            async with aiofiles.open(file_path, mode='w', encoding='utf-8') as f:
-                await f.write(json_string)
+            await self.enrich_post(parse_result, link_resolver)
+            await self.write_parsed_post(thread, parse_result)
 
         return errors, total
 
@@ -371,12 +483,14 @@ class Parser(commands.Cog):
             await interaction.response.send_message("That is not an archive thread, it cannot be parsed.", ephemeral=True)
             return
 
+        await interaction.response.defer(ephemeral=True)
+
         # Wrap the single thread in an async generator
         async def single_thread_gen():
             yield thread
 
         errors, total = await self.parse_threads_stream(single_thread_gen(), interaction, reply_to_channel=False)
-        await interaction.response.send_message(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
+        await interaction.followup.send(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
 
     # Parse channel
     @app_commands.command(name="parse_channel", description="Parse the posts in a selected channel and check for errors")
@@ -411,6 +525,7 @@ class Parser(commands.Cog):
 
         errors = total = 0
         crossposts: dict[str, CrosspostReference] = {}
+        link_resolver = DiscordLinkResolver(self.bot)
         total_channels = len(parse_channel_list)
         current_channel_index = 1
         embed = discord.Embed(title="Parsing Status", colour=discord.Colour.green())
@@ -422,7 +537,8 @@ class Parser(commands.Cog):
             current_channel_index += 1
 
             channel_errors, channel_total = await self.parse_threads_stream(
-                self.iter_all_threads(channel), interaction, crossposts=crossposts
+                self.iter_all_threads(channel), interaction, crossposts=crossposts,
+                link_resolver=link_resolver,
             )
             errors += channel_errors
             total += channel_total

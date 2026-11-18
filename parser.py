@@ -11,6 +11,7 @@ from typing import get_origin
 from dataclasses import dataclass
 
 from MessageDict import Message
+from links import attach_discord_links, extract_urls
 
 type section = list[str]
 type dict_section = dict[str, section]
@@ -680,7 +681,7 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
     result = []
 
     for node in nodes:
-        urls = re.findall(r"(https?://\S+)", node.text)
+        urls = extract_urls(node.text)
 
         if urls:
             # Note only applies if there's exactly one file
@@ -731,7 +732,7 @@ def figures_parse() -> parser[list[dict]]:
             figure_number = re.search(
                 r"\*Figure\s+(\d+)\.\*", stripped, flags=re.IGNORECASE
             )
-            urls = re.findall(r"(https?://\S+)", stripped)
+            urls = extract_urls(stripped)
             if urls and figure_number is None:
                 raise ValueError(
                     f"Invalid figure label in {stripped!r}; expected '*Figure <number>.*'."
@@ -902,7 +903,9 @@ def message_parse(data: section) -> Message:
     if len(parsed) != 1:
         raise ValueError("Multiple variants in post")
 
-    return next(iter(parsed.values()))
+    post_data = next(iter(parsed.values()))
+    attach_discord_links(post_data)
+    return post_data
 
 
 if __name__ == "__main__":

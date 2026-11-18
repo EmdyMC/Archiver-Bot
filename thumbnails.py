@@ -1,6 +1,7 @@
 from urllib.parse import urlsplit
 
 from dimensions import ATTACHMENT_PATH_RE, media_file_nodes
+from links import link_url
 
 VIDEO_EXTENSIONS = {"mp4", "mov", "webm", "mkv", "gif"}
 
@@ -21,7 +22,7 @@ def thumbnail_url_for(url: str) -> str | None:
 
 
 def _set_thumbnail(target: dict) -> None:
-    if thumbnail_url := thumbnail_url_for(target["url"]):
+    if thumbnail_url := thumbnail_url_for(link_url(target["url"])):
         target["thumbnail_url"] = thumbnail_url
 
 

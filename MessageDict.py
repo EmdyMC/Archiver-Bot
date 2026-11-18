@@ -1,22 +1,34 @@
 from typing import TypedDict
 from typing import Literal, NotRequired
 
+class DiscordLink(TypedDict):
+    url: str
+    server: str | None
+    channel: str | None
+    title: str | None
+    content: str | None
+    server_icon_url: str | None
+
+Link = str | DiscordLink
+
 class TextNode(TypedDict):
     list_type: Literal["dashed", "numbered"]
     text: str
+    discord_links: list[DiscordLink]
     children: list["TextNode"]
 
 class Contributor(TypedDict):
     id: str
     name: str
-    channel_link: str
+    channel_link: Link
     contribution: str
-    contribution_link: str
+    contribution_link: Link
+    discord_links: list[DiscordLink]
 
 class Versions(TypedDict):
     base: str
     modifications: str
-    thread: str
+    discord_links: list[DiscordLink]
 
 class RateItems(TypedDict):
     type: Literal["concurrent", "exclusive"]
@@ -30,6 +42,7 @@ class Rate(TypedDict):
     amount: float
     interval: str
     note: str
+    discord_links: list[DiscordLink]
 
 class Rates(TypedDict):
     drops: list[Rate]
@@ -40,10 +53,12 @@ class LagEnvironment(TypedDict):
     cpu: str
     has_lithium: bool
     version: str
+    discord_links: list[DiscordLink]
 
 class LagEntry(TypedDict):
     conditions: list[str]
     lag: float
+    discord_links: list[DiscordLink]
 
 class LagInfo(TypedDict):
     environment: LagEnvironment
@@ -53,7 +68,8 @@ class LagInfo(TypedDict):
 
 class VideoLink(TypedDict):
     name: str
-    url: str
+    url: Link
+    discord_links: list[DiscordLink]
     width: int | None
     height: int | None
     thumbnail_url: NotRequired[str]
@@ -61,8 +77,9 @@ class VideoLink(TypedDict):
 class FileNode(TypedDict):
     type: Literal["file"]
     name: str
-    url: str
+    url: Link
     note: str
+    discord_links: list[DiscordLink]
     width: NotRequired[int | None]
     height: NotRequired[int | None]
     thumbnail_url: NotRequired[str]

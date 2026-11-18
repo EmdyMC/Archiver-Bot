@@ -6,6 +6,7 @@ from urllib.parse import unquote, urlsplit
 import aiohttp
 import discord
 from discord.ext import commands
+from links import link_url
 
 # Discord attachment URLs, e.g.
 # https://cdn.discordapp.com/attachments/<channel_id>/<message_id>/<filename>
@@ -225,10 +226,10 @@ async def apply_dimensions(resolver: DimensionResolver, post_data: dict) -> None
     for section in ("schematics", "world_downloads", "images"):
         targets.extend(media_file_nodes(files.get(section, [])))
 
-    await resolver.prefetch([target["url"] for target in targets])
+    await resolver.prefetch([link_url(target["url"]) for target in targets])
 
     infos = await asyncio.gather(
-        *(resolver.resolve(target["url"]) for target in targets)
+        *(resolver.resolve(link_url(target["url"])) for target in targets)
     )
 
     for target, info in zip(targets, infos):
