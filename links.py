@@ -1,5 +1,3 @@
-"""Discord URL recognition and the JSON link shape, without network access."""
-
 import re
 from dataclasses import dataclass
 from typing import Iterator, Literal
@@ -77,10 +75,10 @@ def link_url(link: Link) -> str:
     return link["url"] if isinstance(link, dict) else link
 
 
-def discord_link_or_url(link: Link) -> Link:
-    if isinstance(link, str) and discord_target(link) is not None:
-        return new_discord_link(link)
-    return link
+def parse_link(url: str) -> Link:
+    if discord_target(url) is not None:
+        return new_discord_link(url)
+    return url
 
 
 def extract_urls(text: str) -> list[str]:
@@ -127,44 +125,12 @@ def _attach_nodes(nodes: list[dict]) -> None:
         _attach_nodes(node.get("children", []))
 
 
-def _attach_files(nodes: list[dict]) -> None:
-    for node in nodes:
-        if node["type"] == "folder":
-            _attach_files(node["children"])
-        else:
-            node["url"] = discord_link_or_url(node["url"])
-            _attach_text_links(node, ("note",))
-
-
 def attach_discord_links(post_data: dict) -> None:
     """Attach link objects at their owning fields; leave the source text intact."""
-    for field in ("designers", "credits"):
-        for contributor in post_data.get(field, []):
-            for link_field in ("channel_link", "contribution_link"):
-                contributor[link_field] = discord_link_or_url(contributor[link_field])
-            _attach_text_links(contributor, ("name", "contribution"))
-
-    _attach_text_links(post_data["versions"], ("base", "modifications"))
-
-    rates = post_data.get("rates", {})
-    for field in ("drops", "consumption"):
-        for rate in rates.get(field, []):
-            _attach_text_links(rate, ("variants", "version", "conditions", "note"))
-    _attach_nodes(rates.get("notes", []))
+    _attach_nodes(post_data.get("rates", {}).get("notes", []))
 
     if lag_info := post_data.get("lag_info"):
-        _attach_text_links(lag_info["environment"], ("cpu", "version"))
-        for field in ("idle", "active"):
-            for entry in lag_info.get(field, []):
-                _attach_text_links(entry, ("conditions",))
         _attach_nodes(lag_info.get("notes", []))
-
-    for video in post_data.get("video_links", []):
-        video["url"] = discord_link_or_url(video["url"])
-        _attach_text_links(video, ("name",))
-
-    for field in ("schematics", "world_downloads", "images"):
-        _attach_files(post_data.get("files", {}).get(field, []))
 
     for field in ("description", "positives", "negatives", "design_specifications"):
         _attach_nodes(post_data.get(field, []))

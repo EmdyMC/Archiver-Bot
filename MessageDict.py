@@ -20,15 +20,13 @@ class TextNode(TypedDict):
 class Contributor(TypedDict):
     id: str
     name: str
-    channel_link: Link
+    channel_link: str
     contribution: str
     contribution_link: Link
-    discord_links: list[DiscordLink]
 
 class Versions(TypedDict):
     base: str
     modifications: str
-    discord_links: list[DiscordLink]
 
 class RateItems(TypedDict):
     type: Literal["concurrent", "exclusive"]
@@ -42,7 +40,6 @@ class Rate(TypedDict):
     amount: float
     interval: str
     note: str
-    discord_links: list[DiscordLink]
 
 class Rates(TypedDict):
     drops: list[Rate]
@@ -53,12 +50,10 @@ class LagEnvironment(TypedDict):
     cpu: str
     has_lithium: bool
     version: str
-    discord_links: list[DiscordLink]
 
 class LagEntry(TypedDict):
     conditions: list[str]
     lag: float
-    discord_links: list[DiscordLink]
 
 class LagInfo(TypedDict):
     environment: LagEnvironment
@@ -68,8 +63,7 @@ class LagInfo(TypedDict):
 
 class VideoLink(TypedDict):
     name: str
-    url: Link
-    discord_links: list[DiscordLink]
+    url: str
     width: int | None
     height: int | None
     thumbnail_url: NotRequired[str]
@@ -79,7 +73,6 @@ class FileNode(TypedDict):
     name: str
     url: Link
     note: str
-    discord_links: list[DiscordLink]
     width: NotRequired[int | None]
     height: NotRequired[int | None]
     thumbnail_url: NotRequired[str]

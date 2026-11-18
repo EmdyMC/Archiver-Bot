@@ -10,8 +10,8 @@ from typing import Callable
 from typing import get_origin
 from dataclasses import dataclass
 
-from MessageDict import Message
-from links import attach_discord_links, extract_urls
+from MessageDict import Contributor, FileTreeNode, Message
+from links import attach_discord_links, extract_urls, parse_link
 
 type section = list[str]
 type dict_section = dict[str, section]
@@ -311,7 +311,7 @@ def version_parse() -> parser[dict[str, str]]:
     return parse
 
 
-def contributors_parse() -> parser[list[dict[str, str | int]]]:
+def contributors_parse() -> parser[list[Contributor]]:
     DISCORD_ID_RE = re.compile(r"<@(\d+)>")
     MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
@@ -372,7 +372,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         return result
 
     @single_line_parser
-    def parse(data: str) -> list[dict[str, str | int]]:
+    def parse(data: str) -> list[Contributor]:
         text = data
 
         # Remove leading "- "
@@ -396,7 +396,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
         contributions = [parse_contribution(c) for c in contribution_chunks]
 
         # Cartesian product # ai made that comment but it sounded smart so i kept it
-        results: list[dict[str, str | int]] = []
+        results: list[Contributor] = []
         for c in contributors:
             for contrib in contributions:
                 results.append(
@@ -405,7 +405,7 @@ def contributors_parse() -> parser[list[dict[str, str | int]]]:
                         "name": c["name"],
                         "channel_link": c["channel_link"],
                         "contribution": contrib["contribution"],
-                        "contribution_link": contrib["contribution_link"],
+                        "contribution_link": parse_link(contrib["contribution_link"]),
                     }
                 )
 
@@ -677,8 +677,8 @@ def videos_parse() -> parser[list[dict[str, str]]]:
     return parse
 
 
-def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
-    result = []
+def files_from_nodes(nodes: list[ListNode]) -> list[FileTreeNode]:
+    result: list[FileTreeNode] = []
 
     for node in nodes:
         urls = extract_urls(node.text)
@@ -695,7 +695,7 @@ def files_from_nodes(nodes: list[ListNode]) -> list[dict]:
                     {
                         "type": "file",
                         "name": normalized_url.split("/")[-1],
-                        "url": normalized_url,
+                        "url": parse_link(normalized_url),
                         "note": note if len(urls) == 1 else "",
                     }
                 )
