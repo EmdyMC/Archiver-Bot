@@ -677,16 +677,17 @@ def videos_parse() -> parser[list[dict[str, str]]]:
     return parse
 
 
-def files_from_nodes(nodes: list[ListNode]) -> list[FileTreeNode]:
+def files_from_nodes(
+    nodes: list[ListNode], *, share_note: bool = False
+) -> list[FileTreeNode]:
     result: list[FileTreeNode] = []
 
     for node in nodes:
         urls = extract_urls(node.text)
 
         if urls:
-            # Note only applies if there's exactly one file
             note = ""
-            if len(urls) == 1:
+            if share_note or len(urls) == 1:
                 note = node.text[: node.text.find(urls[0])].strip(": ")
 
             for url in urls:
@@ -696,7 +697,7 @@ def files_from_nodes(nodes: list[ListNode]) -> list[FileTreeNode]:
                         "type": "file",
                         "name": normalized_url.split("/")[-1],
                         "url": parse_link(normalized_url),
-                        "note": note if len(urls) == 1 else "",
+                        "note": note,
                     }
                 )
         else:
@@ -704,7 +705,7 @@ def files_from_nodes(nodes: list[ListNode]) -> list[FileTreeNode]:
                 {
                     "type": "folder",
                     "name": node.text.rstrip(":"),
-                    "children": files_from_nodes(node.children),
+                    "children": files_from_nodes(node.children, share_note=share_note),
                 }
             )
 
@@ -823,7 +824,9 @@ message_parse_schema = dict_postprocess_parse(
                         SchemaItem(
                             ["Image", "Images"],
                             "images",
-                            lambda data: files_from_nodes(parse_nested_list(data)),
+                            lambda data: files_from_nodes(
+                                parse_nested_list(data), share_note=True
+                            ),
                         ),
                     ],
                 ),
