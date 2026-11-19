@@ -137,8 +137,8 @@ RANDOM_REPLIES = [
     "Yeah, no",
     "The audacity to ping me",
     "Sup?",
-    "Tektonic is so cool",
-    "<@1244389624751849577> website when?",
+    "<@900779759997419530> is so cool", # tektonic
+    "<@1244389624751849577> website when?", # worldincolors (cats)
     "Emdy is the best, go sub to him",
     "Sam is ok I guess",
     "Watchu doin",
