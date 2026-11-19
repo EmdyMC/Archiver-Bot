@@ -11,7 +11,7 @@ from typing import get_origin
 from dataclasses import dataclass
 
 from MessageDict import Contributor, FileTreeNode, Message
-from links import attach_discord_links, extract_urls, parse_link
+from links import attach_discord_links, discord_target, extract_urls, parse_link
 
 type section = list[str]
 type dict_section = dict[str, section]
@@ -19,6 +19,18 @@ type parser[U] = Callable[[section], U]
 
 
 SCHEMA_DEFAULT_UNSET = object()
+LIST_ITEM_RE = re.compile(r"(?P<indent> *)(?P<marker>- |\d+\. )(?P<text>.*\S)")
+URL = r"https?://[^\s<>\"\x60/?#]+(?:[/?#][^\s<>\"\x60]*)?"
+URL_TOKEN = rf"(?:<{URL}>|{URL})"
+BARE_LINKS_RE = re.compile(rf"{URL_TOKEN}(?: +{URL_TOKEN})*")
+NUMBER = r"(?:\d+(?:\.\d+)?|\.\d+)"
+VERSION_RANGE = r"\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+|\+)?"
+VERSIONS = rf"{VERSION_RANGE}(?:, {VERSION_RANGE})*"
+
+
+def line_error(reason: str, text: str) -> ValueError:
+    excerpt = text if len(text) <= 180 else text[:177] + "..."
+    return ValueError(f"{reason}\nOffending content: {excerpt!r}")
 
 
 CONTRIBUTOR_USERNAME_LOOKUP: ContextVar[dict[int, str] | None] = ContextVar(
@@ -82,9 +94,9 @@ def single_line_parser[T](function: Callable[[str], T]) -> parser[T]:
     @wraps(function)
     def wrapper(data: section) -> T:
         if len(data) != 1:
-            raise ValueError(
-                f"Single line parse for expected one line of input, got {data!r}."
-            )
+            if len(data) > 1:
+                raise line_error("Only one bullet is allowed here.", data[1])
+            raise ValueError("Expected one bullet.")
         return function(data[0])
 
     return wrapper
@@ -115,8 +127,13 @@ def prefix_dict_parse(
         parsed_data: defaultdict[str, section] = defaultdict(list)
         current_key = ""
         for line in data:
+            if not line.strip():
+                continue
             if line.startswith(prefix):
                 current_key = line[len(prefix) :].strip()
+                if not current_key:
+                    raise line_error("Expected a heading name.", line)
+                parsed_data.setdefault(current_key, [])
             else:
                 parsed_data[current_key].append(line)
         return dict(parsed_data)
@@ -124,12 +141,41 @@ def prefix_dict_parse(
     return parse
 
 
+def parse_post_sections(data: section) -> dict_section:
+    sections = prefix_dict_parse("## ")(data)
+    headings = Counter(line[3:].strip() for line in data if line.startswith("## "))
+    for title, lines in sections.items():
+        if not title or not lines or not re.match(r"- See (?:\[thread\]|thread\b)", lines[0], re.IGNORECASE):
+            continue
+        stub = lines[0].rstrip()
+        match = re.fullmatch(rf"- See \[thread\]\(({URL_TOKEN})\) for (.+?)\.?", stub, re.IGNORECASE)
+        target = discord_target(match[1].strip("<>")) if match else None
+        if not target or target.kind != "channel" or not target.message_id or match[2].lower() != title.lower():
+            raise line_error(f"Use a linked thread message for the {title} placeholder.", stub)
+        if headings[title] < 2 or len(lines) < 2:
+            raise line_error(f"Include the full {title} section in the thread.", stub)
+        sections[title] = lines[1:]
+    return sections
+
+
 def list_parse() -> parser[list[section]]:
     # Assume one level list
     def parse(data: section) -> list[section]:
-        if not all(line.lstrip().startswith("- ") for line in data):
-            raise ValueError("Incorrect list formatting.")
-        return [[line.lstrip()[2:]] for line in data]
+        lines = []
+        indent = None
+        for line in data:
+            match = LIST_ITEM_RE.fullmatch(line.rstrip())
+            if not match or match["marker"] != "- ":
+                raise line_error("Expected a dash bullet with text.", line)
+            if indent is None:
+                indent = match["indent"]
+            if len(indent) > 3 or match["indent"] != indent:
+                raise line_error("Inconsistent indentation. Align this bullet with its siblings.", line)
+            text = match["text"].strip()
+            if BARE_LINKS_RE.fullmatch(text):
+                raise line_error("Bare link. Add a caption or a descriptive link label.", line)
+            lines.append([text])
+        return lines
 
     return parse
 
@@ -142,76 +188,45 @@ def flattened_list_parse() -> parser[section]:
     return parse
 
 
-def parse_nested_list(data: list[str], indent: int = 0) -> list[ListNode]:
+def parse_nested_list(data: list[str], *, allow_numbered: bool = True) -> list[ListNode]:
     nodes: list[ListNode] = []
-    i = 0
-
-    while i < len(data):
-        line = data[i]
-        stripped = line.lstrip()
-        current_indent = len(line) - len(stripped)
-
-        if current_indent < indent:
-            i += 1
+    levels = []
+    for line in data:
+        if not line.strip():
             continue
-
-        LIST_ITEM_RE = re.compile(r"(?P<prefix>- |\d+\. )(?P<text>.*)")
-        m = LIST_ITEM_RE.match(stripped)
-        if not m:
-            i += 1
-            continue
-
-        prefix = m.group("prefix")
-        text = m.group("text").strip()
-
-        list_type = "dashed" if prefix == "- " else "numbered"
-
-        i += 1
-
-        # collect children
-        children_lines = []
-        while i < len(data):
-            next_line = data[i]
-            next_stripped = next_line.lstrip()
-            next_indent = len(next_line) - len(next_stripped)
-
-            if next_indent <= current_indent:
-                break
-
-            children_lines.append(next_line)
-            i += 1
-
-        nodes.append(
-            ListNode(
-                text=text,
-                list_type=list_type,
-                children=parse_nested_list(children_lines, current_indent + 2),
-            )
-        )
-
+        match = LIST_ITEM_RE.fullmatch(line.rstrip())
+        if not match:
+            if BARE_LINKS_RE.fullmatch(line.strip()):
+                raise line_error("Bare link. Put the URL on a bullet with a caption.", line)
+            raise line_error("Expected a bullet or numbered item with text.", line)
+        indent = len(match["indent"])
+        if not levels:
+            if indent > 3:
+                raise line_error("Inconsistent indentation. The first item must start within three spaces of the left margin.", line)
+            levels.append((indent, nodes))
+        current_indent, siblings = levels[-1]
+        if indent > current_indent:
+            if not siblings or indent - current_indent < 2:
+                raise line_error(
+                    "Inconsistent indentation. Indent children by at least two spaces.",
+                    line,
+                )
+            siblings = siblings[-1].children
+            levels.append((indent, siblings))
+        elif indent < current_indent:
+            while len(levels) > 1 and levels[-1][0] > indent:
+                levels.pop()
+            if levels[-1][0] != indent:
+                raise line_error("Inconsistent indentation. Align this item with its siblings.", line)
+            siblings = levels[-1][1]
+        numbered = match["marker"] != "- "
+        if numbered and not allow_numbered:
+            raise line_error("Expected a dash bullet in this section.", line)
+        text = match["text"].strip()
+        if BARE_LINKS_RE.fullmatch(text):
+            raise line_error("Bare link. Add a caption or a descriptive link label.", line)
+        siblings.append(ListNode(text, [], "numbered" if numbered else "dashed"))
     return nodes
-
-
-def list_dict_parse() -> parser[dict_section]:
-    def parse(data: section) -> dict_section:
-        result: defaultdict[str, section] = defaultdict(list)
-        current_key = ""
-        for line in data:
-            if line.startswith("- "):
-                if ": " in line:
-                    # print(line[2:].split(": ", 1))
-                    current_key, value = line[2:].split(": ", 1)
-                    if value.strip() != "":
-                        result[current_key].append("- " + value)
-                else:
-                    current_key = line[2:]
-                    if current_key.endswith(":"):
-                        current_key = current_key[:-1]
-            else:
-                result[current_key].append(line[2:])
-        return dict(result)
-
-    return parse
 
 
 def schema_dict_parse[T](
@@ -221,6 +236,14 @@ def schema_dict_parse[T](
     def parse(data: section) -> dict:
         result: dict[str, T] = {}
         parsed_data = parser_(data)
+        if parsed_data.get(""):
+            raise line_error("Unexpected content before the first heading.", parsed_data[""][0])
+        valid_keys = {name for field in config for name in field.display_names}
+        for key, lines in parsed_data.items():
+            if key not in valid_keys:
+                raise ValueError(f"Unexpected heading **{key}**.")
+            if not lines:
+                raise ValueError(f"Heading **{key}** has no content.")
 
         used_keys = set()
 
@@ -228,7 +251,10 @@ def schema_dict_parse[T](
             match_found = False
             for display_name in field.display_names:
                 if display_name in parsed_data:
-                    result[field.name] = field.parser(parsed_data[display_name])
+                    try:
+                        result[field.name] = field.parser(parsed_data[display_name])
+                    except ValueError as error:
+                        raise ValueError(f"**{display_name}**: {error}") from error
                     used_keys.add(display_name)
                     match_found = True
                     break
@@ -254,32 +280,9 @@ def schema_dict_parse[T](
 
         extra_keys = set(parsed_data.keys()) - used_keys
         if extra_keys:
-            extra_keys.discard("")
-            if extra_keys:
-                raise ValueError(
-                    f"Extra or unrecognised fields found: {', '.join(extra_keys)}"
-                )
+            raise ValueError(f"Duplicate field headings: {', '.join(sorted(extra_keys))}.")
 
         return result
-
-    return parse
-
-
-def variant_parse[T](
-    parser_: Callable[[str], parser[list[T]]], predicate: Callable[[section], bool]
-) -> parser[list[T]]:
-    def parse(data: section) -> list[T]:
-        # Skip rate tables
-        if data[0].startswith("- See"):
-            return []
-
-        if predicate(data):
-            result: list[T] = []
-            for variant, data_ in list_dict_parse()(data).items():
-                result.extend(parser_(variant)(data_))
-            return result
-        else:
-            return parser_("")(data)
 
     return parse
 
@@ -287,26 +290,17 @@ def variant_parse[T](
 def version_parse() -> parser[dict[str, str]]:
     @single_line_parser
     def parse(data: str) -> dict[str, str]:
-        if not data.startswith("- "):
-            raise ValueError("Incorrect version field formatting.")
-        versions = data[2:].split("; ")
-        result = {
-            "base": "",
-            "modifications": "",
-        }
-        for version_raw in versions:
-            if "(" not in version_raw:
-                version = version_raw
-                section = "base"
-            else:
-                version = version_raw.split("(")[0]
-                match version_raw.split("(")[1].rstrip(")"):
-                    case "with modifications":
-                        section = "modifications"
-                    case _:
-                        raise ValueError("Incorrect version field formatting.")
-            result[section] = version.strip()
-        return result
+        match = re.fullmatch(
+            rf"- (?:(?P<base>{VERSIONS})(?:; (?P<mods>{VERSIONS}) \(with modifications\))?|"
+            rf"(?P<mods_only>{VERSIONS}) \(with modifications\))",
+            data.rstrip(),
+        )
+        if not match:
+            raise line_error(
+                "Expected a version bullet such as '- 1.21+; 1.20+ (with modifications)'.",
+                data,
+            )
+        return {"base": match["base"] or "", "modifications": match["mods"] or match["mods_only"] or ""}
 
     return parse
 
@@ -414,130 +408,99 @@ def contributors_parse() -> parser[list[Contributor]]:
     return parse
 
 
+def strict_subsections(data: section, allowed: set[str]) -> dict_section:
+    sections = prefix_dict_parse("### ")(data)
+    for heading, lines in sections.items():
+        if heading and heading not in allowed:
+            raise ValueError(f"Unexpected subsection **{heading}**.")
+        if not lines:
+            raise ValueError(f"Subsection **{heading}** has no content.")
+    return sections
+
+
+def check_measurement_text(text: str) -> None:
+    if re.search(r"\bfigures?\s+\d", text, re.IGNORECASE) or re.match(
+        r"(?:see|refer to)\b", text, re.IGNORECASE
+    ):
+        raise line_error("Put figure, table, and other references under '### Notes'.", text)
+
+
 def rates_section_parser() -> parser[dict]:
     def parse(data: section) -> dict:
-        result = {
-            "drops": [],
-            "consumption": [],
-            "notes": [],
-        }
-
-        sections = prefix_dict_parse("### ")(data)
-
-        drops_data = sections.get("", [])
-        if drops_data:
-            walk_rates(
-                parse_nested_list(drops_data),
-                [],
-                None,  # no version at top level
-                result["drops"],
-            )
-
-        if "Consumes" in sections:
-            walk_rates(
-                parse_nested_list(sections["Consumes"]),
-                [],
-                None,
-                result["consumption"],
-            )
-
-        if "Notes" in sections:
-            result["notes"] = serialize_nodes(parse_nested_list(sections["Notes"]))
-
+        sections = strict_subsections(data, {"Consumes", "Notes"})
+        result = {"drops": [], "consumption": [], "notes": []}
+        for heading, key in (("", "drops"), ("Consumes", "consumption")):
+            try:
+                nodes = parse_nested_list(sections.get(heading, []), allow_numbered=False)
+                walk_rates(nodes, [], "", result[key])
+            except ValueError as error:
+                if heading:
+                    raise ValueError(f"**{heading}**: {error}") from error
+                raise
+        result["notes"] = serialize_nodes(parse_nested_list(sections.get("Notes", [])))
         return result
 
     return parse
 
 
-def parse_rate_line(text: str):
-    """
-    - Variant:
-      - (Version) Items (Condition): Amount/Interval (Note)
-    """
-    RATE_LINE_RE = re.compile(
-        r"""
-        ^                           # start
-        (?:(\([^)]*\))\s*)?         # Version (optional)
-        (?P<items>[^:(]+?)           # Items
-        (?:\s*\((?P<condition>[^)]*)\))?   # Condition (optional)
-        \s*:\s*
-        (?P<amount>[\d\.]+)(?P<unit>[kKmM]?) # Amount
-        /
-        (?P<interval>[^\s(]+)       # Interval
-        (?:\s*\((?P<note>[^)]*)\))? # Note (optional)
-        \s*$
-        """,
-        re.VERBOSE,
-    )
+RATE_VALUE = rf"(?P<amount>{NUMBER})(?P<unit>[kKmM]?)/(?P<interval>[^\s(]+)(?:\s+\((?P<note>[^)]+)\))?"
+RATE_LINE_RE = re.compile(
+    rf"(?:\((?P<version>{VERSIONS})\)\s+)?(?P<items>[^:(]+?)"
+    rf"(?:\s*\((?P<condition>[^)]+)\))?\s*:\s*{RATE_VALUE}"
+)
 
-    m = RATE_LINE_RE.match(text)
-    if not m:
-        raise ValueError(f"Invalid rate line: {text!r}")
 
-    amount = float(m.group("amount"))
-    unit = {
-        "": 1,
-        "k": 1e3,
-        "m": 1e6,
-    }[m.group("unit").lower()]
-
-    version = (m.group(1) or "").strip("()")
-    items = parse_drop_field()([m.group("items").strip()])
-
+def parse_rate_value(match: re.Match, text: str) -> dict:
+    interval = match["interval"]
+    if any(not part for part in interval.split("/")):
+        raise line_error("Rate intervals need a single slash between parts, such as 'plant/h'.", text)
+    if not re.fullmatch(r"[\w.+-]+(?:/[\w.+-]+)*", interval):
+        raise line_error("Invalid rate interval. Use an interval such as 'h', 'min', or 'plant/h'.", text)
+    scale = {"": 1, "k": 1e3, "m": 1e6}[match["unit"].lower()]
     return {
-        "version": version,
-        "items": items,
-        "conditions": m.group("condition") or "",
-        "amount": float(amount * unit),
-        "interval": m.group("interval"),
-        "note": m.group("note") or "",
+        "amount": float(match["amount"]) * scale,
+        "interval": interval,
+        "note": match["note"] or "",
     }
 
 
-def walk_rates(
-    nodes: list[ListNode],
-    variants: list[str],
-    version: str | None,
-    out: list[dict],
-):
+def parse_rate_line(text: str) -> dict:
+    match = RATE_LINE_RE.fullmatch(text)
+    if not match:
+        raise line_error("Expected a rate such as 'Iron Ingot: 1.2k/h'.", text)
+    return {
+        "version": match["version"] or "",
+        "items": parse_drop_field()([match["items"].strip()]),
+        "conditions": match["condition"] or "",
+        **parse_rate_value(match, text),
+    }
+
+
+def walk_rates(nodes: list[ListNode], variants: list[str], version: str, out: list[dict]):
     for node in nodes:
-        text = node.text.strip()
-
-        # Version-only node "(1.21.2+)"
-        version_match = re.fullmatch(r"\(([^)]+)\)", text)
-        if version_match:
-            walk_rates(
-                node.children,
-                variants,
-                version_match.group(1),
-                out,
-            )
+        text = node.text
+        check_measurement_text(text)
+        version_match = re.fullmatch(rf"\(({VERSIONS})\)", text)
+        if version_match or text.endswith(":"):
+            if not node.children or text == ":":
+                raise line_error("A rate group needs a label and at least one nested rate.", text)
+            if version_match:
+                walk_rates(node.children, variants, version_match[1], out)
+            else:
+                walk_rates(node.children, [*variants, text[:-1].rstrip()], version, out)
             continue
 
-        # Variant node
-        if text.endswith(":"):
-            walk_rates(
-                node.children,
-                variants + [text.rstrip(":").strip()],
-                version,
-                out,
-            )
-            continue
+        rate = parse_rate_line(text)
+        rate["variants"] = variants
+        rate["version"] = rate["version"] or version
+        out.append(rate)
 
-        # Leaf rate entry
-        rate_data = parse_rate_line(text)
-
-        out.append(
-            {
-                "variants": variants.copy(),
-                "version": rate_data["version"] or (version or ""),
-                "items": rate_data["items"],
-                "conditions": rate_data["conditions"],
-                "amount": rate_data["amount"],
-                "interval": rate_data["interval"],
-                "note": rate_data["note"],
-            }
-        )
+        for child in node.children:
+            check_measurement_text(child.text)
+            match = re.fullmatch(RATE_VALUE, child.text)
+            if not match or child.children:
+                raise line_error("Only an alternate interval such as '12/min' may follow a rate as a child bullet.", child.text)
+            out.append({**rate, **parse_rate_value(match, child.text)})
 
 
 def parse_drop_field() -> parser[dict[str, list[str] | str]]:
@@ -553,9 +516,17 @@ def parse_drop_field() -> parser[dict[str, list[str] | str]]:
         else:
             item_names = [text]
             _type = "concurrent"  # single drop can be treated as concurrent
+        if not all(item_names):
+            raise line_error("Rate item names cannot be empty.", text)
         return {"type": _type, "names": item_names}
 
     return parse
+
+
+LAG_ENVIRONMENT_RE = re.compile(
+    rf"Test environment: CPU ((?:(?! with | in | using ).)+?)"
+    rf"( with Lithium)?(?: in ({VERSIONS}))?(?: using (.+))?"
+)
 
 
 def parse_lag_section(data: section) -> dict:
@@ -565,91 +536,60 @@ def parse_lag_section(data: section) -> dict:
         "active": [],
         "notes": [],
     }
+    sections = strict_subsections(data, {"Notes"})
+    nodes = parse_nested_list(sections.get("", []), allow_numbered=False)
 
     default_variant = ""
-
-    # Split by ### headers
-    sections = prefix_dict_parse("### ")(data)
-
-    # Main lines
-    main_lines = sections.get("", [])
-    main_nodes = parse_nested_list(main_lines)
-
-    for node in main_nodes:
-        text = node.text.strip()
-
-        # Environment
-        if text.startswith("Test environment: CPU"):
-            m = re.match(
-                r"Test environment: CPU (.*?)( with Lithium)?( in (.*?))?( using (.*))?$",
-                text,
-            )
-            if m:
-                result["environment"]["cpu"] = m.group(1)
-                result["environment"]["has_lithium"] = bool(m.group(2))
-                result["environment"]["version"] = m.group(4) or ""
-                default_variant = (m.group(6) or "").strip()
+    seen = set()
+    for index, node in enumerate(nodes):
+        text = node.text
+        check_measurement_text(text)
+        if text.startswith("Test environment"):
+            match = LAG_ENVIRONMENT_RE.fullmatch(text)
+            if not match or node.children or index != 0:
+                raise line_error(
+                    "Start Lag Info with 'Test environment: CPU model', optionally followed by 'with Lithium', 'in VERSION', or 'using VARIANT'.",
+                    text,
+                )
+            cpu, lithium, version, variant = match.groups()
+            result["environment"] = {"cpu": cpu, "has_lithium": bool(lithium), "version": version or ""}
+            default_variant = variant or ""
             continue
 
-        # Flat lag entries
-        m = re.match(r"(Idle|Active):\s*([\d\.]+)mspt", text)
-        if m:
-            section_name = m.group(1).lower()
-            lag = float(m.group(2))
-            result[section_name].append(
-                {"conditions": [default_variant] if default_variant else [], "lag": lag}
-            )
+        label, colon, value = text.partition(":")
+        if not colon or label not in {"Idle", "Active"}:
+            raise line_error("Expected an Idle or Active reading. Put variants under 'Idle:' or 'Active:'.", text)
+        if label in seen:
+            raise line_error(f"Combine duplicate {label} entries under a single '{label}:' heading.", text)
+        seen.add(label)
+        readings = result[label.lower()]
+        if not value.strip() and node.children:
+            walk_lag(node.children, [], readings, default_variant)
             continue
 
-        # Nested entries
-        key = node.text.lower().rstrip(":").strip()
-        if key in result:
-            walk_lag(node.children, [], result[key], default_variant=default_variant)
+        match = re.fullmatch(rf" *({NUMBER})mspt", value)
+        if not match or node.children:
+            raise line_error(f"Expected '{label}: 1.2mspt' or an indented list of {label.lower()} readings.", text)
+        readings.append({"conditions": [default_variant] if default_variant else [], "lag": float(match[1])})
 
-    # Notes
-    if "Notes" in sections:
-        notes_lines = sections["Notes"]
-        result["notes"] = serialize_nodes(parse_nested_list(notes_lines))
-
+    result["notes"] = serialize_nodes(parse_nested_list(sections.get("Notes", [])))
     return result
 
 
-def walk_lag(nodes, conditions, out, default_variant=""):
+def walk_lag(nodes: list[ListNode], conditions: list[str], out: list[dict], default_variant: str):
     for node in nodes:
-        # Match "Label: 6mspt"
-        m = re.match(r"(.*?):\s*([\d\.]+)\s*mspt", node.text)
-        if m:
-            label = m.group(1).strip()
-            lag = float(m.group(2))
-            # Use label as condition if present, otherwise default_variant
-            conds = [label] if label else ([default_variant] if default_variant else [])
-            out.append(
-                {
-                    "conditions": conditions + conds,
-                    "lag": lag,
-                }
-            )
-            continue
-
-        # Match bare "6mspt"
-        lag_match = re.search(r"([\d\.]+)\s*mspt", node.text)
-        if lag_match:
-            out.append(
-                {
-                    "conditions": conditions
-                    + ([default_variant] if default_variant else []),
-                    "lag": float(lag_match.group(1)),
-                }
-            )
-            continue
-
-        # Otherwise, descend and treat this node as variant context
-        walk_lag(
-            node.children,
-            conditions + [node.text.rstrip(":")],
-            out,
-            default_variant=default_variant,
-        )
+        text = node.text
+        check_measurement_text(text)
+        match = re.fullmatch(rf"(.+?):\s*({NUMBER})mspt", text)
+        if match and not node.children:
+            out.append({"conditions": [*conditions, match[1].strip()], "lag": float(match[2])})
+        elif (match := re.fullmatch(rf"({NUMBER})mspt", text)) and not node.children:
+            suffix = [default_variant] if default_variant else []
+            out.append({"conditions": conditions + suffix, "lag": float(match[1])})
+        elif text.endswith(":") and text != ":" and node.children:
+            walk_lag(node.children, [*conditions, text[:-1].rstrip()], out, default_variant)
+        else:
+            raise line_error("Expected a variant reading such as 'Base version: 1.2mspt'.", text)
 
 
 def videos_parse() -> parser[list[dict[str, str]]]:
@@ -657,13 +597,13 @@ def videos_parse() -> parser[list[dict[str, str]]]:
         result = []
         for line in data:
             if not line.startswith("- "):
-                raise ValueError("Incorrect video links field formatting.")
+                raise line_error("Expected an unindented video link bullet.", line)
 
             text = line[2:].strip()
 
-            m = re.match(r"\[(.*?)\]\(<(.*?)>\)", text)
-            if not m:
-                raise ValueError(f"Invalid video link format: {data!r}")
+            m = re.fullmatch(rf"\[([^\]]+)\]\(<({URL})>\)", text)
+            if not m or not m[1].strip():
+                raise line_error("Expected '[Video Title](<https://…>)' with a caption.", line)
 
             result.append(
                 {
@@ -677,38 +617,81 @@ def videos_parse() -> parser[list[dict[str, str]]]:
     return parse
 
 
-def files_from_nodes(
-    nodes: list[ListNode], *, share_note: bool = False
-) -> list[FileTreeNode]:
-    result: list[FileTreeNode] = []
+FILE_HEADINGS = {
+    "Schematic": "schematics", "Schematics": "schematics",
+    "World Download": "world_downloads", "World Downloads": "world_downloads",
+    "Image": "images", "Images": "images",
+}
+MARKDOWN_FILE_LINK_RE = re.compile(rf"\[([^\]]+)\]\((<{URL}>|https?://[^\s<>()]+)\)")
 
+
+def read_file_links(text: str, *, images: bool, group_caption: str = "") -> list[FileTreeNode]:
+    caption = ""
+    text = text.strip()
+    source = text
+    if not MARKDOWN_FILE_LINK_RE.fullmatch(text):
+        version = re.fullmatch(rf"(\({VERSIONS}\))\s+({URL_TOKEN})", text)
+        prefix = re.fullmatch(r"([^<>]+?): +(.+)", text)
+        if label := version or prefix:
+            caption, text = label.groups()
+            caption = caption.strip(": ")
+    if match := MARKDOWN_FILE_LINK_RE.fullmatch(text):
+        caption = match[1].strip() or caption
+        urls = [match[2].strip("<>")]
+    elif BARE_LINKS_RE.fullmatch(text):
+        urls = [token.strip("<>") for token in text.split()]
+    else:
+        raise line_error("Expected a caption followed by a file URL, or a labeled Markdown link.", source)
+    if not (caption or group_caption):
+        raise line_error("A file link needs a caption, version, or descriptive link label.", source)
+    if len(urls) > 1 and not images:
+        raise line_error("List each schematic or world download on its own captioned bullet.", source)
+    files = []
+    for url in urls:
+        url = normalize_cdn_url(url)
+        files.append({"type": "file", "name": url.split("/")[-1], "url": parse_link(url), "note": caption})
+    return files
+
+
+def files_from_nodes(nodes: list[ListNode], *, images: bool) -> list[FileTreeNode]:
+    files = []
     for node in nodes:
-        urls = extract_urls(node.text)
+        text = node.text
+        if node.children:
+            if extract_urls(text) or not (text.endswith(":") or re.fullmatch(rf"\({VERSIONS}\)", text)):
+                raise line_error("Use a caption or version as a group heading, with file links below it.", text)
+            name = text.removesuffix(":").strip()
+            if not name:
+                raise line_error("A file group needs a caption.", text)
+            files.append({"type": "folder", "name": name, "children": files_from_nodes(node.children, images=images)})
+            continue
 
-        if urls:
-            note = ""
-            if share_note or len(urls) == 1:
-                note = node.text[: node.text.find(urls[0])].strip(": ")
+        files.extend(read_file_links(text, images=images))
+    return files
 
-            for url in urls:
-                normalized_url = normalize_cdn_url(url)
-                result.append(
-                    {
-                        "type": "file",
-                        "name": normalized_url.split("/")[-1],
-                        "url": parse_link(normalized_url),
-                        "note": note,
-                    }
-                )
+
+def parse_files(data: section) -> dict:
+    result = {"schematics": [], "world_downloads": [], "images": []}
+    seen = set()
+    for node in parse_nested_list(data, allow_numbered=False):
+        label, colon, links = node.text.partition(":")
+        if label not in FILE_HEADINGS or not colon:
+            raise line_error("Expected a file-type caption such as 'Schematic:', 'World Download:', or 'Image:'.", node.text)
+        kind = FILE_HEADINGS[label]
+        if kind in seen:
+            raise line_error(f"Combine duplicate {label} captions into one file group.", node.text)
+        seen.add(kind)
+        links = links.strip()
+        if links and not node.children:
+            result[kind] = read_file_links(links, group_caption=label, images=kind == "images")
+        elif not links and node.children:
+            result[kind] = files_from_nodes(node.children, images=kind == "images")
         else:
-            result.append(
-                {
-                    "type": "folder",
-                    "name": node.text.rstrip(":"),
-                    "children": files_from_nodes(node.children, share_note=share_note),
-                }
-            )
+            raise line_error("Provide inline file links or an indented file list under this caption.", node.text)
 
+    for required in ("schematics", "images"):
+        if not result[required]:
+            raise ValueError(f"Missing required file group **{required}**.")
     return result
 
 
@@ -725,38 +708,26 @@ def figures_parse() -> parser[list[dict]]:
     def parse(data: section) -> list[dict]:
         figures: list[dict] = []
 
+        seen = set()
         for line in data:
-            stripped = line.lstrip()
-            if not stripped.startswith("- "):
-                continue
-
-            figure_number = re.search(
-                r"\*Figure\s+(\d+)\.\*", stripped, flags=re.IGNORECASE
-            )
-            urls = extract_urls(stripped)
-            if urls and figure_number is None:
-                raise ValueError(
-                    f"Invalid figure label in {stripped!r}; expected '*Figure <number>.*'."
-                )
-            for url in urls:
-                normalized_url = normalize_cdn_url(url)
-                name = urlsplit(normalized_url).path.rsplit("/", 1)[-1]
-                extension = name.rsplit(".", 1)[-1].lower() if "." in name else ""
-                try:
-                    file_type = file_types[extension]
-                except KeyError:
-                    raise ValueError(
-                        f"Unsupported figure file extension {extension or '(none)'!r} "
-                        f"for {normalized_url}"
-                    ) from None
-                figures.append(
-                    {
-                        "url": normalized_url,
-                        "name": name,
-                        "figure_number": int(figure_number.group(1)),
-                        "file_type": file_type,
-                    }
-                )
+            match = re.fullmatch(rf"- \*Figure +([1-9]\d*)\.\* +({URL_TOKEN})", line.rstrip(), re.IGNORECASE)
+            if not match:
+                raise line_error("Expected one figure link in the form '- *Figure 1.* https://…'.", line)
+            figure_number = int(match[1])
+            if figure_number in seen:
+                raise line_error(f"Duplicate figure number {figure_number}.", line)
+            seen.add(figure_number)
+            normalized_url = normalize_cdn_url(match[2].strip("<>"))
+            name = urlsplit(normalized_url).path.rsplit("/", 1)[-1]
+            extension = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+            if extension not in file_types:
+                raise line_error(f"Unsupported figure file extension {extension or '(none)'!r}.", line)
+            figures.append({
+                "url": normalized_url,
+                "name": name,
+                "figure_number": figure_number,
+                "file_type": file_types[extension],
+            })
         return figures
 
     return parse
@@ -765,7 +736,7 @@ def figures_parse() -> parser[list[dict]]:
 message_parse_schema = dict_postprocess_parse(
     prefix_dict_parse("# "),
     schema_dict_parse(
-        prefix_dict_parse("## "),
+        parse_post_sections,
         [
             SchemaItem(
                 ["Designer", "Designers", "Designer(s)"],
@@ -806,30 +777,7 @@ message_parse_schema = dict_postprocess_parse(
             SchemaItem(
                 ["Files"],
                 "files",
-                schema_dict_parse(
-                    list_dict_parse(),  # Schematics / World Downloads / Images
-                    [
-                        SchemaItem(
-                            ["Schematic", "Schematics"],
-                            "schematics",
-                            lambda data: files_from_nodes(parse_nested_list(data)),
-                        ),
-                        SchemaItem(
-                            ["World Download", "World Downloads"],
-                            "world_downloads",
-                            lambda data: files_from_nodes(parse_nested_list(data)),
-                            required=False,
-                            default=[],
-                        ),
-                        SchemaItem(
-                            ["Image", "Images"],
-                            "images",
-                            lambda data: files_from_nodes(
-                                parse_nested_list(data), share_note=True
-                            ),
-                        ),
-                    ],
-                ),
+                parse_files,
             ),
             SchemaItem(
                 ["Description"],
@@ -897,8 +845,28 @@ message_parse_schema = dict_postprocess_parse(
 )
 
 
+def parse_crosspost(data: section) -> str | None:
+    """Validate a crosspost and return the thread ID of its original post."""
+    lines = [line.rstrip() for line in data if line.strip()]
+    if not lines or not re.fullmatch(r"## +Original Post", lines[0].lstrip()):
+        return None
+    if len(lines) < 3 or lines[2] != "## Image":
+        unexpected = lines[2] if len(lines) >= 3 else "(missing heading)"
+        raise line_error("Crossposts need a single '## Image' section after the original post link.", unexpected)
+    if len(lines) != 4:
+        unexpected = lines[4] if len(lines) > 4 else "(missing image link)"
+        raise line_error("Crossposts must contain exactly one image link.", unexpected)
+    original = re.fullmatch(rf"- ({URL_TOKEN})", lines[1])
+    target = discord_target(original[1].strip("<>")) if original else None
+    if not target or target.kind != "channel":
+        raise line_error("Expected one Discord thread link under '## Original Post'.", lines[1])
+    if not re.fullmatch(rf"- {URL_TOKEN}", lines[3]):
+        raise line_error("Expected one image URL under '## Image'.", lines[3])
+    return str(target.channel_id)
+
+
 def message_parse(data: section) -> Message:
-    if data and any(line.strip().endswith("Original Post") for line in data[:2]):
+    if parse_crosspost(data) is not None:
         raise ValueError("Crosspost")
 
     parsed = message_parse_schema(data)
@@ -980,18 +948,16 @@ if __name__ == "__main__":
             if not messages:
                 raise ValueError("No messages")
 
-            # Crossposts
-            if messages[0].startswith("## Original Post"):
-                raise ValueError("Crosspost")
-
-            raw_text = "\n".join(messages)
-            parsed = message_parse(raw_text.split("\n"))
+            lines = "\n".join(messages).split("\n")
+            if parse_crosspost(lines) is not None:
+                return None
+            parsed = message_parse(lines)
 
             if not parsed:
                 raise ValueError("No parsable content")
 
             # Merge parsed message content
-            result.update(parsed[0])
+            result.update(parsed)
             return result
 
         except Exception as e:

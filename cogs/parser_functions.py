@@ -13,7 +13,12 @@ from pathlib import Path
 from discord.ext import commands
 from discord import app_commands
 from typing import Any, Type
-from parser import set_contributor_username_lookup, message_parse, reset_contributor_username_lookup
+from parser import (
+    message_parse,
+    parse_crosspost,
+    reset_contributor_username_lookup,
+    set_contributor_username_lookup,
+)
 from dimensions import DimensionResolver, apply_dimensions
 from thumbnails import apply_thumbnails
 from links import DiscordTarget, discord_target, iter_discord_links, new_discord_link
@@ -209,27 +214,26 @@ class PostEditAndParseModal(PostEditModal):
         thread = self.message.channel
         assert isinstance(thread, discord.Thread)
         data = await parser_cog.get_post_data(thread, thread.parent, self.bot)
-        username_lookup = await parser_cog.build_username_lookup_from_messages(data["messages"])
-        lookup_token = set_contributor_username_lookup(username_lookup)
-
+        ephemeral = self.parse_response_message.flags.ephemeral
         try:
-            parse_result = message_parse("\n".join(data["messages"]).split("\n"))
+            parse_result, _ = await parser_cog.parse_thread_content(data["messages"])
         except Exception as e:
             new_item = await ParserErrorItem.create(self.bot, thread, e, self.i)
             new_view = discord.ui.LayoutView()
             new_view.add_item(new_item)
-            await self.parse_response_message.channel.send(view=new_view)
+            await interaction.followup.send(
+                view=new_view, ephemeral=ephemeral, allowed_mentions=discord.AllowedMentions.none()
+            )
             return
-        finally:
-            reset_contributor_username_lookup(lookup_token)
 
-        await parser_cog.enrich_post(parse_result, DiscordLinkResolver(self.bot))
-        await parser_cog.write_parsed_post(thread, parse_result)
+        if parse_result is not None:
+            await parser_cog.enrich_post(parse_result, DiscordLinkResolver(self.bot))
+            await parser_cog.write_parsed_post(thread, parse_result)
 
         new_item = discord.ui.TextDisplay(f"{self.message.jump_url}: Parse successful.")
         new_view = discord.ui.LayoutView()
         new_view.add_item(new_item)
-        await self.parse_response_message.channel.send(view=new_view)
+        await interaction.followup.send(view=new_view, ephemeral=ephemeral)
         
 class Parser(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -308,19 +312,16 @@ class Parser(commands.Cog):
                 metadata["messages"].append(message.content)
         return metadata
 
-    def get_crosspost_target_thread_id(self, messages: list[str]) -> str | None:
-        content = "\n".join(messages)
-        if not re.match(r"^\s*##\s+Original Post\s*(?:\n|$)", content):
-            return None
-
-        # A forum-post link is either /channels/<guild>/<thread> or
-        # /channels/<guild>/<thread>/<message>. The thread ID identifies the
-        # parsed record regardless of which message was linked.
-        match = re.search(
-            r"https?://(?:ptb\.|canary\.)?discord(?:app)?\.com/channels/\d+/(\d+)(?:/\d+)?(?:[?#][^\s]*)?",
-            content,
-        )
-        return match.group(1) if match else None
+    async def parse_thread_content(self, messages: list[str]) -> tuple[dict | None, str | None]:
+        lines = "\n".join(messages).splitlines()
+        if (target := parse_crosspost(lines)) is not None:
+            return None, target
+        username_lookup = await self.build_username_lookup_from_messages(messages)
+        lookup_token = set_contributor_username_lookup(username_lookup)
+        try:
+            return message_parse(lines), None
+        finally:
+            reset_contributor_username_lookup(lookup_token)
 
     async def iter_all_threads(self, channel: discord.ForumChannel):
         #Iterates over all threads, active or not
@@ -332,7 +333,6 @@ class Parser(commands.Cog):
 
     # Parse given threads to json and write to file
     async def parse_threads_stream(self, thread_iter, interaction: discord.Interaction, reply_to_channel=True, crossposts: dict[str, CrosspostReference] | None = None, link_resolver: DiscordLinkResolver | None = None):
-        exceptions_view = discord.ui.LayoutView(timeout=None)
         errors = total = 0
         link_resolver = link_resolver or DiscordLinkResolver(self.bot)
 
@@ -342,8 +342,22 @@ class Parser(commands.Cog):
             total += 1
             data = await self.get_post_data(thread=thread, channel=thread.parent, bot=interaction.client)
 
-            crosspost_target_id = self.get_crosspost_target_thread_id(data["messages"])
-            if crosspost_target_id is not None and crossposts is not None:
+            try:
+                parse_result, crosspost_target_id = await self.parse_thread_content(data["messages"])
+            except Exception as error:
+                error_view = discord.ui.LayoutView(timeout=None)
+                error_view.add_item(await ParserErrorItem.create(self.bot, thread, error, 1))
+                mentions = discord.AllowedMentions.none()
+                if reply_to_channel:
+                    await interaction.channel.send(view=error_view, allowed_mentions=mentions)
+                else:
+                    await interaction.followup.send(view=error_view, ephemeral=True, allowed_mentions=mentions)
+                errors += 1
+                continue
+
+            if crosspost_target_id is not None:
+                if crossposts is None:
+                    continue
                 # Preserve archive traversal order and do not add the same
                 # forum twice when Discord happens to return a duplicate thread.
                 reference = crossposts.setdefault(
@@ -355,22 +369,6 @@ class Parser(commands.Cog):
                 if all(source.id != thread.id for source in reference.source_threads):
                     reference.source_threads.append(thread)
                 continue
-
-            username_lookup = await self.build_username_lookup_from_messages(data["messages"])
-            lookup_token = set_contributor_username_lookup(username_lookup)
-
-            try:
-                parse_result = message_parse("\n".join(data["messages"]).split("\n"))
-            except Exception as e:
-                error_view = await ParserErrorItem.create(self.bot, thread, e, 1)
-                exceptions_view.add_item(error_view)
-                if reply_to_channel:
-                    await interaction.channel.send(view=exceptions_view)
-                    exceptions_view = discord.ui.LayoutView(timeout=None)
-                errors += 1
-                continue
-            finally:
-                reset_contributor_username_lookup(lookup_token)
 
             await self.enrich_post(parse_result, link_resolver)
             await self.write_parsed_post(thread, parse_result)
@@ -490,7 +488,8 @@ class Parser(commands.Cog):
             yield thread
 
         errors, total = await self.parse_threads_stream(single_thread_gen(), interaction, reply_to_channel=False)
-        await interaction.followup.send(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
+        if not errors:
+            await interaction.followup.send(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
 
     # Parse channel
     @app_commands.command(name="parse_channel", description="Parse the posts in a selected channel and check for errors")
