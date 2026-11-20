@@ -91,6 +91,13 @@ class DiscordLinkResolver:
             self._guild_fields(data, guild)
         channel = await self._channel(target.channel_id)
         if channel is None:
+            if guild is None:
+                preview = await self._lookup(
+                    ("guild_preview", target.server_id),
+                    lambda: self.bot.fetch_guild_preview(target.server_id),
+                )
+                if preview is not None:
+                    self._guild_fields(data, preview)
             return data
         # Ignore forged server/channel pairs and never preview direct messages.
         guild = getattr(channel, "guild", None)
