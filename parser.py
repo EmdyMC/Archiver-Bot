@@ -23,6 +23,7 @@ LIST_ITEM_RE = re.compile(r"(?P<indent> *)(?P<marker>- |\d+\. )(?P<text>.*\S)")
 URL = r"https?://[^\s<>\"\x60/?#]+(?:[/?#][^\s<>\"\x60]*)?"
 URL_TOKEN = rf"(?:<{URL}>|{URL})"
 BARE_LINKS_RE = re.compile(rf"{URL_TOKEN}(?: +{URL_TOKEN})*")
+INLINE_URL_RE = re.compile(r"https?://[^\s<>()\[\]\"`]+")
 NUMBER = r"(?:\d+(?:\.\d+)?|\.\d+)"
 VERSION_RANGE = r"\d+(?:\.\d+)+(?:-\d+(?:\.\d+)+|\+)?"
 VERSIONS = rf"{VERSION_RANGE}(?:, {VERSION_RANGE})*"
@@ -64,7 +65,7 @@ class ListNode:
     def to_dict(self) -> dict:
         return {
             "list_type": self.list_type,
-            "text": self.text,
+            "text": INLINE_URL_RE.sub(lambda match: normalize_cdn_url(match[0]), self.text),
             "children": [c.to_dict() for c in self.children],
         }
 
