@@ -1,6 +1,7 @@
 import json
 import re
 from contextvars import ContextVar, Token
+from decimal import Decimal
 from urllib.parse import urlsplit
 
 # import traceback
@@ -65,7 +66,7 @@ class ListNode:
     def to_dict(self) -> dict:
         return {
             "list_type": self.list_type,
-            "text": INLINE_URL_RE.sub(lambda match: normalize_cdn_url(match[0]), self.text),
+            "text": normalize_inline_urls(self.text),
             "children": [c.to_dict() for c in self.children],
         }
 
@@ -89,6 +90,10 @@ def normalize_cdn_url(url: str) -> str:
         if url.startswith(prefix):
             return "https://cdn.tmcc.dev/" + url[len(prefix) :].lstrip("/")
     return url
+
+
+def normalize_inline_urls(text: str) -> str:
+    return INLINE_URL_RE.sub(lambda match: normalize_cdn_url(match[0]), text)
 
 
 def single_line_parser[T](function: Callable[[str], T]) -> parser[T]:
@@ -451,15 +456,29 @@ RATE_LINE_RE = re.compile(
 )
 
 
+class AbbreviatedRate(float):
+    """Retain the written k/M value for merging while serializing as a number."""
+
+    def __new__(cls, amount: float, written: Decimal | None = None, scale: int = 1):
+        value = super().__new__(cls, amount)
+        value.written = written
+        value.scale = scale
+        return value
+
+
 def parse_rate_value(match: re.Match, text: str) -> dict:
     interval = match["interval"]
     if any(not part for part in interval.split("/")):
         raise line_error("Rate intervals need a single slash between parts, such as 'plant/h'.", text)
     if not re.fullmatch(r"[\w.+-]+(?:/[\w.+-]+)*", interval):
         raise line_error("Invalid rate interval. Use an interval such as 'h', 'min', or 'plant/h'.", text)
-    scale = {"": 1, "k": 1e3, "m": 1e6}[match["unit"].lower()]
+    number = match["amount"]
+    scale = {"": 1, "k": 1_000, "m": 1_000_000}[match["unit"].lower()]
+    amount = float(number) * scale
+    if scale != 1 and len(number.partition(".")[2]) <= 2:
+        amount = AbbreviatedRate(amount, Decimal(number), scale)
     return {
-        "amount": float(match["amount"]) * scale,
+        "amount": amount,
         "interval": interval,
         "note": match["note"] or "",
     }
