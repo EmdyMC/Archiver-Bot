@@ -14,10 +14,11 @@ from discord.ext import commands
 from discord import app_commands
 from typing import Any, Type
 from parser import (
+    ContributorProfile,
     message_parse,
     parse_crosspost,
-    reset_contributor_username_lookup,
-    set_contributor_username_lookup,
+    reset_contributor_profile_lookup,
+    set_contributor_profile_lookup,
 )
 from dimensions import DimensionResolver, apply_dimensions
 from manual_measurements import ManualMeasurementsError, load_manual_measurements, merge_manual_measurements
@@ -285,33 +286,29 @@ class Parser(commands.Cog):
             "messages": []
         }
 
-    # Discord id->username helper
-    async def get_username_from_id(self, user_id: int) -> str | None:
-        """Finds the name and ID of a user using their user ID"""
+    async def get_contributor_profile(self, user_id: int) -> ContributorProfile | None:
         user = self.bot.get_user(user_id)
         if user is None:
             try:
                 user = await self.bot.fetch_user(user_id)
-            except (discord.NotFound, discord.Forbidden, discord.HTTPException):
+            except discord.HTTPException:
                 return None
 
-        return user.display_name if hasattr(user, "display_name") else user.name
+        return ContributorProfile(display_name=user.display_name, avatar_url=user.display_avatar.url)
 
-
-    async def build_username_lookup_from_messages(self, messages: list[str]) -> dict[int, str]:
-        """Builds a per-request cache of user_id -> username from message mentions."""
+    async def build_contributor_lookup_from_messages(self, messages: list[str]) -> dict[int, ContributorProfile]:
         user_ids: set[int] = set()
         for message in messages:
             for match in MENTION_RE.finditer(message):
                 user_ids.add(int(match.group(1)))
 
-        username_lookup: dict[int, str] = {}
+        profiles: dict[int, ContributorProfile] = {}
         for user_id in user_ids:
-            username = await self.get_username_from_id(user_id)
-            if username:
-                username_lookup[user_id] = username
+            profile = await self.get_contributor_profile(user_id)
+            if profile is not None:
+                profiles[user_id] = profile
 
-        return username_lookup
+        return profiles
 
     async def get_post_data(self, thread: discord.Thread, channel: discord.ForumChannel, bot: commands.Bot) -> dict[str, str|list[str]]:
         #Gets the metadata for the post along with all the post messages
@@ -327,12 +324,12 @@ class Parser(commands.Cog):
         lines = "\n".join(messages).splitlines()
         if (target := parse_crosspost(lines)) is not None:
             return None, target
-        username_lookup = await self.build_username_lookup_from_messages(messages)
-        lookup_token = set_contributor_username_lookup(username_lookup)
+        profiles = await self.build_contributor_lookup_from_messages(messages)
+        lookup_token = set_contributor_profile_lookup(profiles)
         try:
             return message_parse(lines), None
         finally:
-            reset_contributor_username_lookup(lookup_token)
+            reset_contributor_profile_lookup(lookup_token)
 
     async def iter_all_threads(self, channel: discord.ForumChannel):
         #Iterates over all threads, active or not

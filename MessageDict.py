@@ -23,6 +23,7 @@ class Contributor(TypedDict):
     channel_link: str
     contribution: str
     contribution_link: Link
+    avatar_url: NotRequired[str]
 
 class Versions(TypedDict):
     base: str

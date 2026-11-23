@@ -35,17 +35,23 @@ def line_error(reason: str, text: str) -> ValueError:
     return ValueError(f"{reason}\nOffending content: {excerpt!r}")
 
 
-CONTRIBUTOR_USERNAME_LOOKUP: ContextVar[dict[int, str] | None] = ContextVar(
-    "contributor_username_lookup", default=None
+@dataclass(frozen=True)
+class ContributorProfile:
+    display_name: str
+    avatar_url: str
+
+
+CONTRIBUTOR_PROFILE_LOOKUP: ContextVar[dict[int, ContributorProfile] | None] = ContextVar(
+    "contributor_profile_lookup", default=None
 )
 
 
-def set_contributor_username_lookup(lookup: dict[int, str] | None) -> Token:
-    return CONTRIBUTOR_USERNAME_LOOKUP.set(lookup or {})
+def set_contributor_profile_lookup(lookup: dict[int, ContributorProfile]) -> Token:
+    return CONTRIBUTOR_PROFILE_LOOKUP.set(lookup)
 
 
-def reset_contributor_username_lookup(token: Token) -> None:
-    CONTRIBUTOR_USERNAME_LOOKUP.reset(token)
+def reset_contributor_profile_lookup(token: Token) -> None:
+    CONTRIBUTOR_PROFILE_LOOKUP.reset(token)
 
 
 @dataclass
@@ -312,7 +318,7 @@ def version_parse() -> parser[dict[str, str]]:
 
 
 def contributors_parse() -> parser[list[Contributor]]:
-    DISCORD_ID_RE = re.compile(r"<@(\d+)>")
+    DISCORD_ID_RE = re.compile(r"<@!?(\d+)>")
     MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
     def parse_contributor(text: str) -> dict:
@@ -327,11 +333,11 @@ def contributors_parse() -> parser[list[Contributor]]:
         if id_match:
             result["id"] = id_match.group(1)
 
-            username_lookup = CONTRIBUTOR_USERNAME_LOOKUP.get() or {}
-            user_id = int(result["id"])
-            name = username_lookup.get(user_id)
-            if name:
-                result["name"] = name
+            profiles = CONTRIBUTOR_PROFILE_LOOKUP.get() or {}
+            profile = profiles.get(int(result["id"]))
+            if profile is not None:
+                result["name"] = profile.display_name
+                result["avatar_url"] = profile.avatar_url
 
             text = DISCORD_ID_RE.sub("", text)
 
@@ -399,15 +405,16 @@ def contributors_parse() -> parser[list[Contributor]]:
         results: list[Contributor] = []
         for c in contributors:
             for contrib in contributions:
-                results.append(
-                    {
-                        "id": c["id"],
-                        "name": c["name"],
-                        "channel_link": c["channel_link"],
-                        "contribution": contrib["contribution"],
-                        "contribution_link": parse_link(contrib["contribution_link"]),
-                    }
-                )
+                contributor: Contributor = {
+                    "id": c["id"],
+                    "name": c["name"],
+                    "channel_link": c["channel_link"],
+                    "contribution": contrib["contribution"],
+                    "contribution_link": parse_link(contrib["contribution_link"]),
+                }
+                if "avatar_url" in c:
+                    contributor["avatar_url"] = c["avatar_url"]
+                results.append(contributor)
 
         return results
 
