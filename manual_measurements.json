@@ -889,13 +889,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia",
           "amount": 10000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -905,13 +903,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 5200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Azalea"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -921,13 +917,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 10000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -937,13 +931,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Brown Mushroom",
           "amount": 10000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Brown mushroom"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -953,13 +945,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry",
           "amount": 10000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -969,13 +959,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 10000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -985,13 +973,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Mangrove",
           "amount": 13200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Mangrove"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -1001,13 +987,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 9900,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -1017,13 +1001,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Red Mushroom",
           "amount": 6200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Red mushroom"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -1033,16 +1015,14 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 10000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         },
         {
-          "version": "",
+          "version": "Crimson",
           "items": {
             "type": "concurrent",
             "names": [
@@ -1053,12 +1033,10 @@
           "amount": 2100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Crimson"
-          ]
+          "variants": []
         },
         {
-          "version": "",
+          "version": "Mangrove",
           "items": {
             "type": "concurrent",
             "names": [
@@ -1069,12 +1047,10 @@
           "amount": 3200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Mangrove"
-          ]
+          "variants": []
         },
         {
-          "version": "",
+          "version": "Warped",
           "items": {
             "type": "concurrent",
             "names": [
@@ -1085,9 +1061,7 @@
           "amount": 2200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Warped"
-          ]
+          "variants": []
         }
       ]
     }
@@ -1167,13 +1141,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 4700,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -1183,13 +1155,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 6600,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -1199,13 +1169,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 5400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -1215,13 +1183,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 6300,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         }
       ]
     }
@@ -2025,13 +1991,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia (Bone meal efficient mode)",
           "amount": 3900,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia (Bone meal efficient mode)"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2041,13 +2005,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia (Normal mode)",
           "amount": 3000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2057,13 +2019,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 1100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Azalea"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2073,13 +2033,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 5400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2089,13 +2047,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry (Normal mode)",
           "amount": 3000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2105,13 +2061,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry (Bone meal efficient mode)",
           "amount": 1100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry (Bone meal efficient mode)"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2121,13 +2075,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 5900,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2137,13 +2089,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 6100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2153,13 +2103,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 5400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         }
       ]
     }
@@ -2281,13 +2229,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry",
           "amount": 46500,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2297,13 +2243,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia",
           "amount": 46500,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2313,13 +2257,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 46500,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2329,13 +2271,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 46500,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2345,13 +2285,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 50100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2361,13 +2299,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 50800,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -2377,13 +2313,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 49420,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Azalea"
-          ]
+          "variants": []
         }
       ]
     },
@@ -3001,7 +2935,7 @@
               "Oak Log"
             ]
           },
-          "conditions": "Azalea, after planting cherry",
+          "conditions": "Azalea (after planting cherry)",
           "amount": 14070,
           "interval": "h",
           "note": "",
@@ -3019,13 +2953,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry",
           "amount": 12310,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Cherry"
+            "Clicker variant"
           ]
         },
         {
@@ -3036,13 +2969,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia",
           "amount": 12260,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Acacia"
+            "Clicker variant"
           ]
         },
         {
@@ -3053,13 +2985,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 5980,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Azalea"
+            "Clicker variant"
           ]
         },
         {
@@ -3070,13 +3001,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 10960,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Birch"
+            "Clicker variant"
           ]
         },
         {
@@ -3087,13 +3017,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 10880,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Oak"
+            "Clicker variant"
           ]
         },
         {
@@ -3104,13 +3033,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 10450,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Spruce"
+            "Clicker variant"
           ]
         },
         {
@@ -3121,13 +3049,12 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Red Mushroom",
           "amount": 8700,
           "interval": "h",
           "note": "",
           "variants": [
-            "Clicker variant",
-            "Red mushroom"
+            "Clicker variant"
           ]
         }
       ]
@@ -3376,13 +3303,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 89400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -3392,13 +3317,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 92500,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Azalea"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -3408,13 +3331,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 90000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -3424,13 +3345,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 92700,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -3440,13 +3359,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 92700,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -3456,13 +3373,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia",
           "amount": 92700,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -3472,13 +3387,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry",
           "amount": 92700,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry"
-          ]
+          "variants": []
         }
       ]
     },
@@ -4050,13 +3963,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia",
           "amount": 6200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4066,13 +3977,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 4100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Azalea"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4082,13 +3991,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 10100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4098,13 +4005,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Brown Mushroom",
           "amount": 2100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Brown mushroom"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4114,13 +4019,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry",
           "amount": 4800,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4130,13 +4033,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 5100,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4146,13 +4047,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Mangrove",
           "amount": 9000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Mangrove"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4162,13 +4061,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Red Mushroom",
           "amount": 3000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Red mushroom"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4178,13 +4075,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 8600,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4194,13 +4089,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 8500,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         }
       ]
     }
@@ -4322,13 +4215,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Oak",
           "amount": 46800,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Oak"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4338,13 +4229,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Birch",
           "amount": 47200,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Birch"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4354,13 +4243,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Spruce",
           "amount": 59400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Spruce"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4370,13 +4257,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Jungle",
           "amount": 59400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Jungle"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4386,13 +4271,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Acacia",
           "amount": 59400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Acacia"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4402,13 +4285,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Cherry",
           "amount": 59400,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Cherry"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -4418,13 +4299,11 @@
               "Bone Meal"
             ]
           },
-          "conditions": "",
+          "conditions": "Azalea",
           "amount": 59300,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Azalea"
-          ]
+          "variants": []
         }
       ]
     },
@@ -4556,25 +4435,7 @@
           "amount": 106000,
           "interval": "h",
           "note": "",
-          "variants": [
-            "Dark oak"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Bone Meal"
-            ]
-          },
-          "conditions": "",
-          "amount": 106000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Pale oak"
-          ]
+          "variants": []
         }
       ]
     },
@@ -4644,13 +4505,11 @@
               "Seagrass"
             ]
           },
-          "conditions": "",
+          "conditions": "1-128 turtles",
           "amount": 11.2,
           "interval": "turtle/h",
           "note": "",
-          "variants": [
-            "1-128 turtles"
-          ]
+          "variants": []
         },
         {
           "items": {
@@ -4659,11 +4518,9 @@
             ],
             "type": "concurrent"
           },
-          "variants": [
-            "256+ turtles"
-          ],
+          "variants": [],
           "version": "",
-          "conditions": "",
+          "conditions": "256+ turtles",
           "amount": 1069.5,
           "interval": "h",
           "note": ""
@@ -4672,7 +4529,7 @@
       "notes": [
         {
           "list_type": "dashed",
-          "text": "Rates roughly follow a curve of 3942x/(x+167).",
+          "text": "Rates roughly follow a curve of `3942x/(x+167)`.",
           "children": [
             {
               "list_type": "dashed",
@@ -4716,7 +4573,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Potato"
           ]
         },
         {
@@ -4732,7 +4590,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Potato"
           ]
         },
         {
@@ -4748,7 +4607,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Potato"
           ]
         },
         {
@@ -4764,7 +4624,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Potato"
           ]
         },
         {
@@ -4780,7 +4641,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Carrot"
           ]
         },
         {
@@ -4796,7 +4658,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Carrot"
           ]
         },
         {
@@ -4812,7 +4675,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Wheat"
           ]
         },
         {
@@ -4828,7 +4692,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Wheat"
           ]
         },
         {
@@ -4844,7 +4709,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Wheat"
           ]
         },
         {
@@ -4860,7 +4726,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Wheat"
           ]
         },
         {
@@ -4876,7 +4743,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Beetroot"
           ]
         },
         {
@@ -4892,7 +4760,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Beetroot"
           ]
         },
         {
@@ -4908,7 +4777,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "1 module"
+            "1 module",
+            "Beetroot"
           ]
         },
         {
@@ -4924,7 +4794,8 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "8 modules"
+            "8 modules",
+            "Beetroot"
           ]
         }
       ],
@@ -4977,7 +4848,7 @@
           "note": "",
           "variants": [
             "1 module",
-            "Potato, Poisonous Potato, Carrot, Wheat Seeds, Wheat, Beedroot Seeds, Beetroot"
+            "Potato"
           ]
         },
         {
@@ -4994,8 +4865,76 @@
           "note": "",
           "variants": [
             "8 modules",
-            "Potato, Poisonous Potato, Carrot, Wheat Seeds, Wheat, Beedroot Seeds, Beetroot"
+            "Potato"
           ]
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "1 module",
+            "Carrot"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 6220,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "8 modules",
+            "Carrot"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 46530,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "1 module",
+            "Wheat"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 6220,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "8 modules",
+            "Wheat"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 46530,
+          "interval": "h",
+          "note": ""
         }
       ],
       "notes": [
@@ -5124,7 +5063,9 @@
           "amount": 1400,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Potato"
+          ]
         }
       ],
       "consumption": [
@@ -5136,11 +5077,13 @@
               "Bone Block"
             ]
           },
-          "conditions": "Wheat",
+          "conditions": "",
           "amount": 19000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Wheat"
+          ]
         },
         {
           "version": "",
@@ -5150,11 +5093,13 @@
               "Bone Block"
             ]
           },
-          "conditions": "Beetroot",
+          "conditions": "",
           "amount": 24000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Beetroot"
+          ]
         },
         {
           "version": "",
@@ -5164,11 +5109,13 @@
               "Bone Block"
             ]
           },
-          "conditions": "Carrot",
+          "conditions": "",
           "amount": 19000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Carrot"
+          ]
         },
         {
           "version": "",
@@ -5178,11 +5125,13 @@
               "Bone Block"
             ]
           },
-          "conditions": "Potato",
+          "conditions": "",
           "amount": 19000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Potato"
+          ]
         }
       ]
     }
@@ -5422,7 +5371,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Carrot, Potato, Melon, Pumpkin"
+            "Carrot"
           ]
         },
         {
@@ -5438,7 +5387,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Torchflower, Sweet Berries"
+            "Torchflower"
           ]
         },
         {
@@ -5456,12 +5405,60 @@
           "variants": [
             "Pink Petals, Wildflowers, Tall Flower"
           ]
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "Potato"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 41900,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "Melon, Pumpkin"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 41900,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Bone Meal"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "Sweet Berries"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 36000,
+          "interval": "h",
+          "note": ""
         }
       ],
       "notes": [
         {
           "list_type": "dashed",
-          "text": "Remove piston for Sweet Berries, Pink Petals or Wildflowers, and Tall Flower.",
+          "text": "Remove piston for Sweet Berries, Pink Petals, Wildflowers, or Tall Flowers.",
           "children": []
         }
       ]
@@ -5537,7 +5534,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Nether Quartz"
+              "Quartz"
             ]
           },
           "conditions": "",
@@ -5690,7 +5687,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Nether Quartz"
+              "Quartz"
             ]
           },
           "conditions": "",
@@ -6021,7 +6018,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Nether Quartz"
+              "Quartz"
             ]
           },
           "conditions": "",
@@ -6230,7 +6227,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Nether Quartz"
+              "Quartz"
             ]
           },
           "conditions": "",
@@ -6364,13 +6361,11 @@
               "Shulker Shell"
             ]
           },
-          "conditions": "",
+          "conditions": "23 snow golems",
           "amount": 800,
           "interval": "h",
           "note": "",
-          "variants": [
-            "23 snow golems"
-          ]
+          "variants": []
         },
         {
           "version": "",
@@ -6380,13 +6375,11 @@
               "Shulker Shell"
             ]
           },
-          "conditions": "",
+          "conditions": "1 snow golem",
           "amount": 580,
           "interval": "h",
           "note": "",
-          "variants": [
-            "1 snow golem"
-          ]
+          "variants": []
         }
       ],
       "notes": [
@@ -6420,8 +6413,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Small variant",
-            "Without looting"
+            "Small variant"
           ]
         },
         {
@@ -6473,6 +6465,7 @@
           "interval": "h",
           "note": "",
           "variants": [
+            "Large variant",
             "With looting"
           ]
         }
@@ -6817,7 +6810,9 @@
           "amount": 46200,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Bamboo"
+          ]
         },
         {
           "version": "",
@@ -6831,7 +6826,9 @@
           "amount": 43300,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Big Dripleaf"
+          ]
         },
         {
           "version": "",
@@ -6845,7 +6842,9 @@
           "amount": 99100,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Twisting Vines"
+          ]
         },
         {
           "version": "",
@@ -6859,7 +6858,9 @@
           "amount": 72000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Weeping Vines"
+          ]
         },
         {
           "version": "",
@@ -6873,7 +6874,9 @@
           "amount": 36000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Bush"
+          ]
         },
         {
           "version": "",
@@ -6887,7 +6890,9 @@
           "amount": 36000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Firefly Bush"
+          ]
         },
         {
           "version": "",
@@ -6901,7 +6906,9 @@
           "amount": 18000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Glow Berries"
+          ]
         },
         {
           "version": "",
@@ -6915,7 +6922,9 @@
           "amount": 71300,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Hanging Roots"
+          ]
         },
         {
           "version": "",
@@ -6930,7 +6939,9 @@
           "amount": 72000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Pink Petals/Wildflowers"
+          ]
         },
         {
           "version": "",
@@ -6944,7 +6955,9 @@
           "amount": 90000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Sweet Berry Bush"
+          ]
         },
         {
           "version": "",
@@ -6958,7 +6971,9 @@
           "amount": 18000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Short Dry Grass"
+          ]
         },
         {
           "version": "",
@@ -6972,7 +6987,9 @@
           "amount": 27000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Tall Dry Grass"
+          ]
         },
         {
           "version": "",
@@ -6986,7 +7003,9 @@
           "amount": 72000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Tall Flower"
+          ]
         },
         {
           "version": "",
@@ -7000,7 +7019,9 @@
           "amount": 4200,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Coral"
+          ]
         },
         {
           "version": "",
@@ -7014,7 +7035,9 @@
           "amount": 65300,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Coral Fan"
+          ]
         },
         {
           "version": "",
@@ -7028,7 +7051,9 @@
           "amount": 10500,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Coral Fan"
+          ]
         },
         {
           "version": "",
@@ -7042,7 +7067,9 @@
           "amount": 15200,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Glow Lichen"
+          ]
         },
         {
           "version": "",
@@ -7056,7 +7083,9 @@
           "amount": 72000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Glow Lichen"
+          ]
         },
         {
           "version": "",
@@ -7070,7 +7099,9 @@
           "amount": 72000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Pale Hanging Moss"
+          ]
         },
         {
           "version": "",
@@ -7084,21 +7115,25 @@
           "amount": 77200,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Seagrass"
+          ]
         },
         {
           "version": "",
           "items": {
             "type": "concurrent",
             "names": [
-              "Sea Pickles"
+              "Sea Pickle"
             ]
           },
           "conditions": "",
           "amount": 27000,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Sea Pickle"
+          ]
         }
       ],
       "consumption": [
@@ -7243,7 +7278,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Pink Petals, Wildflowers"
+            "Pink Petals/Wildflowers"
           ]
         },
         {
@@ -7334,13 +7369,12 @@
               "Bone Block"
             ]
           },
-          "conditions": "",
+          "conditions": "Normal mode",
           "amount": 8000,
           "interval": "h",
           "note": "",
           "variants": [
-            "Coral Fan",
-            "Normal mode"
+            "Coral Fan"
           ]
         },
         {
@@ -7351,13 +7385,12 @@
               "Bone Block"
             ]
           },
-          "conditions": "",
+          "conditions": "Seagrass mode",
           "amount": 3700,
           "interval": "h",
           "note": "",
           "variants": [
-            "Coral Fan",
-            "Seagrass mode"
+            "Coral Fan"
           ]
         },
         {
@@ -7368,13 +7401,12 @@
               "Bone Block"
             ]
           },
-          "conditions": "",
+          "conditions": "No Efficiency",
           "amount": 1700,
           "interval": "h",
           "note": "",
           "variants": [
-            "Glow Lichen",
-            "No Efficiency"
+            "Glow Lichen"
           ]
         },
         {
@@ -7385,13 +7417,12 @@
               "Bone Block"
             ]
           },
-          "conditions": "",
+          "conditions": "Efficiency II",
           "amount": 8000,
           "interval": "h",
           "note": "",
           "variants": [
-            "Glow Lichen",
-            "Efficiency II"
+            "Glow Lichen"
           ]
         },
         {
@@ -7439,7 +7470,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Sea Pickles"
+            "Sea Pickle"
           ]
         }
       ]
@@ -8299,7 +8330,7 @@
               "Soul Campfire"
             ]
           },
-          "conditions": "Hold, disableInterpolation off",
+          "conditions": "",
           "amount": 18000,
           "interval": "h",
           "note": "",
@@ -8339,7 +8370,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Exposed Copper Block"
+              "Exposed Copper"
             ]
           },
           "conditions": "",
@@ -8355,7 +8386,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Weathered Copper Block"
+              "Weathered Copper"
             ]
           },
           "conditions": "",
@@ -8703,488 +8734,140 @@
     "rates": {
       "drops": [
         {
-          "version": "",
           "items": {
-            "type": "concurrent",
             "names": [
-              "Guardian"
-            ]
+              "Prismarine Shard"
+            ],
+            "type": "concurrent"
           },
-          "conditions": "1x monuments, 1 bot",
+          "variants": [
+            "Suppression variant"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 1050000,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Prismarine Crystals"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "Suppression variant"
+          ],
+          "version": "",
+          "conditions": "",
           "amount": 420000,
           "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Suppression version"
-          ]
+          "note": ""
         },
         {
-          "version": "",
           "items": {
-            "type": "concurrent",
             "names": [
-              "Total Items"
-            ]
+              "Raw Cod"
+            ],
+            "type": "concurrent"
           },
-          "conditions": "1x monuments, 1 bot",
-          "amount": 1900000,
+          "variants": [
+            "Suppression variant"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 420000,
           "interval": "h",
-          "note": "",
-          "variants": [
-            "Suppression version"
-          ]
+          "note": ""
         },
         {
-          "version": "",
           "items": {
-            "type": "concurrent",
             "names": [
-              "Guardian"
-            ]
+              "Total Rates"
+            ],
+            "type": "concurrent"
           },
-          "conditions": "2x monuments, 1 bot",
-          "amount": 840000,
+          "variants": [
+            "Suppression variant"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 1890000,
           "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Suppression version"
-          ]
+          "note": ""
         },
         {
-          "version": "",
           "items": {
-            "type": "concurrent",
             "names": [
-              "Total Items"
-            ]
+              "Prismarine Shard"
+            ],
+            "type": "concurrent"
           },
-          "conditions": "2x monuments, 1 bot",
-          "amount": 3800000,
+          "variants": [
+            "Skipping variant"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 1000000,
           "interval": "h",
-          "note": "",
-          "variants": [
-            "Suppression version"
-          ]
+          "note": ""
         },
         {
-          "version": "",
           "items": {
-            "type": "concurrent",
             "names": [
-              "Guardian"
-            ]
+              "Prismarine Crystals"
+            ],
+            "type": "concurrent"
           },
-          "conditions": "3x monuments, 1 bot",
-          "amount": 1120000,
-          "interval": "h",
-          "note": "Spawn rate",
           "variants": [
-            "Suppression version"
-          ]
-        },
-        {
+            "Skipping variant"
+          ],
           "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "3x monuments, 1 bot",
-          "amount": 5100000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "3x monuments, 2 bots",
-          "amount": 1250000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "3x monuments, 2 bots",
-          "amount": 5700000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "4x monuments, 1 bot",
-          "amount": 1210000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "4x monuments, 1 bot",
-          "amount": 5500000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "4x monuments, 2 bots",
-          "amount": 1660000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "4x monuments, 2 bots",
-          "amount": 7500000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Suppression version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "1x monuments, 1 bot",
+          "conditions": "",
           "amount": 400000,
           "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Skipping version"
-          ]
+          "note": ""
         },
         {
-          "version": "",
           "items": {
-            "type": "concurrent",
             "names": [
-              "Total Items"
-            ]
+              "Raw Cod"
+            ],
+            "type": "concurrent"
           },
-          "conditions": "1x monuments, 1 bot",
+          "variants": [
+            "Skipping variant"
+          ],
+          "version": "",
+          "conditions": "",
+          "amount": 400000,
+          "interval": "h",
+          "note": ""
+        },
+        {
+          "items": {
+            "names": [
+              "Total Rates"
+            ],
+            "type": "concurrent"
+          },
+          "variants": [
+            "Skipping variant"
+          ],
+          "version": "",
+          "conditions": "",
           "amount": 1800000,
           "interval": "h",
-          "note": "",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "2x monuments, 1 bot",
-          "amount": 810000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "2x monuments, 1 bot",
-          "amount": 3700000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "3x monuments, 1 bot",
-          "amount": 1090000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "3x monuments, 1 bot",
-          "amount": 5100000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "3x monuments, 2 bots",
-          "amount": 1190000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "3x monuments, 2 bots",
-          "amount": 5400000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "4x monuments, 1 bot",
-          "amount": 1200000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "4x monuments, 1 bot",
-          "amount": 5500000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Guardian"
-            ]
-          },
-          "conditions": "4x monuments, 2 bots",
-          "amount": 1600000,
-          "interval": "h",
-          "note": "Spawn rate",
-          "variants": [
-            "Skipping version"
-          ]
-        },
-        {
-          "version": "",
-          "items": {
-            "type": "concurrent",
-            "names": [
-              "Total Items"
-            ]
-          },
-          "conditions": "4x monuments, 2 bots",
-          "amount": 7300000,
-          "interval": "h",
-          "note": "",
-          "variants": [
-            "Skipping version"
-          ]
+          "note": ""
         }
       ]
     },
     "lag_info": {
       "active": [
         {
-          "conditions": [
-            "Suppression version",
-            "1x monuments",
-            "1 bot"
-          ],
+          "conditions": [],
           "lag": 8
-        },
-        {
-          "conditions": [
-            "Suppression version",
-            "2x monuments",
-            "1 bot"
-          ],
-          "lag": 16
-        },
-        {
-          "conditions": [
-            "Suppression version",
-            "3x monuments",
-            "1 bot"
-          ],
-          "lag": 22
-        },
-        {
-          "conditions": [
-            "Suppression version",
-            "3x monuments",
-            "2 bots"
-          ],
-          "lag": 29
-        },
-        {
-          "conditions": [
-            "Suppression version",
-            "4x monuments",
-            "1 bot"
-          ],
-          "lag": 26
-        },
-        {
-          "conditions": [
-            "Suppression version",
-            "4x monuments",
-            "2 bots"
-          ],
-          "lag": 45
-        },
-        {
-          "conditions": [
-            "Skipping version",
-            "1x monuments",
-            "1 bot"
-          ],
-          "lag": 8
-        },
-        {
-          "conditions": [
-            "Skipping version",
-            "2x monuments",
-            "1 bot"
-          ],
-          "lag": 16
-        },
-        {
-          "conditions": [
-            "Skipping version",
-            "3x monuments",
-            "1 bot"
-          ],
-          "lag": 23
-        },
-        {
-          "conditions": [
-            "Skipping version",
-            "3x monuments",
-            "2 bots"
-          ],
-          "lag": 26
-        },
-        {
-          "conditions": [
-            "Skipping version",
-            "4x monuments",
-            "1 bot"
-          ],
-          "lag": 26
-        },
-        {
-          "conditions": [
-            "Skipping version",
-            "4x monuments",
-            "2 bots"
-          ],
-          "lag": 39
         }
       ],
       "notes": [
