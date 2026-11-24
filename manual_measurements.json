@@ -1022,7 +1022,7 @@
           "variants": []
         },
         {
-          "version": "Crimson",
+          "version": "",
           "items": {
             "type": "concurrent",
             "names": [
@@ -1033,10 +1033,12 @@
           "amount": 2100,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Crimson"
+          ]
         },
         {
-          "version": "Mangrove",
+          "version": "",
           "items": {
             "type": "concurrent",
             "names": [
@@ -1047,10 +1049,12 @@
           "amount": 3200,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Mangrove"
+          ]
         },
         {
-          "version": "Warped",
+          "version": "",
           "items": {
             "type": "concurrent",
             "names": [
@@ -1061,7 +1065,9 @@
           "amount": 2200,
           "interval": "h",
           "note": "",
-          "variants": []
+          "variants": [
+            "Warped"
+          ]
         }
       ]
     }
