@@ -4,7 +4,7 @@ import json
 import random
 from discord.ext import commands
 from discord import app_commands
-from constants import BLACKLIST, BOT_DM_THREAD, RANDOM_REPLIES, SNAPSHOT_CHANNEL, NO_CHAT, STAFF_ROLES, TIMEOUT_MESSAGE, SUBMISSIONS_CHANNEL, NO_CHAT_IMAGE, LOG_CHANNEL, SUBMISSION_PROMPT, HOW_TO_PIN, HELP_CHANNEL, HELP_FORUM, HELP_FORUM_PROMPT, MAIN_ARCHIVE_CATEGORIES
+from constants import BLACKLIST, BOT_DM_THREAD, RANDOM_REPLIES, SNAPSHOT_CHANNEL, NO_CHAT, STAFF_ROLES, TIMEOUT_MESSAGE, SUBMISSIONS_CHANNEL, NO_CHAT_IMAGE, LOG_CHANNEL, SUBMISSION_PROMPT, HOW_TO_PIN, HELP_CHANNEL, HELP_FORUM, HELP_FORUM_PROMPT, ARCHIVE_CATEGORIES
 
 # Reply modal
 class ReplyBox(discord.ui.Modal, title="Reply to DM"):
@@ -178,7 +178,7 @@ class MessageActions(commands.Cog):
         if source.parent is None:
             await utility_cog.log(title="Error resolving forwarded post", message=f"{log_context}\n**Error:** Source thread's parent channel is unavailable", colour=discord.Color.red())
             return False
-        if not isinstance(source.parent, discord.ForumChannel) or source.parent.category_id not in MAIN_ARCHIVE_CATEGORIES:
+        if not isinstance(source.parent, discord.ForumChannel) or source.parent.category_id not in ARCHIVE_CATEGORIES:
             return False
 
         replacement = None
