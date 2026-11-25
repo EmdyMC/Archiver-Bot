@@ -184,7 +184,7 @@ class MessageActions(commands.Cog):
         replacement = None
         try:
             # Send the link first so the forward is preserved if sending fails.
-            replacement = await message.channel.send(f"<{source.jump_url}>")
+            replacement = await message.channel.send(source.jump_url)
             await message.delete()
         except discord.HTTPException as e:
             action = "delete the forward" if replacement is not None else "send the replacement link"
