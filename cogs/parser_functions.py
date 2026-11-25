@@ -575,6 +575,14 @@ class Parser(commands.Cog):
         async with self.parsed_files_lock:
             await self._parse_and_upload_archive(interaction)
 
+    @app_commands.command(name="rebuild_site", description="Request a rebuild of the archive website")
+    @app_commands.checks.has_any_role(*HIGHER_ROLES)
+    async def rebuild_site(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+        async with self.parsed_files_lock:
+            rebuild_status = await self._request_website_rebuild()
+        await interaction.followup.send(rebuild_status, ephemeral=True)
+
     async def _find_deleted_manual_threads(self, thread_ids: set[str]) -> set[str]:
         deleted = set()
         for thread_id in sorted(thread_ids):

@@ -109,6 +109,7 @@ COMMANDS_LIST = '''
 **/edit_post_title**: Send a title edit request to archiver chat for another archiver to approve
 **/track**: Make a post in #submission-tracker for the submission post you are in
 **/tracker_list**: Resend the submission tracker list, clearing the older one
+**/rebuild_site**: Request a rebuild of the archive website
 **Edit** *(App command)*: Edit a message sent by the bot
 **Delete** *(App command)*: Send a delete request to archiver chat for another archiver to approve
 **Publish post** *(App command)*: Create a new thread in the archives with the selected message as the starter
