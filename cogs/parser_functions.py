@@ -22,6 +22,7 @@ from parser import (
 )
 from dimensions import DimensionResolver, apply_dimensions
 from manual_measurements import ManualMeasurementsError, load_manual_measurements, merge_manual_measurements
+from manual_schematics import ManualSchematicsError, load_manual_schematics, merge_manual_schematics
 from thumbnails import apply_thumbnails
 from links import DiscordTarget, discord_target, iter_discord_links, new_discord_link
 from MessageDict import DiscordLink
@@ -230,6 +231,7 @@ class PostEditAndParseModal(PostEditModal):
                 if parse_result is not None:
                     measurements = load_manual_measurements(missing_ok=True)
                     merge_manual_measurements(str(thread.id), parse_result, measurements)
+                    merge_manual_schematics(str(thread.id), parse_result, load_manual_schematics(missing_ok=True))
                     await parser_cog.enrich_post(parse_result, DiscordLinkResolver(self.bot))
                     await parser_cog.write_parsed_post(thread, parse_result)
         except Exception as e:
@@ -349,6 +351,8 @@ class Parser(commands.Cog):
         link_resolver: DiscordLinkResolver | None = None,
         *,
         manual_measurements: dict[str, dict],
+        manual_schematics: dict[str, dict],
+        unapplied_schematics: set[str] | None = None,
         unapplied_measurements: set[str] | None = None,
         visited_threads: set[str] | None = None,
     ):
@@ -368,6 +372,9 @@ class Parser(commands.Cog):
                 parse_result, crosspost_target_id = await self.parse_thread_content(data["messages"])
                 if parse_result is not None:
                     merge_manual_measurements(thread_id, parse_result, manual_measurements)
+                    merge_manual_schematics(thread_id, parse_result, manual_schematics)
+                elif thread_id in manual_schematics:
+                    raise ManualSchematicsError(f"Thread {thread_id}: source ZIP missing (post is now a crosspost)")
             except Exception as error:
                 error_view = discord.ui.LayoutView(timeout=None)
                 error_view.add_item(await ParserErrorItem.create(self.bot, thread, error, 1))
@@ -398,6 +405,8 @@ class Parser(commands.Cog):
             await self.write_parsed_post(thread, parse_result)
             if unapplied_measurements is not None:
                 unapplied_measurements.discard(thread_id)
+            if unapplied_schematics is not None:
+                unapplied_schematics.discard(thread_id)
 
         return errors, total
 
@@ -494,7 +503,7 @@ class Parser(commands.Cog):
             }
             if missing_threads:
                 raise ManualMeasurementsError(
-                    f"Parsed output is missing measurement threads: {', '.join(sorted(missing_threads))}"
+                    f"Parsed output is missing manual-data threads: {', '.join(sorted(missing_threads))}"
                 )
 
             if not docs_to_insert:
@@ -524,12 +533,13 @@ class Parser(commands.Cog):
         async with self.parsed_files_lock:
             try:
                 manual_measurements = load_manual_measurements(missing_ok=True)
-            except ManualMeasurementsError as error:
+                manual_schematics = load_manual_schematics(missing_ok=True)
+            except (ManualMeasurementsError, ManualSchematicsError) as error:
                 await interaction.followup.send(str(error), ephemeral=True)
                 return
             errors, total = await self.parse_threads_stream(
                 single_thread_gen(), interaction, reply_to_channel=False,
-                manual_measurements=manual_measurements,
+                manual_measurements=manual_measurements, manual_schematics=manual_schematics,
             )
         if not errors:
             await interaction.followup.send(content=f"Parsed {thread.name} successfully.\nErrors: {errors}/{total}", ephemeral=True)
@@ -547,11 +557,12 @@ class Parser(commands.Cog):
         async with self.parsed_files_lock:
             try:
                 manual_measurements = load_manual_measurements(missing_ok=True)
-            except ManualMeasurementsError as error:
+                manual_schematics = load_manual_schematics(missing_ok=True)
+            except (ManualMeasurementsError, ManualSchematicsError) as error:
                 await interaction.channel.send(str(error))
                 return
             errors, total = await self.parse_threads_stream(
-                self.iter_all_threads(channel), interaction, manual_measurements=manual_measurements,
+                self.iter_all_threads(channel), interaction, manual_measurements=manual_measurements, manual_schematics=manual_schematics,
             )
         await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
@@ -564,7 +575,7 @@ class Parser(commands.Cog):
         async with self.parsed_files_lock:
             await self._parse_and_upload_archive(interaction)
 
-    async def _find_deleted_measurement_threads(self, thread_ids: set[str]) -> set[str]:
+    async def _find_deleted_manual_threads(self, thread_ids: set[str]) -> set[str]:
         deleted = set()
         for thread_id in sorted(thread_ids):
             try:
@@ -581,10 +592,12 @@ class Parser(commands.Cog):
     async def _parse_and_upload_archive(self, interaction: discord.Interaction):
         try:
             manual_measurements = load_manual_measurements()
-        except ManualMeasurementsError as error:
+            manual_schematics = load_manual_schematics()
+        except (ManualMeasurementsError, ManualSchematicsError) as error:
             await interaction.channel.send(f"Archive upload skipped. {error}")
             return
         unapplied_measurements = set(manual_measurements)
+        unapplied_schematics = set(manual_schematics)
         visited_threads: set[str] = set()
 
         parse_channel_list = [
@@ -616,6 +629,7 @@ class Parser(commands.Cog):
             channel_errors, channel_total = await self.parse_threads_stream(
                 self.iter_all_threads(channel), interaction, crossposts=crossposts,
                 link_resolver=link_resolver, manual_measurements=manual_measurements,
+                manual_schematics=manual_schematics, unapplied_schematics=unapplied_schematics,
                 unapplied_measurements=unapplied_measurements, visited_threads=visited_threads,
             )
             errors += channel_errors
@@ -631,27 +645,32 @@ class Parser(commands.Cog):
 
         await interaction.channel.send(f"Done parsing.\nErrors: {errors}/{total}.")
 
-        deleted_threads = await self._find_deleted_measurement_threads(unapplied_measurements - visited_threads)
+        deleted_threads = await self._find_deleted_manual_threads((unapplied_measurements | unapplied_schematics) - visited_threads)
         if deleted_threads:
             unapplied_measurements.difference_update(deleted_threads)
+            unapplied_schematics.difference_update(deleted_threads)
             await interaction.channel.send(
-                f"Skipping manual measurements for {len(deleted_threads)} thread(s) Discord reports as deleted."
+                f"Skipping manual archive data for {len(deleted_threads)} thread(s) Discord reports as deleted."
             )
 
-        if unapplied_measurements:
-            thread_ids = ", ".join(sorted(unapplied_measurements)[:25])
-            extra = len(unapplied_measurements) - 25
+        unapplied = unapplied_measurements | unapplied_schematics
+        if unapplied:
+            thread_ids = ", ".join(sorted(unapplied)[:25])
+            extra = len(unapplied) - 25
             if extra > 0:
                 thread_ids += f", and {extra} more"
             await interaction.channel.send(
-                f"Archive upload skipped. Manual measurements could not be applied to thread IDs {thread_ids}."
+                f"Archive upload skipped. Manual archive data could not be applied to thread IDs {thread_ids}."
             )
             return
 
         # Push parsed files to DB
         await interaction.channel.send("Uploading parsed results to the database. . .")
         try:
-            uploaded = await asyncio.to_thread(self._upload_to_designs, manual_measurements.keys() - deleted_threads)
+            uploaded = await asyncio.to_thread(
+                self._upload_to_designs,
+                (manual_measurements.keys() | manual_schematics.keys()) - deleted_threads,
+            )
         except ManualMeasurementsError as error:
             await interaction.channel.send(f"Archive upload skipped. {error}")
             return

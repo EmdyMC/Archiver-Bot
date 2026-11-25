@@ -1,0 +1,1696 @@
+{
+  "1446260896145084577": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1569119814969073824/Chromoss_Archive_Improved.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "1x1 tilings",
+            "children": [
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x1 [with clock and dropper output].litematic",
+                "note": "1x1x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167528307658855/Chromoss_Cube_1x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x10x1 [with clock and dropper output].litematic",
+                "note": "1x10x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167530463526993/Chromoss_Cube_1x10x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x2x1 [with clock and dropper output].litematic",
+                "note": "1x2x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167531943993374/Chromoss_Cube_1x2x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x3x1 [with clock and dropper output].litematic",
+                "note": "1x3x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167533517115564/Chromoss_Cube_1x3x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x4x1 [with clock and dropper output].litematic",
+                "note": "1x4x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167535752679514/Chromoss_Cube_1x4x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x5x1 [with clock and dropper output].litematic",
+                "note": "1x5x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167540206768320/Chromoss_Cube_1x5x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x6x1 [with clock and dropper output].litematic",
+                "note": "1x6x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167542383739030/Chromoss_Cube_1x6x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x7x1 [with clock and dropper output].litematic",
+                "note": "1x7x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167544308928643/Chromoss_Cube_1x7x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x8x1 [with clock and dropper output].litematic",
+                "note": "1x8x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167563657388163/Chromoss_Cube_1x8x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x9x1 [with clock and dropper output].litematic",
+                "note": "1x9x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167566232428624/Chromoss_Cube_1x9x1_with_clock_and_dropper_output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "chromoss_cube_1x1_clock.litematic",
+                "note": "1x1 clock",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167568254210128/chromoss_cube_1x1_clock.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "2x2 tilings",
+            "children": [
+              {
+                "type": "file",
+                "name": "Chromoss 2x10x2 with clock.litematic",
+                "note": "2x10x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167569797587064/Chromoss_2x10x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x2 with clock.litematic",
+                "note": "2x1x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167571345539132/Chromoss_2x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x2x2 with clock.litematic",
+                "note": "2x2x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167572985249873/Chromoss_2x2x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x3x2 with clock.litematic",
+                "note": "2x3x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167574260457644/Chromoss_2x3x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x4x2 with clock.litematic",
+                "note": "2x4x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167594476863710/Chromoss_2x4x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x5x2 with clock.litematic",
+                "note": "2x5x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167596653846679/Chromoss_2x5x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x6x2 with clock.litematic",
+                "note": "2x6x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167599556436069/Chromoss_2x6x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x7x2 with clock.litematic",
+                "note": "2x7x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167601972088942/Chromoss_2x7x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x8x2 with clock.litematic",
+                "note": "2x8x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167603222118482/Chromoss_2x8x2_with_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss 2x9x2 with clock.litematic",
+                "note": "2x9x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167605046771802/Chromoss_2x9x2_with_clock.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "4x4 tilings",
+            "children": [
+              {
+                "type": "file",
+                "name": "Chromoss_4x4x4_setup.litematic",
+                "note": "4x4x4",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167606468645066/Chromoss_4x4x4_setup.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss_cube_4x2x4_clock.litematic",
+                "note": "4x2x4",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167626072559626/Chromoss_cube_4x2x4_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss_cube_4x3x4_clock.litematic",
+                "note": "4x3x4",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167627834167478/Chromoss_cube_4x3x4_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss_cube_4x4_clock.litematic",
+                "note": "4x1x4",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167629318955048/Chromoss_cube_4x4_clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss_cube_4x5x4_clock.litematic",
+                "note": "4x5x4",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167630715650058/Chromoss_cube_4x5x4_clock.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Components",
+            "children": [
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x1.litematic",
+                "note": "Clockless 1x1x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167631952977920/Chromoss_Cube_1x1.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss Cube 1x1 [Dropper Output].litematic",
+                "note": "Dropper output 1x1x1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167634750832681/Chromoss_Cube_1x1_Dropper_Output.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss_cube_2x2.litematic",
+                "note": "Clockless 2x1x2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167667122344046/Chromoss_cube_2x2.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chromoss_cube_4x4.litematic",
+                "note": "Clockless 4x1x4",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167669844451409/Chromoss_cube_4x4.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Clock_for_Chromoss.litematic",
+                "note": "Clock",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167671593476240/Clock_for_Chromoss.litematic"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1446262122307649728": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1438658970507018260/Ryuuoy_Moss_Bone_Meal_Farm_Schematics.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Base version",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Chest collection",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Normal version-Chest collection-12 modules.litematic",
+                    "note": "12 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167673527173281/Normal_version-Chest_collection-12_modules.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Normal version-Chest collection-1 module.litematic",
+                    "note": "1 module",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167675557093496/Normal_version-Chest_collection-1_module.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Normal version-Chest collection-4 modules-vertical tiling.litematic",
+                    "note": "4 modules (vertical tiling)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167677062717578/Normal_version-Chest_collection-4_modules-vertical_tiling.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Normal version-Chest collection-4 modules.litematic",
+                    "note": "4 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167678727983245/Normal_version-Chest_collection-4_modules.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Water stream collection",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Normal version-Water stream collection-12 modules.litematic",
+                    "note": "12 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167698265047120/Normal_version-Water_stream_collection-12_modules.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Normal version-Water stream collection-4 modules.litematic",
+                    "note": "4 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167699779199036/Normal_version-Water_stream_collection-4_modules.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Normal version-Water stream collection-4 modules-vertical tiling.litematic",
+                    "note": "4 modules (vertical tiling)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167701427425280/Normal_version-Water_stream_collection-4_modules-vertical_tiling.litematic"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Cheap variant",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Chest collection",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Chest collection-4 modules.litematic",
+                    "note": "4 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167703251943484/Cheap_version-Chest_collection-4_modules.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Chest collection-1 module.litematic",
+                    "note": "1 module",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167705818861669/Cheap_version-Chest_collection-1_module.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Chest collection-12 modules.litematic",
+                    "note": "12 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167707719008296/Cheap_version-Chest_collection-12_modules.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Chest collection-4 modules-vertical tilling.litematic",
+                    "note": "4 modules (vertical tiling)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167710915072131/Cheap_version-Chest_collection-4_modules-vertical_tilling.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Water stream collection",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Water stream collection-4 modules.litematic",
+                    "note": "4 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167730456203274/Cheap_version-Water_stream_collection-4_modules.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Water stream collection-4 modules-vertical tilling.litematic",
+                    "note": "4 modules (vertical tiling)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167732209553539/Cheap_version-Water_stream_collection-4_modules-vertical_tilling.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cheap version-Water stream collection-12 modules.litematic",
+                    "note": "12 modules",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167733962645504/Cheap_version-Water_stream_collection-12_modules.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1446265107423166605": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1358527668877791362/USSR_Moss_Farm_Collection.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.17-1.21.1) Base version",
+            "children": [
+              {
+                "type": "file",
+                "name": "USSR_1x1_Moss_Farm.litematic",
+                "note": "1x1 tiling",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167735594221788/USSR_1x1_Moss_Farm.litematic"
+              },
+              {
+                "type": "file",
+                "name": "USSR_1x2_Moss_Farm.litematic",
+                "note": "1x2 tiling",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167737167347863/USSR_1x2_Moss_Farm.litematic"
+              },
+              {
+                "type": "file",
+                "name": "USSR_2x2_Moss_Farm.litematic",
+                "note": "2x2 tiling",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167738639556639/USSR_2x2_Moss_Farm.litematic"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1432137637891674152": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1379296807003226192/1380440699182514186/Singleplayer_Variant.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.21.2+) Singleplayer variant",
+            "children": [
+              {
+                "type": "file",
+                "name": "SINGLEPLAYER - Variable Distance Lazy Accel Pearl Cannon (west).litematic",
+                "note": "West",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167757320978573/SINGLEPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_west.litematic"
+              },
+              {
+                "type": "file",
+                "name": "SINGLEPLAYER - Variable Distance Lazy Accel Pearl Cannon (south).litematic",
+                "note": "South",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167759476727878/SINGLEPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_south.litematic"
+              },
+              {
+                "type": "file",
+                "name": "SINGLEPLAYER - Variable Distance Lazy Accel Pearl Cannon (north).litematic",
+                "note": "North",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167761208971264/SINGLEPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_north.litematic"
+              },
+              {
+                "type": "file",
+                "name": "SINGLEPLAYER - Variable Distance Lazy Accel Pearl Cannon (east).litematic",
+                "note": "East",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167762869911673/SINGLEPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_east.litematic"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1379296807003226192/1380440559172194395/Multiplayer_Variant.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.21.5+) Multiplayer variant",
+            "children": [
+              {
+                "type": "file",
+                "name": "MULTIPLAYER - Variable Distance Lazy Accel Pearl Cannon (west).litematic",
+                "note": "West",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167764904280114/MULTIPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_west.litematic"
+              },
+              {
+                "type": "file",
+                "name": "MULTIPLAYER - Variable Distance Lazy Accel Pearl Cannon (south).litematic",
+                "note": "South",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167766573621400/MULTIPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_south.litematic"
+              },
+              {
+                "type": "file",
+                "name": "MULTIPLAYER - Variable Distance Lazy Accel Pearl Cannon (north).litematic",
+                "note": "North",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167768133763082/MULTIPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_north.litematic"
+              },
+              {
+                "type": "file",
+                "name": "MULTIPLAYER - Variable Distance Lazy Accel Pearl Cannon (east).litematic",
+                "note": "East",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167789117866085/MULTIPLAYER_-_Variable_Distance_Lazy_Accel_Pearl_Cannon_east.litematic"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1435019386950910166": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1434949509225517189/Wave_Bolt_Shcmeatics_v1.0.4.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Flying machines",
+            "children": [
+              {
+                "type": "file",
+                "name": "Diagonal Rail Curver Kvil.litematic",
+                "note": "Diagonal rail curver",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167790669758484/Diagonal_Rail_Curver_Kvil.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Rail Curver.litematic",
+                "note": "Straight rail curver",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167792137769085/Rail_Curver.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Bolt 6w Lane Splitter v1.0.1.litematic",
+                "note": "Lane splitter",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167793450450964/Bolt_6w_Lane_Splitter_v1.0.1.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Block Pusher (downwards) v1.0.0.litematic",
+                "note": "Block pusher",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167795132637304/Block_Pusher_downwards_v1.0.0.litematic"
+              },
+              {
+                "type": "file",
+                "name": "6w Floor Placer v1.0.0.litematic",
+                "note": "Floor placer",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167796810227733/6w_Floor_Placer_v1.0.0.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Bolt Block Puller (simpler) v1.0.0.litematic",
+                "note": "Block puller",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167816049369240/Bolt_Block_Puller_simpler_v1.0.0.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Diagonal Bolt Flying Machine Kvil v1.0.0.litematic",
+                "note": "Diagonal flying machine",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167817613975612/Diagonal_Bolt_Flying_Machine_Kvil_v1.0.0.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Straight",
+            "children": [
+              {
+                "type": "file",
+                "name": "Straight Bolt Massive.litematic",
+                "note": "Long straight bolt",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167819371380966/Straight_Bolt_Massive.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Straight Bolt.litematic",
+                "note": "Straight bolt",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167820650516631/Straight_Bolt.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Corner Bolt.litematic",
+                "note": "Corner bolt",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167822030446632/Corner_Bolt.litematic"
+              },
+              {
+                "type": "file",
+                "name": "4 Hexit Subnet Transition v1.0.4.litematic",
+                "note": "Subnet transition",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167823632928868/4_Hexit_Subnet_Transition_v1.0.4.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Diagonal",
+            "children": [
+              {
+                "type": "file",
+                "name": "4 Hexit Left Diagonal Transition v1.0.4.litematic",
+                "note": "Left diagonal transition",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167843094237296/4_Hexit_Left_Diagonal_Transition_v1.0.4.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Diagonal Bolt.litematic",
+                "note": "Diagonal bolt",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167844830679050/Diagonal_Bolt.litematic"
+              },
+              {
+                "type": "file",
+                "name": "4 Hexit Right Diagonal Transition v1.0.4.litematic",
+                "note": "Right diagonal transition",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167847133356133/4_Hexit_Right_Diagonal_Transition_v1.0.4.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Diagonal Bolt Massive.litematic",
+                "note": "Long diagonal bolt",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167848639369326/Diagonal_Bolt_Massive.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Intersections",
+            "children": [
+              {
+                "type": "file",
+                "name": "4 Hexit 4 Way Intersection v1.0.5.litematic",
+                "note": "4-way",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167850593915020/4_Hexit_4_Way_Intersection_v1.0.5.litematic"
+              },
+              {
+                "type": "file",
+                "name": "4 Hexit Bolt Station v1.0.6.litematic",
+                "note": "Station",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167852242014361/4_Hexit_Bolt_Station_v1.0.6.litematic"
+              },
+              {
+                "type": "file",
+                "name": "4 Hexit 3 Way Intersection v1.0.5.litematic",
+                "note": "3-way",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167853642915941/4_Hexit_3_Way_Intersection_v1.0.5.litematic"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1540037253890441368": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1539980665913614467/return_cannon.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "TNT dupers",
+            "children": [
+              {
+                "type": "file",
+                "name": "duper 011 TNT.litematic",
+                "note": "011",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167874081886401/duper_011_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 066 TNT.litematic",
+                "note": "066",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167875788968106/duper_066_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 121 TNT.litematic",
+                "note": "121",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167878653677608/duper_121_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 198 TNT.litematic",
+                "note": "198",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167880734179439/duper_198_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 132 TNT.litematic",
+                "note": "132",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167882302587040/duper_132_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 209 TNT.litematic",
+                "note": "209",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167884433555547/duper_209_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 055 TNT.litematic",
+                "note": "055",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167886140510228/duper_055_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 022 TNT.litematic",
+                "note": "022",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167905564459108/duper_022_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 088 TNT.litematic",
+                "note": "088",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167907300777985/duper_088_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 165 TNT.litematic",
+                "note": "165",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167908835893309/duper_165_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 176 TNT.litematic",
+                "note": "176",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167910517678250/duper_176_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 110 TNT.litematic",
+                "note": "110",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167912187138068/duper_110_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 044 TNT.litematic",
+                "note": "044",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167913562865806/duper_044_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 187 TNT.litematic",
+                "note": "187",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167915769077790/duper_187_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 033 TNT.litematic",
+                "note": "033",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167937470402701/duper_033_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 099 TNT.litematic",
+                "note": "099",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167939232145631/duper_099_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 154 TNT.litematic",
+                "note": "154",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167941568364606/duper_154_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 143 TNT.litematic",
+                "note": "143",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167943199690842/duper_143_TNT.litematic"
+              },
+              {
+                "type": "file",
+                "name": "duper 077 TNT.litematic",
+                "note": "077",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167944873480372/duper_077_TNT.litematic"
+              }
+            ]
+          },
+          {
+            "type": "file",
+            "name": "aligner.litematic",
+            "note": "Aligner",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167946270048537/aligner.litematic"
+          },
+          {
+            "type": "file",
+            "name": "basket.litematic",
+            "note": "Basket",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167947863752934/basket.litematic"
+          }
+        ]
+      }
+    ]
+  },
+  "1446267785041674241": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1464769544017940673/UTF_v5.4_litematics.zip",
+        "tree": [
+          {
+            "type": "file",
+            "name": "snow_in_july GYJX UTF v5.4.litematic",
+            "note": "snow in july GYJX UTF v5.4",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167969925926993/snow_in_july_GYJX_UTF_v5.4.litematic"
+          }
+        ]
+      }
+    ]
+  },
+  "1445913277795143832": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1405370887984910498/Tiling_Schems.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Tiling",
+            "children": [
+              {
+                "type": "file",
+                "name": "Start.litematic",
+                "note": "Start",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167974980190348/Start.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Middle.litematic",
+                "note": "Middle",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167977916071978/Middle.litematic"
+              },
+              {
+                "type": "file",
+                "name": "End.litematic",
+                "note": "End",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167980218753136/End.litematic"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1445141033493991476": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1393014990285312173/SSNWE.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "No Gate",
+            "children": [
+              {
+                "type": "folder",
+                "name": "14h",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, 1024², No Gate).litematic",
+                    "note": "1024²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167982232019004/SSNWE_14h_10242_No_Gate.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, 272², No Gate).litematic",
+                    "note": "272²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167983712473218/SSNWE_14h_2722_No_Gate.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, 528², No Gate).litematic",
+                    "note": "528²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167985478402183/SSNWE_14h_5282_No_Gate.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, Mini, No Gate).litematic",
+                    "note": "Mini",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575167988389126214/SSNWE_14h_Mini_No_Gate.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Full Height",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, 1024², No Gate).litematic",
+                    "note": "1024²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168007913738411/SSNWE_FH_10242_No_Gate.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, 272², No Gate).litematic",
+                    "note": "272²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168009197326498/SSNWE_FH_2722_No_Gate.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, 528², No Gate).litematic",
+                    "note": "528²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168010656678098/SSNWE_FH_5282_No_Gate.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, Mini, No Gate).litematic",
+                    "note": "Mini",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168012384862389/SSNWE_FH_Mini_No_Gate.litematic"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Standard",
+            "children": [
+              {
+                "type": "folder",
+                "name": "14h",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, 1024²).litematic",
+                    "note": "1024²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168014289080460/SSNWE_14h_10242.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, 272²).litematic",
+                    "note": "272²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168016453337378/SSNWE_14h_2722.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, 528²).litematic",
+                    "note": "528²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168018131189940/SSNWE_14h_5282.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (14h, Mini).litematic",
+                    "note": "Mini",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168039584927854/SSNWE_14h_Mini.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Full Height",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, 1024²).litematic",
+                    "note": "1024²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168041782616154/SSNWE_FH_10242.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, 272²).litematic",
+                    "note": "272²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168043300950216/SSNWE_FH_2722.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, 528²).litematic",
+                    "note": "528²",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168045150773269/SSNWE_FH_5282.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "SSNWE (FH, Mini).litematic",
+                    "note": "Mini",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168047193391204/SSNWE_FH_Mini.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1529597592340529234": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1548433614021328987/Trenchless_Trencher_Collection.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Base version",
+            "children": [
+              {
+                "type": "file",
+                "name": "Sweeper 3wt.litematic",
+                "note": "Liquid sweeper",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168048913064057/Sweeper_3wt.litematic"
+              },
+              {
+                "type": "folder",
+                "name": "Overworld",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Trenchless 3w Overworld.litematic",
+                    "note": "3w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168052108984320/Trenchless_3w_Overworld.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 12w Overworld.litematic",
+                    "note": "12w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168071201718454/Trenchless_12w_Overworld.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Nether (full height)",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Trenchless 24w Nether.litematic",
+                    "note": "24w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168072770261146/Trenchless_24w_Nether.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 6w Nether.litematic",
+                    "note": "6w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168074158579712/Trenchless_6w_Nether.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 3w Nether.litematic",
+                    "note": "3w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168075697750026/Trenchless_3w_Nether.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 18w Nether.litematic",
+                    "note": "18w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168077933449377/Trenchless_18w_Nether.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Nether (below roof)",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Trenchless 3w Sub-roof.litematic",
+                    "note": "3w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168079699386468/Trenchless_3w_Sub-roof.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 18w Sub-roof.litematic",
+                    "note": "18w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168098649247824/Trenchless_18w_Sub-roof.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 6w Sub-roof.litematic",
+                    "note": "6w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168100410589428/Trenchless_6w_Sub-roof.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 24w Sub-roof.litematic",
+                    "note": "24w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168102306414692/Trenchless_24w_Sub-roof.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1521927340219830312/1525163999702810774/Trenchless_Trencher_Attachments.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Sweeper variant",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Nether (full height)",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Trenchless 15w Nether [+attachments].litematic",
+                    "note": "15w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168103598264320/Trenchless_15w_Nether_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 18w Nether [+attachments].litematic",
+                    "note": "18w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168105125126205/Trenchless_18w_Nether_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 24w Nether [+attachments].litematic",
+                    "note": "24w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168107075338371/Trenchless_24w_Nether_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 3w Nether [+attachments].litematic",
+                    "note": "3w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168109013377024/Trenchless_3w_Nether_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 6w Nether [+attachments].litematic",
+                    "note": "6w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168129883971644/Trenchless_6w_Nether_attachments.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Nether (below roof)",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Trenchless 18w Sub-roof [+attachments].litematic",
+                    "note": "18w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168131599695994/Trenchless_18w_Sub-roof_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 24w Sub-roof [+attachments].litematic",
+                    "note": "24w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168133155651751/Trenchless_24w_Sub-roof_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 3w Sub-roof [+attachments].litematic",
+                    "note": "3w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168134967726090/Trenchless_3w_Sub-roof_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 6w Sub-roof [+attachments].litematic",
+                    "note": "6w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168137995747458/Trenchless_6w_Sub-roof_attachments.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Overworld",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Trenchless 12w Overworld [+attachments].litematic",
+                    "note": "12w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168139564683305/Trenchless_12w_Overworld_attachments.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Trenchless 3w Overworld [+attachments].litematic",
+                    "note": "3w",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168143842611400/Trenchless_3w_Overworld_attachments.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1550280032818171954": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1549832359019548682/Shulker_Farm_Assembly_Schems.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Assembly schematics",
+            "children": [
+              {
+                "type": "file",
+                "name": "Breeder.litematic",
+                "note": "Breeder",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168146619375777/Breeder.litematic"
+              },
+              {
+                "type": "folder",
+                "name": "Replacement chutes",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Bottom Replacement Chute.litematic",
+                    "note": "Bottom",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168149052063844/Bottom_Replacement_Chute.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Middle Replacement Chute.litematic",
+                    "note": "Middle",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168173303537774/Middle_Replacement_Chute.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Top Replacement Chute.litematic",
+                    "note": "Top",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168174767349791/Top_Replacement_Chute.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Cell modules",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Cell Bottom Module.litematic",
+                    "note": "Bottom",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168176705110056/Cell_Bottom_Module.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cell Middle Module.litematic",
+                    "note": "Middle",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168179448193114/Cell_Middle_Module.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Cell Top Module.litematic",
+                    "note": "Top",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168181209796709/Cell_Top_Module.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1446161879516057703": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1537181716068958248/Schematics_1.21.4-.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.19-1.21.4)",
+            "children": [
+              {
+                "type": "file",
+                "name": "Alternate Clock.litematic",
+                "note": "Alternate clock",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168182769950980/Alternate_Clock.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Chunk Loader (Nether Side).litematic",
+                "note": "Chunk loader (Nether side)",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168184460378244/Chunk_Loader_Nether_Side.litematic"
+              },
+              {
+                "type": "file",
+                "name": "Lazy Man's 60k.litematic",
+                "note": "60k variant",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168204462887023/Lazy_Mans_60k.litematic"
+              },
+              {
+                "type": "file",
+                "name": "TileCane 200k.litematic",
+                "note": "200k variant",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168206300250274/TileCane_200k.litematic"
+              },
+              {
+                "type": "file",
+                "name": "TileCane 40k.litematic",
+                "note": "40k variant",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168207717666867/TileCane_40k.litematic"
+              },
+              {
+                "type": "file",
+                "name": "TileCane 5k.litematic",
+                "note": "5k variant",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168210305810623/TileCane_5k.litematic"
+              },
+              {
+                "type": "file",
+                "name": "TileCane 67k.litematic",
+                "note": "67k variant",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168212528537600/TileCane_67k.litematic"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1537181716379074680/Schematics_1.21.5.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.21.5+)",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Schematics_1.21.5",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Chunk Loader (Nether Side).litematic",
+                    "note": "Chunk loader (Nether side)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168215191916627/Chunk_Loader_Nether_Side.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Lazy Man's 60k.litematic",
+                    "note": "60k variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168217347784744/Lazy_Mans_60k.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "TileCane 200k.litematic",
+                    "note": "200k variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168219684016148/TileCane_200k.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "TileCane 40k.litematic",
+                    "note": "40k variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168239498043503/TileCane_40k.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "TileCane 5k.litematic",
+                    "note": "5k variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168241280745503/TileCane_5k.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "TileCane 67k.litematic",
+                    "note": "67k variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168243000148028/TileCane_67k.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1446163045750411406": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1524397091101609994/Schematics.zip",
+        "tree": [
+          {
+            "type": "file",
+            "name": "18k Cactus.litematic",
+            "note": "18k variant",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168244967542934/18k_Cactus.litematic"
+          },
+          {
+            "type": "file",
+            "name": "127k Cactus.litematic",
+            "note": "127k variant",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168246443942078/127k_Cactus.litematic"
+          },
+          {
+            "type": "file",
+            "name": "6k Cactus.litematic",
+            "note": "6k variant",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168247941046282/6k_Cactus.litematic"
+          },
+          {
+            "type": "file",
+            "name": "Alternate Clock.litematic",
+            "note": "Alternate clock",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168266542907513/Alternate_Clock.litematic"
+          },
+          {
+            "type": "file",
+            "name": "30k Cactus.litematic",
+            "note": "30k variant",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168268262445179/30k_Cactus.litematic"
+          },
+          {
+            "type": "file",
+            "name": "Nether Chunk Loader.litematic",
+            "note": "Chunk loader (Nether side)",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168273438212267/Nether_Chunk_Loader.litematic"
+          }
+        ]
+      }
+    ]
+  },
+  "1435832154574815366": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1473419276428771530/raid_farm_Java_1.21.2_schematic_260211.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "Self-sustaining variant",
+            "children": [
+              {
+                "type": "file",
+                "name": "09.self-sustaining raid farm (Java 1.21.2-1.21.4).litematic",
+                "note": "(1.21.2-1.21.4)",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168275791216861/09.self-sustaining_raid_farm_Java_1.21.2-1.21.4.litematic"
+              },
+              {
+                "type": "file",
+                "name": "10.self-sustaining raid farm (Java 1.21.5+).litematic",
+                "note": "(1.21.5+)",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168277146247289/10.self-sustaining_raid_farm_Java_1.21.5.litematic"
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "1D variant",
+            "children": [
+              {
+                "type": "file",
+                "name": "07.whole wave 1D raid farm step1 (Java 1.21.2+).litematic",
+                "note": "Step 1",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168279335403691/07.whole_wave_1D_raid_farm_step1_Java_1.21.2.litematic"
+              },
+              {
+                "type": "file",
+                "name": "08.whole wave 1D raid farm step2 (Java 1.21.2+).litematic",
+                "note": "Step 2",
+                "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168281688539259/08.whole_wave_1D_raid_farm_step2_Java_1.21.2.litematic"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1444281607254183988": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1523030358424289461/1.9M_Guardian_Farm_1.19-1.21.4.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.19-1.21.4)",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Overworld side",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Collection.litematic",
+                    "note": "Collection",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168283357749289/Collection.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "海货塔-跳略-skipping.litematic",
+                    "note": "Skipping variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168302743953539/--skipping.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "海货塔-抑制-supression.litematic",
+                    "note": "Suppression variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168304580923596/--supression.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Nether side",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "diamond-sword.litematic",
+                    "note": "Diamond sword variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168306006982727/diamond-sword.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "netherite-sword.litematic",
+                    "note": "Netherite sword variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168307823247581/netherite-sword.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "老蜜块版-old-honey-version.litematic",
+                    "note": "Honey shifting floor",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168309459025990/-old-honey-version.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1523030358784872559/1.9M_Guardian_Farm_1.21.6.zip",
+        "tree": [
+          {
+            "type": "folder",
+            "name": "(1.21.6+)",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Overworld side",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Collection.litematic",
+                    "note": "Collection",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168311883333684/Collection.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "海货塔-抑制-supression.litematic",
+                    "note": "Suppression variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168313493815306/--supression.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "海货塔-跳略-skipping.litematic",
+                    "note": "Skipping variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168334704545913/--skipping.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Nether side",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "diamond-sword.litematic",
+                    "note": "Diamond sword variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168336474415104/diamond-sword.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "netherite-sword.litematic",
+                    "note": "Netherite sword variant",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168338990993519/netherite-sword.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "老蜜块版-old-honey-version.litematic",
+                    "note": "Honey shifting floor",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168347874791444/-old-honey-version.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "1429721770536996925": {
+    "bundles": [
+      {
+        "source_url": "https://cdn.discordapp.com/attachments/1315522702492172300/1468451178554720420/WAIFU_Collection_Schematics.zip",
+        "tree": [
+          {
+            "type": "file",
+            "name": "WAIFU Nether side (portal).litematic",
+            "note": "Nether side",
+            "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168350395310124/WAIFU_Nether_side_portal.litematic"
+          },
+          {
+            "type": "folder",
+            "name": "Mini variant",
+            "children": [
+              {
+                "type": "folder",
+                "name": "1D variant",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "waifu MS18.litematic",
+                    "note": "(1.16.4-1.18.2, 1.20.2+)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168352492593162/waifu_MS18.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "waifu MS19.litematic",
+                    "note": "(1.19-1.20.1)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168354912837733/waifu_MS19.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "2D variant",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "waifu MP19.litematic",
+                    "note": "(1.19-1.20.1)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168356363927722/waifu_MP19.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "waifu MP18.litematic",
+                    "note": "(1.16.4-1.18.2, 1.20.2+)",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168358352027859/waifu_MP18.litematic"
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Collection",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Mini collection.litematic",
+                    "note": "Overworld",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168361032065064/Mini_collection.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Mini collection nether.litematic",
+                    "note": "Nether",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168363859284190/Mini_collection_nether.litematic"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "folder",
+            "name": "Maxi variant",
+            "children": [
+              {
+                "type": "folder",
+                "name": "Pillager",
+                "children": [
+                  {
+                    "type": "folder",
+                    "name": "1D variant",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "waifu PS19.litematic",
+                        "note": "(1.19-1.20.1)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168385136984104/waifu_PS19.litematic"
+                      },
+                      {
+                        "type": "file",
+                        "name": "waifu PS18.litematic",
+                        "note": "(1.16.4-1.18.2, 1.20.2+)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168387590389760/waifu_PS18.litematic"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "folder",
+                    "name": "2D variant",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "waifu PP18.litematic",
+                        "note": "(1.16.4-1.18.2, 1.20.2+)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168390585122927/waifu_PP18.litematic"
+                      },
+                      {
+                        "type": "file",
+                        "name": "waifu PP19.litematic",
+                        "note": "(1.19-1.20.1)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168392544133302/waifu_PP19.litematic"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Zombie",
+                "children": [
+                  {
+                    "type": "folder",
+                    "name": "1D variant",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "waifu ZS18.litematic",
+                        "note": "(1.16.4-1.18.2, 1.20.2+)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168394330898522/waifu_ZS18.litematic"
+                      },
+                      {
+                        "type": "file",
+                        "name": "waifu ZS19.litematic",
+                        "note": "(1.19-1.20.1)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168397816369223/waifu_ZS19.litematic"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "folder",
+                    "name": "2D variant",
+                    "children": [
+                      {
+                        "type": "file",
+                        "name": "waifu ZP19.litematic",
+                        "note": "(1.19-1.20.1)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168401439981710/waifu_ZP19.litematic"
+                      },
+                      {
+                        "type": "file",
+                        "name": "waifu ZP18.litematic",
+                        "note": "(1.16.4-1.18.2, 1.20.2+)",
+                        "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168403402915920/waifu_ZP18.litematic"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "folder",
+                "name": "Collection",
+                "children": [
+                  {
+                    "type": "file",
+                    "name": "Maxi collection.litematic",
+                    "note": "Overworld",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168404837638164/Maxi_collection.litematic"
+                  },
+                  {
+                    "type": "file",
+                    "name": "Maxi collection nether.litematic",
+                    "note": "Nether",
+                    "url": "https://cdn.tmcc.dev/attachments/1315522702492172300/1575168426761125899/Maxi_collection_nether.litematic"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
