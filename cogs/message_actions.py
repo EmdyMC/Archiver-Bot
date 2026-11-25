@@ -4,7 +4,7 @@ import json
 import random
 from discord.ext import commands
 from discord import app_commands
-from constants import BLACKLIST, BOT_DM_THREAD, RANDOM_REPLIES, SNAPSHOT_CHANNEL, NO_CHAT, STAFF_ROLES, TIMEOUT_MESSAGE, SUBMISSIONS_CHANNEL, NO_CHAT_IMAGE, LOG_CHANNEL, SUBMISSION_PROMPT, HOW_TO_PIN, HELP_FORUM, HELP_FORUM_PROMPT
+from constants import BLACKLIST, BOT_DM_THREAD, RANDOM_REPLIES, SNAPSHOT_CHANNEL, NO_CHAT, STAFF_ROLES, TIMEOUT_MESSAGE, SUBMISSIONS_CHANNEL, NO_CHAT_IMAGE, LOG_CHANNEL, SUBMISSION_PROMPT, HOW_TO_PIN, HELP_CHANNEL, HELP_FORUM, HELP_FORUM_PROMPT, MAIN_ARCHIVE_CATEGORIES
 
 # Reply modal
 class ReplyBox(discord.ui.Modal, title="Reply to DM"):
@@ -151,6 +151,50 @@ class MessageActions(commands.Cog):
         except Exception as e:
             await utility_cog.log(title=f"An error occurred", message=f"{e}")
 
+    async def replace_forwarded_archive_post(self, message: discord.Message) -> bool:
+        reference = message.reference
+        if not reference or reference.type != discord.MessageReferenceType.forward:
+            return False
+        if reference.guild_id is not None and reference.guild_id != message.guild.id:
+            return False
+
+        utility_cog = self.bot.get_cog("Utility")
+        log_context = (
+            f"**By:** {message.author.mention}\n"
+            f"**In:** {message.channel.jump_url}\n"
+            f"**Forward:** {message.jump_url}\n"
+            f"**Source:** https://discord.com/channels/{message.guild.id}/{reference.channel_id}"
+        )
+        # Archived threads may not be cached; resolve the original post before replacing it.
+        source = self.bot.get_channel(reference.channel_id)
+        if source is None:
+            try:
+                source = await self.bot.fetch_channel(reference.channel_id)
+            except (discord.HTTPException, discord.InvalidData) as e:
+                await utility_cog.log(title="Error resolving forwarded post", message=f"{log_context}\n**Error:** {e}", colour=discord.Color.red())
+                return False
+        if not isinstance(source, discord.Thread) or source.guild.id != message.guild.id:
+            return False
+        if source.parent is None:
+            await utility_cog.log(title="Error resolving forwarded post", message=f"{log_context}\n**Error:** Source thread's parent channel is unavailable", colour=discord.Color.red())
+            return False
+        if not isinstance(source.parent, discord.ForumChannel) or source.parent.category_id not in MAIN_ARCHIVE_CATEGORIES:
+            return False
+
+        replacement = None
+        try:
+            # Send the link first so the forward is preserved if sending fails.
+            replacement = await message.channel.send(f"<{source.jump_url}>")
+            await message.delete()
+        except discord.HTTPException as e:
+            action = "delete the forward" if replacement is not None else "send the replacement link"
+            if replacement is not None:
+                log_context += f"\n**Replacement:** {replacement.jump_url}"
+            await utility_cog.log(title="Error replacing forwarded archive post", message=f"{log_context}\n**Error:** Failed to {action}: {e}", colour=discord.Color.red())
+        else:
+            await utility_cog.log(title="Forwarded archive post replaced", message=f"{log_context}\n**Replacement:** {replacement.jump_url}", colour=discord.Color.green())
+        return True
+
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         # Ignore own messages
@@ -171,6 +215,13 @@ class MessageActions(commands.Cog):
         # Catch images sent by no chat users
         if message.author.get_role(NO_CHAT) and not any(role.id in STAFF_ROLES for role in message.author.roles):
             await self.handle_no_chat_users(message)
+        # Replace forwards in #help and help forum replies, without deleting the help post itself.
+        elif (
+            (isinstance(message.channel, discord.TextChannel) and message.channel.id == HELP_CHANNEL)
+            or (isinstance(message.channel, discord.Thread) and message.channel.parent_id == HELP_FORUM and message.id != message.channel.id)
+        ):
+            if await self.replace_forwarded_archive_post(message):
+                return
         # Pin first message in submission posts and send info message
         if isinstance(message.channel, discord.Thread) and message.channel.parent_id == SUBMISSIONS_CHANNEL:
             if message.id == message.channel.id:
