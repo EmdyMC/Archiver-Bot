@@ -103,7 +103,7 @@ COMMANDS_LIST = '''
 **/tag_selector**: Set the tags of the current submission/archive corrections/ help forum post
 **Pin** *(App command)*: Pin the selected message
 ## Archiver commands:
-**/close_resolved**: Close all posts in the archived marked as accepted or rejected
+**/close_resolved**: Close all solved, rejected, archived, inactive or off-topic posts (excluding accepted posts)
 **/close_archived**: Close all open posts in the archive channels
 **/delete_post**: Send a delete request to archiver chat for another archiver to approve
 **/edit_post_title**: Send a title edit request to archiver chat for another archiver to approve

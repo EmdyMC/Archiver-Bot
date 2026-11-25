@@ -5,7 +5,7 @@ from datetime import timedelta
 from discord.utils import snowflake_time
 from discord.ext import commands
 from discord import app_commands
-from constants import HIGHER_ROLES, HELP_FORUM, STAFF_ROLES, ALLOWED_FORUMS, NON_ARCHIVE_CATEGORIES, FORUMS, FAQ_CHANNEL, PENDING_TAGS, INACTIVE_TAG, UNSOLVED_TAG, SUBMISSIONS_CHANNEL, RESOLVED_TAGS, LOG_CHANNEL
+from constants import HIGHER_ROLES, HELP_FORUM, STAFF_ROLES, ALLOWED_FORUMS, NON_ARCHIVE_CATEGORIES, FORUMS, FAQ_CHANNEL, PENDING_TAGS, INACTIVE_TAG, UNSOLVED_TAG, SUBMISSIONS_CHANNEL, ACCEPTED_TAG, REJECTED_TAG, LOG_CHANNEL
 from cogs.utility import TagSelectView
 
 class Management(commands.Cog):
@@ -76,7 +76,7 @@ class Management(commands.Cog):
         for channel in guild.channels:
             if isinstance(channel, discord.ForumChannel):
                 for thread in channel.threads:
-                    if thread.archived or thread.flags.pinned:
+                    if thread.archived or thread.flags.pinned or any(tag.id == ACCEPTED_TAG for tag in thread.applied_tags):
                         continue
                     if thread.locked and not thread.archived:
                         await thread.edit(locked=False)
@@ -137,7 +137,8 @@ class Management(commands.Cog):
         submissions = self.bot.get_channel(SUBMISSIONS_CHANNEL)
         count = 0
         for thread in submissions.threads:
-            if any(tag.id in RESOLVED_TAGS for tag in thread.applied_tags) and not thread.locked:
+            tag_ids = {tag.id for tag in thread.applied_tags}
+            if REJECTED_TAG in tag_ids and ACCEPTED_TAG not in tag_ids and not thread.locked:
                 if thread.last_message_id:
                     last_activity = snowflake_time(thread.last_message_id)
                 else:
@@ -147,7 +148,7 @@ class Management(commands.Cog):
                     await thread.edit(archived=False, locked=True)
                     await thread.edit(archived=True)
                     count += 1
-        await run_channel.send(content=f"Locked {count} Rejected/Archived submissions posts")
+        await run_channel.send(content=f"Locked {count} rejected submission posts")
 
     @tasks.loop(hours=12)
     async def archive_management(self):
