@@ -466,7 +466,7 @@ class Parser(commands.Cog):
         text = text.strip('-')
         return text
 
-    def _upload_to_designs(self, required_threads: set[str] | frozenset[str] = frozenset()):
+    def _upload_to_designs(self, required_threads: set[str] | frozenset[str] = frozenset()) -> bool:
         client = MongoClient(MONGO_URI)
         try:
             DIRECTORY_PATH = Path.cwd() / "parsed"
@@ -497,11 +497,11 @@ class Parser(commands.Cog):
                     f"Parsed output is missing measurement threads: {', '.join(sorted(missing_threads))}"
                 )
 
-            if docs_to_insert:
-                # Wipe existing files
-                collection.delete_many({})
-                # Push new files
-                collection.insert_many(docs_to_insert)
+            if not docs_to_insert:
+                return False
+
+            collection.delete_many({})
+            return collection.insert_many(docs_to_insert).acknowledged
 
         finally:
             client.close()
@@ -651,11 +651,36 @@ class Parser(commands.Cog):
         # Push parsed files to DB
         await interaction.channel.send("Uploading parsed results to the database. . .")
         try:
-            await asyncio.to_thread(self._upload_to_designs, manual_measurements.keys() - deleted_threads)
+            uploaded = await asyncio.to_thread(self._upload_to_designs, manual_measurements.keys() - deleted_threads)
         except ManualMeasurementsError as error:
             await interaction.channel.send(f"Archive upload skipped. {error}")
             return
-        await interaction.channel.send("Database updated")
+        if not uploaded:
+            await interaction.channel.send("No confirmed database update. Website rebuild skipped.")
+            return
+
+        rebuild_status = await self._request_website_rebuild()
+        await interaction.channel.send(f"Database updated. {rebuild_status}")
+
+    async def _request_website_rebuild(self) -> str:
+        hook_url = os.getenv("WEBSITE_DEPLOY_HOOK_URL", "").strip()
+        if not hook_url:
+            return "Website rebuild skipped because WEBSITE_DEPLOY_HOOK_URL is unset."
+
+        try:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10)) as session:
+                async with session.post(hook_url, allow_redirects=False) as response:
+                    if not 200 <= response.status < 300:
+                        return f"Website rebuild request failed (HTTP {response.status})."
+                    result = await response.json()
+        except TimeoutError:
+            return "Website rebuild request could not be confirmed (timed out)."
+        except (aiohttp.ClientError, ValueError):
+            return "Website rebuild request failed."
+
+        if isinstance(result, dict) and result.get("success") is True:
+            return "Website rebuild requested."
+        return "Website rebuild request failed."
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(Parser(bot))
