@@ -7300,7 +7300,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Sweet Berry Bush"
+            "Sweet Berries"
           ]
         },
         {
@@ -7539,7 +7539,7 @@
         },
         {
           "conditions": [
-            "Sweet Berry Bush"
+            "Sweet Berries"
           ],
           "lag": 0.8
         },
