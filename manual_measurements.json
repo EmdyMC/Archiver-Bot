@@ -5327,7 +5327,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Pink Petals, Wildflowers, Tall Flower"
+            "Pink Petals/Wildflowers/Tall Flower"
           ]
         }
       ],
@@ -6954,7 +6954,7 @@
           "items": {
             "type": "concurrent",
             "names": [
-              "Sweet Berry Bush"
+              "Sweet Berries"
             ]
           },
           "conditions": "",
@@ -6962,7 +6962,7 @@
           "interval": "h",
           "note": "",
           "variants": [
-            "Sweet Berry Bush"
+            "Sweet Berries"
           ]
         },
         {
