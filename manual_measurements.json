@@ -5319,7 +5319,10 @@
             "names": [
               "Pink Petals",
               "Wildflowers",
-              "Tall Flower"
+              "Lilac",
+              "Peony",
+              "Rose Bush",
+              "Sunflower"
             ]
           },
           "conditions": "",
@@ -7000,9 +7003,12 @@
         {
           "version": "",
           "items": {
-            "type": "concurrent",
+            "type": "exclusive",
             "names": [
-              "Tall Flower"
+              "Lilac",
+              "Peony",
+              "Rose Bush",
+              "Sunflower"
             ]
           },
           "conditions": "",
